@@ -1,10 +1,12 @@
 <template>
     <!-- 128 / 150 -->
-    <div class="bottom-item">
+    <a class="bottom-item" 
+        :href="menuItemHref" 
+        @click=" $attrs.odata.name==='应急保障' && openContactListPage($attrs.odata.menuUrl) ">
         <p>{{ $attrs.odata.name }}</p>
         <i class="item-img" :style=" 'backgroundImage: url(' + itemImg + ')' "></i>
         <i class="base-icon"></i>
-    </div>
+    </a>
 </template>
 
 <script>
@@ -14,11 +16,29 @@
                 itemImg: require(`@/assets/image/${this.$attrs.odata.img}`)
             }
         },
+        mounted () {
+            
+        },
+        computed: {
+            menuItemHref() {
+                if(this.$attrs.odata.name === "应急保障") {
+                    return 'javascript:void(0);'
+                }else {
+                    return this.$attrs.odata.menuUrl
+                }
+            }
+        },
+        methods: {
+            openContactListPage(menuUrl) {
+                window.open(menuUrl, "视频通话窗口", "location=no,menubar=no,status=no,titlebar=no,toolbar=no,width=1000,height=540,left=200,top=100,screenLeft=200,screenTop=150");
+            }
+        },
     }
 </script>
 
 <style lang="scss" scoped>
     .bottom-item{
+        text-decoration: none;
 
         p{
             width: 100%;

@@ -6,6 +6,7 @@
             <!-- 头部 -->
             <el-header class="cus-header" :height="headerHeight">
                 <div class="cus-header-item1">
+                    <back-prevpage></back-prevpage>
                     <div class="logo-img"></div>
                 </div>
                 <div class="cus-header-item2"></div>
@@ -32,6 +33,7 @@
     import MainLeft from '@/views/page2/mainleft/MainLeft'
     import MainRight from '@/views/page2/mainright/MainRight'
     import BottomMenus from '@/views/page2/BottomMenus';
+    import BackPrevpage from '@/components/BackPrevpage';
 
     export default {
         components: {
@@ -41,6 +43,7 @@
             MainLeft,
             MainRight,
             BottomMenus,
+            BackPrevpage,
         },
         data () {
             return {

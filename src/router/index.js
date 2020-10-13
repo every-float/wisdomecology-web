@@ -2,11 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // 直接载入主js文件（容易体积大）
-// import page1 from '@/views/page1.vue';
+// import page1 from '@/views/404.vue';
 // 根据页面地址按需加载
 const page1 = () => import( '@/views/page1.vue' );
 const page2 = () => import( '@/views/page2.vue' );
 const page3 = () => import( '@/views/page3.vue' );
+const notfound = () => import( '@/views/404.vue' );
 // 按需加载（一系列归为一组同时加载进来）
 // const page1 = () => import( /* webpackChunkName: "page" */ '@/views/page1.vue' );
 // const page2 = () => import( /* webpackChunkName: "page" */ '@/views/page2.vue' );
@@ -17,11 +18,11 @@ Vue.use(Router)
 const routes = [
   {
     path: '/',
-    name: 'page1',
-    title: '页面一',
-    component: page1,
+    name: 'notfound',
+    title: '404',
+    component: notfound,
     meta: {
-      title: '智慧西青生态环境大数据指挥平台'
+      title: '404'
     }
   },
   {
@@ -51,17 +52,17 @@ const routes = [
       title: '智慧西青水环境监控'
     }
   },
-  {
-    path: '*',
-    name: 'noFound',
-    title: '未找到',
-    meta: {
-      title: '未找到，跳转中...'
-    },
-    redirect: {
-      name: 'page1'
-    }
-  }
+  // {
+  //   path: '*',
+  //   name: 'noFound',
+  //   title: '未找到',
+  //   meta: {
+  //     title: '未找到，跳转中...'
+  //   },
+  //   redirect: {
+  //     name: 'page1'
+  //   }
+  // }
   // {
   //   path: '/about',
   //   name: 'About',

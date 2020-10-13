@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-// import store from './store';
+import store from './store';
 import { 
   Container,
   Header,
@@ -41,6 +41,6 @@ Vue.use(TabPane);
 
 new Vue({
   router,
-  // store,
+  store,
   render: h => h(App)
 }).$mount('#app');
