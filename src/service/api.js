@@ -56,3 +56,6 @@ export async function getAirQuality(){
 export async function getXiangzhenData(){
   return await http.get('/xiangzhen/xiangzhen.json');
 }
+
+// 我现在的主要工作线是对接后端数据接口
+//（这个功能我还没有完成呢，经理说有个bug需要紧急修改一下，我先到另外一个工作线去一会(那么当前的工作线需要先保存一下，用git stash)，弄完那个工作线再回来继续搞主工作线）
