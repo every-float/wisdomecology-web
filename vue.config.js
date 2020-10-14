@@ -1,16 +1,17 @@
-const port = 7070
-const title = '西青区大气与水环境信息面板'
+const port = 7070;
+const title = '西青区大气与水环境信息面板';
+const publicPath = '/wisdomecology-web/theme/theme_2';
 
-const path = require('path')
+const path = require('path');
 
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
 module.exports = {
-    publicPath: '/wisdomecology-web/theme/theme_2',
+    publicPath,
     devServer: {
-        port: port
+        port,
     },
     productionSourceMap: false,
     // 这个字段下配置所有跟webpack相关的项，最后会跟vue-cli内置的webpack配置合并并覆盖内置配置
@@ -49,7 +50,7 @@ module.exports = {
 
         // 4、别名设置
         config.resolve.alias
-            .set('@', resolve('src'))
+            .set('@', path.resolve(__dirname, './src'))
 
         // 5、不压缩index.html文件
         config

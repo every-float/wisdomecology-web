@@ -98,7 +98,7 @@
                     {
                         series: [{
                             type: 'liquidFill',
-                            data: [0.3, 0.28, 0.25],
+                            data: [0.3, 0.3+0.02, 0.3+0.04],
                             shape: 'path://M879.992333 656.007667a367.992333 367.992333 0 0 1-735.984666 0C144.007667 452.875898 479.453123 0 512 0 536.532822 0 879.992333 452.875898 879.992333 656.007667z',
                             color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
                             direction: 'left',
@@ -132,7 +132,7 @@
                                 show: true,
                                 formatter: odata => this.charts1_getLevelText(odata.value),
                                 color: 'rgba(245,246,10,1)',
-                                insideColor: 'rgba(245,246,10,1)',
+                                insideColor: 'rgba(1,28,39,1)',
                                 fontSize: 16,
                                 fontWeight: 'bold',
                                 align: 'center',
