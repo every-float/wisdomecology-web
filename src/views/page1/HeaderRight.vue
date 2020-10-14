@@ -79,7 +79,7 @@
         
             // views/index2.html?menuId=e1f1e7bb0d974d3eac60447dc4262354
             navToSetting() {
-                window.open(`${this.$store.state.pageUrl}views/index2.html?menuId=e1f1e7bb0d974d3eac60447dc4262354&menuName=综合管理`, '_self', '', false);
+                window.open(`${this.$store.state.pageUrl}views/index2.html?menuId=e1f1e7bb0d974d3eac60447dc4262354&menuName=设置中心`, '_self', '', false);
             },
         }
     }
