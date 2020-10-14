@@ -10,6 +10,7 @@
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
     "echarts": "^4.9.0",
+    "echarts-liquidfill": "^2.0.6",
     "element-ui": "^2.13.2",
     "jsonp": "^0.2.1",
     "vue": "^2.6.11",

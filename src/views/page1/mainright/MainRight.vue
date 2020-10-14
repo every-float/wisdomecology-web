@@ -83,13 +83,14 @@
 
 <script>
     import BlockContainer from "@/components/BlockContainer"
-    import "@/utils/echarts-liquidfill.js";
+    import echartsLiquidfill from 'echarts-liquidfill';
 
     export default {
         components: {
             BlockContainer,
         },
         methods: {
+            
             initCharts_1 () {
                 const _echarts = this.$echarts;
                 let myChart = _echarts.init(this.$refs.right_1_1);
@@ -97,11 +98,11 @@
                     {
                         series: [{
                             type: 'liquidFill',
-                            data: [0.42, 0.5, 0.4, 0.3],
+                            data: [0.3, 0.28, 0.25],
+                            shape: 'path://M879.992333 656.007667a367.992333 367.992333 0 0 1-735.984666 0C144.007667 452.875898 479.453123 0 512 0 536.532822 0 879.992333 452.875898 879.992333 656.007667z',
                             color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
                             direction: 'left',
                             radius: '80%',
-                            shape: 'triangle',
                             center: ['50%', '50%'],
                             outline: {
                                 show: true,
@@ -115,7 +116,7 @@
                                 }
                             },
                             backgroundStyle: {
-                                color: "rgba(20,28,39,1)"
+                                color: "rgba(1,28,39,1)"
                             },
                             itemStyle: {
                                 normal: {
@@ -128,25 +129,11 @@
                                 }
                             },
                             label:{
-                                // normal: {
-                                //     show: true,
-                                //     textStyle: {
-                                //         // color: 'rgba(245,246,10,1)',
-                                //         // insideColor: 'rgba(245,246,10,1)',
-                                //         // fontSize: 50,
-                                //         color:'red',
-                                //         insideColor:'yellow',
-                                //         fontSize:20,
-                                //         fontWeight: 'bold',
-
-                                //         align: 'center',
-                                //         baseline: 'middle'
-                                //     },
-                                //     position: 'inside'
-                                // }
                                 show: true,
-                                color:'red',
-                                fontSize:20,
+                                formatter: odata => this.charts1_getLevelText(odata.value),
+                                color: 'rgba(245,246,10,1)',
+                                insideColor: 'rgba(245,246,10,1)',
+                                fontSize: 16,
                                 fontWeight: 'bold',
                                 align: 'center',
                                 baseline: 'middle',
@@ -158,6 +145,20 @@
                 window.addEventListener("resize", function () {
                     myChart.resize();
                 });
+            },
+            charts1_getLevelText(val) {
+                // 0-1
+                if(val>=0 && val<0.2){
+                    return "Ⅰ类"
+                }else if(val>=0.2 && val<0.4){
+                    return "Ⅱ类"
+                }else if(val>=0.4 && val<0.6){
+                    return "Ⅲ类"
+                }else if(val>=0.6 && val<0.8){
+                    return "Ⅳ类"
+                }else if(val>=0.8 && val<=1){
+                    return "Ⅴ类"
+                }
             },
             initCharts_2 () {
                 const _echarts = this.$echarts;
