@@ -3,8 +3,8 @@
         <block-container _title="水环境实时数据" height="2.95rem">
             <div class="right_1_con">
                 <div class="right_1_data" style="flex: 1; height: 100%;">
-                    <div class="right_1_data_l">
-                        <span style="margin-top: -0.2rem">IV类</span>
+                    <div class="right_1_data_l" ref="right_1_1">
+                        <!-- <span style="margin-top: -0.2rem">IV类</span> -->
                     </div>
                     <div class="right_1_data_r">
                         <div class="cus_bar_con">
@@ -83,12 +83,82 @@
 
 <script>
     import BlockContainer from "@/components/BlockContainer"
+    import "@/utils/echarts-liquidfill.js";
 
     export default {
         components: {
             BlockContainer,
         },
         methods: {
+            initCharts_1 () {
+                const _echarts = this.$echarts;
+                let myChart = _echarts.init(this.$refs.right_1_1);
+                myChart.setOption(
+                    {
+                        series: [{
+                            type: 'liquidFill',
+                            data: [0.42, 0.5, 0.4, 0.3],
+                            color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
+                            direction: 'left',
+                            radius: '80%',
+                            shape: 'triangle',
+                            center: ['50%', '50%'],
+                            outline: {
+                                show: true,
+                                borderDistance: 0,
+                                itemStyle: {
+                                    color: 'none',
+                                    borderColor: 'rgba(248,234,13,1)',
+                                    borderWidth: 4,
+                                    shadowBlur: 20,
+                                    shadowColor: 'rgba(0, 0, 0, 0.25)'
+                                }
+                            },
+                            backgroundStyle: {
+                                color: "rgba(20,28,39,1)"
+                            },
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0.95,
+                                    shadowBlur: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.4)'
+                                },
+                                emphasis: {
+                                    opacity: 0.8
+                                }
+                            },
+                            label:{
+                                // normal: {
+                                //     show: true,
+                                //     textStyle: {
+                                //         // color: 'rgba(245,246,10,1)',
+                                //         // insideColor: 'rgba(245,246,10,1)',
+                                //         // fontSize: 50,
+                                //         color:'red',
+                                //         insideColor:'yellow',
+                                //         fontSize:20,
+                                //         fontWeight: 'bold',
+
+                                //         align: 'center',
+                                //         baseline: 'middle'
+                                //     },
+                                //     position: 'inside'
+                                // }
+                                show: true,
+                                color:'red',
+                                fontSize:20,
+                                fontWeight: 'bold',
+                                align: 'center',
+                                baseline: 'middle',
+                                position: 'inside'
+                            },
+                        }]
+                    }                    
+                )
+                window.addEventListener("resize", function () {
+                    myChart.resize();
+                });
+            },
             initCharts_2 () {
                 const _echarts = this.$echarts;
             　　let myChart = _echarts.init(this.$refs.right_2_1);
@@ -340,6 +410,7 @@
             },
         },
         mounted () {
+            this.initCharts_1();
             this.initCharts_2();
             this.initCharts_3();
         },
@@ -362,15 +433,15 @@
             .right_1_data_l{
                 height: 100%;
                 width: 27.876%;
-                background: url("~@/assets/image/water_evn.png") no-repeat center;
-                background-size: 60% auto;
-                font-size: 0.2rem;
-                font-weight: 600;
-                color: #F4EA26;
-                display: flex;
-                display: -webkit-flex;
-                justify-content: center;
-                align-items: center;
+                // background: url("~@/assets/image/water_evn.png") no-repeat center;
+                // background-size: 60% auto;
+                // font-size: 0.2rem;
+                // font-weight: 600;
+                // color: #F4EA26;
+                // display: flex;
+                // display: -webkit-flex;
+                // justify-content: center;
+                // align-items: center;
             }
             .right_1_data_r{
                 flex: 1;

@@ -1,9 +1,9 @@
 <template>
     <div class="center-bottom">
         <bottom-item 
-            v-for="vo in itemData" 
+            v-for="(vo, index) in itemData" 
             :key="vo.name" 
-            :odata="vo"
+            :odata="Object.assign(vo, {index: index})"
             :style=" {bottom: vo.bottom, left: vo.left} "
             :title="vo.name" 
         ></bottom-item>
@@ -25,13 +25,13 @@
                         img: "page1_zonghe.png",
                         bottom: "3%",
                         left: "28.5%",
-                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=a57c1882826943c3b845b5b98eabe5c9`
+                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=a57c1882826943c3b845b5b98eabe5c9&menuName=综合管理`
                     },{
                         name: "土壤监控",
                         img: "page1_turang.png",
                         bottom: "8%",
                         left: "35.6%",
-                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=a57c1882826943c3b845b5b98eabe5c9`
+                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=a57c1882826943c3b845b5b98eabe5c9&menuName=土壤监控`
                     },{
                         name: "大气监控",
                         img: "page1_daqi.png",
@@ -49,7 +49,7 @@
                         img: "page1_zaosheng.png",
                         bottom: "8%",
                         left: "57.2%",
-                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=f3d055931a64448d8311ac6729c70537`
+                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=f3d055931a64448d8311ac6729c70537&menuName=噪声监控`
                     },{
                         name: "应急保障",
                         img: "page1_yingji.png",

@@ -3,11 +3,16 @@
         <block-container _title="大气环境实时数据" height="2.67rem">
             <div style="width: 100%; height: 100%; dispaly: flex; display:-webkit-flex;">
                 <div class="left_1_1">
-                    <p style="color: #F6FFFF; font-size: 0.3rem;">92</p>
-                    <p style="font-size: 0.18rem; color: #F6FFFF; margin-top:0.1rem;">
-                        AQI
-                        <span style="color: #E3FF1A;">良</span>
-                    </p>
+                    <div class="left_1_1_rotate_outer" ref="left_1_1_rotate_outer"></div>
+                    <div class="left_1_1_rotate_inner" ref="left_1_1_rotate_inner"></div>
+                    <div class="left_1_1_text">
+                        <p style="color: #F6FFFF; font-size: 0.3rem;">92</p>
+                        <p style="font-size: 0.18rem; color: #F6FFFF; margin-top:0.1rem;">
+                            AQI
+                            <span style="color: #E3FF1A;">良</span>
+                        </p>
+                    </div>
+                    
                 </div>
                 <div class="left_1_2" ref="left_1_2"></div>
                 <div style="font-size: 0.12rem;">
@@ -65,7 +70,6 @@
 
 <script>
     import BlockContainer from "@/components/BlockContainer"
-    // import { left_1_1 } from "@/utils/echartsDefine.js"
 
     export default {
         data() {
@@ -76,7 +80,23 @@
         components: {
             BlockContainer,
         },
+        mounted () {
+            this.calcLeft_1_1_rotate_height();
+            window.addEventListener('resize', () => {
+                this.calcLeft_1_1_rotate_height();
+            })
+            this.initCharts();
+            this.initCharts_2();
+            this.initCharts_3();
+        },
         methods: {
+            calcLeft_1_1_rotate_height() {
+                // _inner _outer
+                const outerwidth = this.$refs.left_1_1_rotate_outer.clientWidth;
+                this.$refs.left_1_1_rotate_outer.style.height = outerwidth + "px";
+                this.$refs.left_1_1_rotate_inner.style.width = outerwidth * 0.9411764705882353 + "px";
+                this.$refs.left_1_1_rotate_inner.style.height = outerwidth * 0.9411764705882353 + "px";
+            },
             initCharts () {
                 const _echarts = this.$echarts;
             　　let myChart = _echarts.init(this.$refs.left_1_2);
@@ -453,12 +473,7 @@
                     myChart.resize();
                 });
             },
-        },
-        mounted () {
-            this.initCharts();
-            this.initCharts_2();
-            this.initCharts_3();
-        },
+        }
     }
 </script>
 
@@ -472,14 +487,41 @@
         .left_1_1{
             width: 30.802%;
             height: 100%;
-            background: url("~@/assets/image/circle.png") no-repeat center;
-            background-size: contain;
-            display: flex;
-            display: -webkit-flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
+            position: relative;
+
+            .left_1_1_rotate_outer{
+                position: absolute;
+                width: 100%;
+                z-index: 1;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%) rotate(0deg) scale(0.95);
+                background: url("~@/assets/image/circle-outer.png") no-repeat center;
+                background-size: 100% 100%;
+                animation: antiClockWiseRotate 3.6s linear infinite;
+            }
+            .left_1_1_rotate_inner{
+                position: absolute;
+                z-index: 2;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%) rotate(0deg) scale(0.95);
+                background: url("~@/assets/image/circle-inner.png") no-repeat center;
+                background-size: 100% 100%;
+                animation: clockWiseRotate 3.6s linear infinite;
+            }
+            .left_1_1_text{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                display: -webkit-flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                font-weight: 600;
+                z-index: 9;
+            }
         }
         .left_1_2{
             flex: 1;

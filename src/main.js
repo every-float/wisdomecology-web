@@ -16,6 +16,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import setRem from '@/utils/setRem';
 import '@/icons';
 import '@/assets/css/base.scss';
+import '@/assets/css/cusAnimate.css';
 import echarts from 'echarts';
 
 setRem();
