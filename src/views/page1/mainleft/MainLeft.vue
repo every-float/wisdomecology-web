@@ -59,8 +59,8 @@
                 </div>
                 <div style="height: 100%; position: relative;" id="left_3_1">
                     <div class="cus_tab_order">
-                        <div class="cus_tab_order_item cus_tab_order_active" @click="switchAscOrDesc('asc', $event)">正序</div>
-                        <div class="cus_tab_order_item" @click="switchAscOrDesc('desc', $event)">倒序</div>
+                        <div class="cus_tab_order_item cus_tab_order_active" @click="switchAscOrDesc('desc', $event)">正序</div>
+                        <div class="cus_tab_order_item" @click="switchAscOrDesc('asc', $event)">倒序</div>
                     </div>
                     <div style="height: 100%;" ref="left_3_1"></div>
                 </div>
@@ -89,7 +89,7 @@
                index_1: 0,      //左中计数器
 
                currzb_2: 'aqi', //左下的当前指标
-               order_2: 'asc',   // 左下的当前排序方式
+               order_2: 'desc',   // 左下的当前排序方式
                timer_2: '',     //左下定时器
                index_2: 0,      //左下计数器
             }
@@ -110,10 +110,10 @@
             });
 
             this.handleData2();
-            // this.zbAutoSwitch();
+            this.zbAutoSwitch();
 
             this.handleData3();
-            // this.zbAutoSwitch_2();
+            this.zbAutoSwitch_2();
         },
         beforeDestroy () {
             //清除定时器
@@ -203,7 +203,7 @@
                     if(this.index_1 >= this.zblist.length){
                         this.index_1 = 0;
                     }
-                }, 1000);
+                }, 2500);
             },
             stopAutoSwitch () {
                 clearInterval(this.timer_1)
@@ -223,7 +223,7 @@
                             color: getColorArr(zb, (''+v[zb]).split()).join()
                         }
                     });
-                    tempArr.sort((v1, v2) => this.order_2 === 'desc' ? (v1.y-v2.y) : (v2.y-v1.y));
+                    tempArr.sort((v1, v2) => this.order_2 === 'asc' ? (v1.y-v2.y) : (v2.y-v1.y));
                     x = tempArr.map(v => v.x);
                     y = tempArr.map(v => v.y);
                     colors = tempArr.map(v => v.color);
@@ -253,7 +253,7 @@
                     if(this.index_2 >= this.zblist.length){
                         this.index_2 = 0;
                     }
-                }, 1000);
+                }, 2500);
             },
             stopAutoSwitch_2 () {
                 clearInterval(this.timer_2)
@@ -276,14 +276,15 @@
                     },
                     tooltip: {
                         show: true,
-                        backgroundColor: '#E8E093',
-                        borderColor: '#E8E093',
-                        borderWidth: 4,
-                        textStyle: {
-                            color: '#354060'
-                        },
+                        trigger: 'axis',
+                        // backgroundColor: '#E8E093',
+                        // borderColor: '#E8E093',
+                        // borderWidth: 4,
+                        // textStyle: {
+                        //     color: '#354060'
+                        // },
                         formatter: '{b} : {c}',
-                        extraCssText: 'box-shadow: 0 0 10px rgba(37,47,77,0.8)'
+                        // extraCssText: 'box-shadow: 0 0 10px rgba(37,47,77,0.8)'
                     },
                     xAxis: {
                         type: 'category',
@@ -304,7 +305,15 @@
                         },
                         axisTick: {
                             show: false
-                        }
+                        },
+                        axisPointer: {	//指示器
+                            type: 'line',
+                            lineStyle: {
+                                color: "rgba(255,255,255,0.3)",
+                                width: 1,
+                                type: "dotted"
+                            }
+                        },
                     },
                     yAxis: {
                         name: "单位",
@@ -418,15 +427,15 @@
                         axisPointer: {	//指示器
                             type: 'line',
                             lineStyle: {
-                                color: "#ff0000",
-                                width: 2,
+                                color: "rgba(255,255,255,0.3)",
+                                width: 1,
                                 type: "dotted"
                             }
                         },
                         axisLabel: {
                             interval: 0,
                             color: '#EBFAFF',
-                            fontSize: 12,
+                            fontSize: 10,
                             margin: 4,
                             formatter:function(value,index) {
                                 var ret = "";//拼接加\n返回的类目项  

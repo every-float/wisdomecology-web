@@ -139,9 +139,9 @@ export async function getRiverData(pointId){
 // 水环境质量变化趋势
 /**
  * sectionCode,
-    dataType,   Day | Month
-    startTime,  YYYY-MM-DD | YYYY-MM
-    endTime,    YYYY-MM-DD | YYYY-MM
+    dataType,   Rtd | Day | Month
+    startTime,  YYYY-MM-DD | YYYY-MM-DD | YYYY-MM
+    endTime,    YYYY-MM-DD | YYYY-MM-DD | YYYY-MM
  */
 export async function getRiverGridData(data){
   return await http.get(
