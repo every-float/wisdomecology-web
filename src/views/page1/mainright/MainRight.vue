@@ -62,7 +62,7 @@
             </div>
         </block-container>
         <block-container _title="水环境质量天津市考核排名" height="3.40rem">
-            <div style="position: relative; height: 100%; padding-top: 0.35rem;">
+            <div style="position: relative; height: 100%; padding-top: 0.35rem;" id="right_3_1">
                 <div class="right_3_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
                     <div class="right_3_tab_item right_3_tab_item_active">COD</div>
                     <div class="right_3_tab_item">氨氮</div>
@@ -74,7 +74,7 @@
                         <div class="cus_tab_order_item cus_tab_order_active">正序</div>
                         <div class="cus_tab_order_item">倒序</div>
                     </div>
-                    <div id="right_3_1" style="height: 100%;" ref="right_3_1"></div>
+                    <div style="height: 100%;" ref="right_3_1"></div>
                 </div>
             </div>
         </block-container>
@@ -84,10 +84,17 @@
 <script>
     import BlockContainer from "@/components/BlockContainer"
     import echartsLiquidfill from 'echarts-liquidfill';
+    import { mapState } from 'vuex';
 
     export default {
         components: {
             BlockContainer,
+        },
+        computed: {
+            ...mapState('page1', ['homeStatInfo'])
+        },
+        beforeMount () {
+            console.log(this.homeStatInfo);
         },
         methods: {
             

@@ -3,6 +3,7 @@
     <el-tabs
       v-model="editableTabsValue"
       type="card"
+      @tab-click="handleClick"
     >
       <el-tab-pane
         v-for="item in editableTabs"
@@ -22,43 +23,50 @@ export default {
       editableTabsValue: "1",
       editableTabs: [
         {
-          title: "菜单一",
-          name: "1"
+          title: "河道断面图",
+          name: "1",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/index_duanmianjiance.html`
         },
         {
-          title: "菜单二",
-          name: "2"
+          title: "河流检测数据",
+          name: "2",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/riverData_list.html`
         },
         {
-          title: "菜单三",
-          name: "3"
+          title: "河道周边重点监管",
+          name: "3",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/weCompanyInfo_list.html`
         },
         {
-          title: "菜单四",
-          name: "4"
+          title: "河道闸口信息",
+          name: "4",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/weGateInfo_list.html`
         },
         {
-          title: "菜单五",
-          name: "5"
+          title: "水环境采集数据",
+          name: "5",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/approval_data_list.html`
         },
         {
-          title: "菜单六",
-          name: "6"
+          title: "区域监测数据",
+          name: "6",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/areaData_list.html`
         },
         {
-          title: "菜单七",
-          name: "7"
-        },
-        {
-          title: "菜单八",
-          name: "8"
-        },
-        {
-          title: "菜单九",
-          name: "9"
-        },
+          title: "乡镇监测数据",
+          name: "7",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/townData_list.html`
+        }
       ],
     };
+  },
+  methods: {
+    handleClick(tab) {
+      let url = this.editableTabs.filter(v => {
+        return v.name === tab.name
+      })[0].menuUrl;
+      window.open( url, '_self', '', false );
+    }
   },
 };
 </script>

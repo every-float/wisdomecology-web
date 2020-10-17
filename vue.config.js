@@ -1,6 +1,20 @@
+process.env.VUE_APP_PAGEURL = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8848/wisdomecology-web/' : '';
+
+const file_root_path = process.env.NODE_ENV === 'development' ? process.env.VUE_APP_PAGEURL : '../../';
 const port = 7070;
 const title = '西青区大气与水环境信息面板';
-const publicPath = '/wisdomecology-web/theme/theme_2';
+const publicPath = '';  //这个值可以被设置为空字符串 ('') 或是相对路径 ('./')，这样所有的资源都会被链接为相对路径，这样打出来的包可以被部署在任意路径
+const outputDir = `E:/lvwenji/SVN/wisdomecology-web/theme/theme_2`;
+const assetsDir = 'static';
+
+const dev_extra_scripts = [
+    `https://api.map.baidu.com/api?v=3.0&ak=mE0GRctNh8W2180rEH5g95FXsEwmhhlp&s=1`,
+    `${file_root_path}common/commonUrl.js`,
+].concat(process.env.NODE_ENV === 'development' ? [
+    `${file_root_path}config/test.env.js`,
+    `${file_root_path}config/config.js`,
+] : [])
+
 
 const path = require('path');
 
@@ -10,15 +24,32 @@ function resolve(dir) {
 
 module.exports = {
     publicPath,
+    outputDir,
+    assetsDir,
     devServer: {
         port,
+        proxy: {
+            '/wisdomecology-boot': {
+                target: 'https://www.wisdomjyhc.com:19501',
+                changeOrigin: true,
+                pathRewrite: {
+                  '^/wisdomecology-boot': '/wisdomecology-boot'
+                }
+            },
+            '/wisdomecology': {
+                target: 'https://www.wisdomjyhc.com:18091',
+                changeOrigin: true,
+                pathRewrite: {
+                  '^/wisdomecology': '/bigdata/file/wisdomecology'
+                }
+            }
+        }
     },
     productionSourceMap: false,
     // 这个字段下配置所有跟webpack相关的项，最后会跟vue-cli内置的webpack配置合并并覆盖内置配置
     configureWebpack: {
         // 向index.html注入标题
         name: title,
-        
     },
     // 链式的方式配置
     chainWebpack(config) {
@@ -57,6 +88,9 @@ module.exports = {
             .plugin('html')
             .tap(args => {
                 args[0].minify = false
+                args[0].files = {
+                    js: dev_extra_scripts
+                }
                 return args
             })
     }

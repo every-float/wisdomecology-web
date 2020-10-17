@@ -17,7 +17,7 @@
             </div>
         </span>
         <svg-icon icon-name="yonghu" class="cus-svg-icon" style="margin-left: 3%;"></svg-icon>
-        <span style="vertical-align: middle; margin-left: 1%;">超级管理员</span>
+        <span style="vertical-align: middle; margin-left: 1%;">{{ userinfo && userinfo.realName }}</span>
         <i class="cus-screen-icon" style="margin-left: 3%;"></i>
         <svg-icon icon-name="shezhi" 
                 class="cus-svg-icon" 
@@ -32,12 +32,16 @@
 <script>
     import jsonp from 'jsonp'
     import { o2u } from '@/utils/util'
+    import { mapState } from 'vuex'
 
     export default {
         data() {
             return {
                 weatherData: {},    //天气数据
             }
+        },
+        computed: {
+            ...mapState('userinfo', ['userinfo'])
         },
         mounted() {
             this.getWeatherData()
@@ -77,7 +81,6 @@
                 });
             },
         
-            // views/index2.html?menuId=e1f1e7bb0d974d3eac60447dc4262354
             navToSetting() {
                 window.open(`${this.$store.state.pageUrl}views/index2.html?menuId=e1f1e7bb0d974d3eac60447dc4262354&menuName=设置中心`, '_self', '', false);
             },

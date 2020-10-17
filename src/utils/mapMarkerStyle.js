@@ -37,7 +37,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(300<value){
+			}else if(300<value&&value<=500){
 				result.value=value;
 				result.bgcolor='rgb(126,0,35)';
 				result.color='white';
@@ -76,7 +76,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=4;
 				result.level='中度';
-			}else if(800<value){
+			}else if(800<value&&value<=1000){
 				result.value=value;
 				result.bgcolor='rgb(153,0,76)';
 				result.color='white';
@@ -121,7 +121,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(2340<value){
+			}else if(2340<value&&value<=3840){
 				result.value=value;
 				result.bgcolor='rgb(126,0,35)';
 				result.color='white';
@@ -166,7 +166,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(250<value){
+			}else if(250<value&&value<=500){
 				result.value=value;
 				result.bgcolor='rgb(126,0,35)';
 				result.color='white';
@@ -211,7 +211,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(420<value){
+			}else if(420<value&&value<=600){
 				result.value=value;
 				result.bgcolor='rgb(126,0,35)';
 				result.color='white';
@@ -256,7 +256,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(90<value){
+			}else if(90<value&&value<=150){
 				result.value=value;
 				result.bgcolor='rgb(126,0,35)';
 				result.color='white';
@@ -301,7 +301,7 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(800<value){
+			}else if(800<value&&value<=1200){
 				result.value=value;
 				result.bgcolor='rgb(126,0,35)';
 				result.color='white';

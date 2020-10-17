@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "outgitlog": "git log --pretty=format:'%ai,%an:%s' --since='100 day ago' >> commit.log"
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "axios": "^0.20.0",
@@ -13,7 +12,9 @@
     "echarts": "^4.9.0",
     "echarts-liquidfill": "^2.0.6",
     "element-ui": "^2.13.2",
+    "js-cookie": "^2.2.1",
     "jsonp": "^0.2.1",
+    "moment": "^2.29.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vue-seamless-scroll": "^1.1.21",

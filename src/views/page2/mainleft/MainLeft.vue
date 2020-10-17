@@ -90,7 +90,6 @@
         },
         methods: {
             calcLeft_1_1_rotate_height() {
-                // _inner _outer
                 const outerwidth = this.$refs.left_1_1_rotate_outer.clientWidth;
                 this.$refs.left_1_1_rotate_outer.style.height = outerwidth + "px";
                 this.$refs.left_1_1_rotate_inner.style.width = outerwidth * 0.9411764705882353 + "px";

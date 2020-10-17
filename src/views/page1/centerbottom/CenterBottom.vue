@@ -37,13 +37,13 @@
                         img: "page1_daqi.png",
                         bottom: "13.6%",
                         left: "42.8%",
-                        menuUrl: `${this.$store.state.pageUrl}theme/theme_2/#/page2`
+                        menuUrl: `${this.$store.state.pageUrl}theme/theme_2/index.html#/page2`
                     },{
                         name: "水环境监控",
                         img: "page1_shuihuanjing.png",
                         bottom: "13.6%",
                         left: "50%",
-                        menuUrl: `${this.$store.state.pageUrl}theme/theme_2/#/page3`
+                        menuUrl: `${this.$store.state.pageUrl}theme/theme_2/index.html#/page3`
                     },{
                         name: "噪声监控",
                         img: "page1_zaosheng.png",

@@ -6,7 +6,7 @@
         <span style="margin-left: 2%; vertical-align: middle;">{{ weatherData.weather }}</span>
         <span style="margin-left: 2%; vertical-align: middle;">{{ weatherData.degree }}℃</span>
         <svg-icon icon-name="yonghu" class="cus-svg-icon" style="margin-left: 5%;"></svg-icon>
-        <span style="vertical-align: middle; margin-left: 1%;">超级管理员</span>
+        <span style="vertical-align: middle; margin-left: 1%;">{{ userinfo && userinfo.realName }}</span>
         <i class="cus-screen-icon" style="margin-left: 3%;"></i>
         <svg-icon icon-name="shezhi" class="cus-svg-icon" color="#FFFFFF" style="width: 0.25rem; height: 0.25rem; margin-left: 2%; cursor: pointer;"></svg-icon>
     </div>
@@ -15,12 +15,16 @@
 <script>
     import jsonp from 'jsonp'
     import { o2u } from '@/utils/util'
+    import { mapState } from 'vuex'
 
     export default {
         data() {
             return {
                 weatherData: {},    //天气数据
             }
+        },
+        computed: {
+            ...mapState('userinfo', ['userinfo'])
         },
         mounted() {
             this.getWeatherData()

@@ -3,6 +3,7 @@
     <el-tabs
       v-model="editableTabsValue"
       type="card"
+      @tab-click="handleClick"
     >
       <el-tab-pane
         v-for="item in editableTabs"
@@ -22,43 +23,70 @@ export default {
       editableTabsValue: "1",
       editableTabs: [
         {
-          title: "菜单一",
-          name: "1"
+          title: "数据综合分析",
+          name: "1",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_zonghefenxi.html`
         },
         {
-          title: "菜单二",
-          name: "2"
+          title: "微型空气站",
+          name: "2",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_weizhan.html`
         },
         {
-          title: "菜单三",
-          name: "3"
+          title: "颗粒物监测",
+          name: "3",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_keliwu.html`
+        },
+        // {
+        //   title: "扬尘监测",
+        //   name: "4",
+        //   menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#http://101.200.202.111:9000/login.aspx`
+        // },
+        {
+          title: "油烟监测",
+          name: "5",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_youyan.html`
         },
         {
-          title: "菜单四",
-          name: "4"
+          title: "遥感尾气监测",
+          name: "6",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/yaoganweiqi.html`
         },
         {
-          title: "菜单五",
-          name: "5"
+          title: "污染源监测",
+          name: "7",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_wuranyuan.html`
         },
         {
-          title: "菜单六",
-          name: "6"
+          title: "工况用电监测",
+          name: "8",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#http://111.33.57.10:8081/distb/#/login`
         },
         {
-          title: "菜单七",
-          name: "7"
+          title: "VOC监测",
+          name: "90",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_voc.html`
         },
         {
-          title: "菜单八",
-          name: "8"
+          title: "走航检测",
+          name: "10",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/zouhang.html`
         },
         {
-          title: "菜单九",
-          name: "9"
+          title: "高架视频",
+          name: "11",
+          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/overheadVideo_list.html`
         },
       ],
     };
+  },
+  methods: {
+    handleClick(tab) {
+      let url = this.editableTabs.filter(v => {
+        return v.name === tab.name
+      })[0].menuUrl;
+      window.open( url, '_self', '', false );
+    }
   },
 };
 </script>

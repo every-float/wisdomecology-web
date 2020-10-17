@@ -7,7 +7,21 @@
 <script>
 
   export default {
-    
+    created () {
+      this.getUserInfo();
+    },
+    computed: {
+      
+    },
+    methods: {
+      getUserInfo() {
+        try {
+          this.$store.dispatch('userinfo/getUserInfo', {})
+        } catch (error) {
+
+        }
+      }
+    },
   }
 </script>
 

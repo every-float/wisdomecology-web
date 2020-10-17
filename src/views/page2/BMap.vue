@@ -293,10 +293,12 @@
 	padding-left: 15px;
 	background-size: 8px 8px;
 	background-repeat: no-repeat;
-	font-size: 0.16rem;
+	font-size: 0.18rem;
 	font-weight: 400;
 	line-height: 100%;
 	margin: 0;
+	text-align: left;
+	color: #000;
 }
 .tipBoxItem{
 	border: 1px solid #ccc;
@@ -316,8 +318,9 @@
 	bottom: 0px;
 }
 .contentBox{
-	padding: 5px;
+	padding: 10px;
 	box-sizing: border-box;
+	width:250px; 
 }
 .contentBox .title_bottom{
 	text-align: right;
@@ -325,14 +328,16 @@
 	font-weight: 400;
 	line-height: 100%;
 	margin: 0;
+	color: rgb(0, 0, 0);
+	padding-top: 5px;
 }
 .contentBox .title{
 	background:#13aeff; 
 }
 .contentBox>div>img{
 	position: absolute;
-	bottom: -10px!important;
-	left: 108px!important;
+	bottom: -10px;
+	left: 108px;
 }
 .contentBox .api_item{
 	border: 1px solid #ccc;
@@ -354,6 +359,7 @@
 	line-height: 47px;
 	font-size: 25px;
 	font-weight: bold;
+	color: rgb(0, 0, 0);
 }
 .contentBox .api_value .layui-badge{
 	height: 20px;
@@ -374,6 +380,8 @@
 	height: 25px;
 	line-height: 25px;
 	text-align: center;
+	color: rgb(0, 0, 0);
+	font-size: 14px;
 }
 .contentBox .win_item_box{
 	border: 1px solid #ccc;

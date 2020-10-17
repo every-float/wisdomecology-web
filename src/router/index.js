@@ -18,11 +18,11 @@ Vue.use(Router)
 const routes = [
   {
     path: '/',
-    name: 'notfound',
-    title: '404',
-    component: notfound,
+    name: 'default',
+    title: '默认页面一',
+    component: page1,
     meta: {
-      title: '404'
+      title: '智慧西青生态环境大数据指挥平台'
     }
   },
   {
@@ -52,17 +52,15 @@ const routes = [
       title: '智慧西青水环境监控'
     }
   },
-  // {
-  //   path: '*',
-  //   name: 'noFound',
-  //   title: '未找到',
-  //   meta: {
-  //     title: '未找到，跳转中...'
-  //   },
-  //   redirect: {
-  //     name: 'page1'
-  //   }
-  // }
+  {
+    path: '*',
+    name: '404',
+    title: '未找到',
+    component: notfound,
+    meta: {
+      title: '404'
+    }
+  }
   // {
   //   path: '/about',
   //   name: 'About',

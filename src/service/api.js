@@ -1,4 +1,7 @@
 import axios from 'axios';
+import Cookie from 'js-cookie';
+import Store from '@/store';
+import moment from 'moment';
 
 class HttpRequest {
   constructor(options){
@@ -13,9 +16,12 @@ class HttpRequest {
   interceptors(install){
     install.interceptors.request.use(
       config => {
-        let token = localStorage.getItem('token');
-        if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-          config.headers.authorization = `token ${token}`;
+        let userToken = Cookie.get('login_sid_t_we');
+        if (!userToken) {
+          top.location.href = Store.state.pageUrl + 'views/login.html';
+        }
+        if (userToken && baseUrl) {
+          config.headers.authorization = `Bearer ${userToken}`;
         }
         return config;
       },
@@ -25,6 +31,14 @@ class HttpRequest {
     );
     install.interceptors.response.use(
       res => {
+        if(res && res.code==101){
+          //token失效
+          Cookies.set('login_sid_t_we', '', { path: '/' });
+          top.location.href = Store.state.pageUrl + 'views/login.html';
+        }else if(res.code==102){
+          //无权限
+          location.href = Store.state.pageUrl + 'views/noAuthority.html';
+        }
         const { data, status } = res;
         return data;
       },
@@ -41,21 +55,108 @@ class HttpRequest {
   }
 }
 
+// baseUrl
 const request = new HttpRequest({
-  baseURL: 'https://www.wisdomjyhc.com:18091/bigdata/file/wisdomecology'
+  baseURL: process.env.NODE_ENV === 'development' ? '/wisdomecology-boot' : window.baseUrl
+});
+// jsonUrl
+const request_json = new HttpRequest({
+  baseURL: process.env.NODE_ENV === 'development' ? '/wisdomecology' : window.jsonUrl
 });
 
 const http = request.request();
+const http_json = request_json.request();
 
 // 获取市站数据
 export async function getAirQuality(){
-  return await http.get('/shizhan/shizhan.json');
+  return await http_json.get('/shizhan/shizhan.json');
 }
 
 // 获取乡镇数据
 export async function getXiangzhenData(){
-  return await http.get('/xiangzhen/xiangzhen.json');
+  return await http_json.get('/xiangzhen/xiangzhen.json');
 }
 
-// 我现在的主要工作线是对接后端数据接口
-//（这个功能我还没有完成呢，经理说有个bug需要紧急修改一下，我先到另外一个工作线去一会(那么当前的工作线需要先保存一下，用git stash)，弄完那个工作线再回来继续搞主工作线）
+// 获取用户信息
+export async function getUserInfo(){
+  return await http.get('/index/getUserInfo');
+}
+
+// 大气环境质量变化趋势日变化
+export async function getDataByDay(index){
+  return await http.get(
+    '/dq/statistic/getDataByDay', 
+    {
+      params: {
+        ids: "4e4860553999471883954ecde87d540c", //辛老路数据
+        time: moment().format("YYYY-MM-DD"),
+        index,
+      }
+    }
+  );
+}
+
+// 大气环境质量变化趋势月变化
+export async function getDataByMonth(index){
+  return await http.get(
+    '/dq/statistic/getDataByMonth', 
+    {
+      params: {
+        ids: "4e4860553999471883954ecde87d540c", //辛老路数据
+        time: moment().format("YYYY-MM"),
+        index,
+      }
+    }
+  );
+}
+
+// 区域考核排名——page1左下
+export async function getLeftBottomData(){
+  return await http_json.get('/quyu/quyu.json');
+}
+
+// 获取水环境站点列表
+export async function getRiverTree(){
+  return await http.get('/river/getRiverTree');
+}
+
+// 水环境数据——page1右上
+export async function getRiverData(pointId){
+  return await http.get(
+    '/river/getRiverData',
+    {
+      params: {
+        pointId,
+        startDate: moment().format("YYYY-MM-DD"),
+        endDate: moment().format("YYYY-MM-DD"),
+        page: 1,
+        limit: 9999
+      }
+    }
+  );
+}
+
+// 水环境质量变化趋势
+/**
+ * sectionCode,
+    dataType,   Day | Month
+    startTime,  YYYY-MM-DD | YYYY-MM
+    endTime,    YYYY-MM-DD | YYYY-MM
+ */
+export async function getRiverGridData(data){
+  return await http.get(
+    '/river/getRiverGridData',
+    {
+      params: {
+        page: 1,
+        limit: 9999,
+        ...data
+      }
+    }
+  );
+}
+
+// 水环境区域统计————page1右下
+export async function getHomeStatInfo(){
+  return await http.post('/we/area/getHomeStatInfo');
+}

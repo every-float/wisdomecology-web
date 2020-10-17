@@ -1,22 +1,22 @@
 <template>
-    <div class="page1">
+    <div class="page1" v-if="$store.state.page1.isComplete">
         <el-container class="cus-container">
-        <el-header class="cus-header" :height="headerHeight">
-            <div class="cus-header-item1">
-            <div class="logo-img"></div>
-            </div>
-            <div class="cus-header-item2"></div>
-            <div class="cus-header-item3"></div>
+            <el-header class="cus-header" :height="headerHeight">
+                <div class="cus-header-item1">
+                    <div class="logo-img"></div>
+                </div>
+                <div class="cus-header-item2"></div>
+                <div class="cus-header-item3"></div>
 
-            <header-left></header-left>
-            <header-right></header-right>
-        </el-header>
-        <el-main class="cus-main" ref="cusMain">
-            <main-left></main-left>
-            <main-right></main-right>
-            <center-top></center-top>
-            <center-bottom ref="baseBg"></center-bottom>
-        </el-main>
+                <header-left></header-left>
+                <header-right></header-right>
+            </el-header>
+            <el-main class="cus-main" ref="cusMain">
+                <main-left></main-left>
+                <main-right></main-right>
+                <center-top></center-top>
+                <center-bottom ref="baseBg"></center-bottom>
+            </el-main>
         </el-container>
     </div>
 </template>
@@ -43,11 +43,16 @@
                 headerHeight: '1.10rem',
             }
         },
+        created () {
+            this.getAllData();
+        },
         mounted () {
-            this.setBasbgSize();
             window.addEventListener('resize', () => {
                 this.setBasbgSize();
             })
+        },
+        updated () {
+            this.setBasbgSize();
         },
         methods: {
             setBasbgSize() {  // 保证1920/1080
@@ -74,7 +79,13 @@
                 }
             },
 
+            getAllData() {
+                try {
+                    this.$store.dispatch('page1/getAlldata', {})
+                } catch (error) {
 
+                }
+            },
         },
     }
 </script>
