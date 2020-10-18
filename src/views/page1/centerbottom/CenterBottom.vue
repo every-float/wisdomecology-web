@@ -31,7 +31,7 @@
                         img: "page1_turang.png",
                         bottom: "8%",
                         left: "35.6%",
-                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=a57c1882826943c3b845b5b98eabe5c9&menuName=土壤监控`
+                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=585196faa64043939c13ca8f38215073&menuName=土壤与固废管理`
                     },{
                         name: "大气监控",
                         img: "page1_daqi.png",

@@ -129,7 +129,7 @@
             position: absolute;
             width: 22.13%;
             top: 0.46rem;
-            left: 1.302%;
+            left: 1.04%;
             @include text-beyond;
         }
 

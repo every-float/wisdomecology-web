@@ -3,9 +3,9 @@
         <!-- svg打包的方式灵活好用 -->
         <svg-icon icon-name="rili" class="cus-svg-icon"></svg-icon>
         <!-- <i class="el-icon-date"></i> -->
-        <span style="margin-left: 2%;">2020年8月12日</span>
-        <span style="margin-left: 4%;">星期一</span>
-        <span style="margin-left: 4%; color: #0FAAC6;">23:58:42</span>
+        <span style="margin-left: 2%;">{{ date }}</span>
+        <span style="margin-left: 4%;">{{ week }}</span>
+        <span style="margin-left: 4%; color: #0FAAC6; font-weight: bold;">{{ time }}</span>
         <svg-icon icon-name="weizhi" class="cus-svg-icon" style="margin-left: 4%;"></svg-icon>
         <!-- <i class="el-icon-location"></i> -->
         <span style="margin-left: 2%;">西青区</span>
@@ -13,8 +13,34 @@
 </template>
 
 <script>
+    import moment from 'moment';
+
     export default {
-        
+        data() {
+            return {
+                date: '',
+                week: '',
+                time: '',
+                weekObj: ['日', '一', '二', '三', '四', '五', '六'],
+                timer: '',
+            }
+        },
+        mounted() {
+            this.getCurrDateTime();
+            this.timer = setInterval(() => {
+                this.getCurrDateTime();
+            }, 1000);
+        },
+        beforeDestroy () {
+            clearInterval(this.timer);
+        },
+        methods: {
+            getCurrDateTime() {
+                this.date = moment().format('YYYY年MM月DD日');
+                this.week = '星期' + this.weekObj[moment().format('d')];
+                this.time = moment().format('HH:mm:ss');
+            },
+        },
     }
 </script>
 
