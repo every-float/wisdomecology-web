@@ -38,6 +38,7 @@
                         bottom: "13.6%",
                         left: "42.8%",
                         menuUrl: `${this.$store.state.pageUrl}theme/theme_2/index.html#/page2`
+                        // menuUrl: `#/page2`
                     },{
                         name: "水环境监控",
                         img: "page1_shuihuanjing.png",

@@ -158,7 +158,8 @@
             this.airQualityData = Object.assign(this.airQualityData, this.$store.state.page1.shizhan.filter(function(v){
                 return v.pointId === '4e4860553999471883954ecde87d540c';	//取的辛老路数据
             })[0]);
-            this.xiangzhenData = Object.assign([], this.$store.state.page1.xiangzhen);
+            // this.xiangzhenData = Object.assign([], this.$store.state.page1.xiangzhen);
+            this.xiangzhenData = this.$store.state.page1.xiangzhen.map(v => Object.assign({}, v));
 			this.getAirQuality();
             this.getXiangzhenData();
             this.list = [this.airQualityData].concat(this.xiangzhenData);

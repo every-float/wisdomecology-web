@@ -47,6 +47,7 @@
             this.getAllData();
         },
         mounted () {
+            this.setBasbgSize();
             window.addEventListener('resize', () => {
                 this.setBasbgSize();
             })
