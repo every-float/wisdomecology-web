@@ -8,7 +8,13 @@
         <svg-icon icon-name="yonghu" class="cus-svg-icon" style="margin-left: 5%;"></svg-icon>
         <span style="vertical-align: middle; margin-left: 1%;">{{ userinfo && userinfo.realName }}</span>
         <i class="cus-screen-icon" style="margin-left: 3%;"></i>
-        <svg-icon icon-name="shezhi" class="cus-svg-icon" color="#FFFFFF" style="width: 0.25rem; height: 0.25rem; margin-left: 2%; cursor: pointer;"></svg-icon>
+        <svg-icon icon-name="shezhi" 
+                class="cus-svg-icon" 
+                color="#FFFFFF" 
+                style="width: 0.25rem; height: 0.25rem; margin-left: 2%; cursor: pointer;"
+                @click="navToSetting()"
+            >
+        </svg-icon>
     </div>
 </template>
 
@@ -62,7 +68,11 @@
                         console.log(err);
                     }
                 });
-            }
+            },
+
+            navToSetting() {
+                window.open(`${this.$store.state.pageUrl}views/index2.html?menuId=e1f1e7bb0d974d3eac60447dc4262354&menuName=设置中心`, '_self', '', false);
+            },
         }
     }
 </script>

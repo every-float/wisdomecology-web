@@ -7,6 +7,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import userinfo from './user/userinfo';
 import page1 from './page1/index';
+import page2 from './page2/index';
+import page3 from './page3/index';
 
 Vue.use(Vuex);
 
@@ -21,5 +23,7 @@ export default new Vuex.Store({
   modules: {
     userinfo,
     page1,
+    page2,
+    page3,
   }
 })

@@ -1,5 +1,5 @@
 <template>
-    <div class="page2">
+    <div class="page2" v-if="$store.state.page2.isComplete">
         <el-container>
             <!-- 背景地图 -->
             <b-map></b-map>
@@ -50,11 +50,20 @@
                 headerHeight: '1.10rem',
             }
         },
+        created () {
+            this.getAllData();
+        },
         mounted () {
         
         },
         methods: {
-        
+            getAllData() {
+                try {
+                    this.$store.dispatch('page2/getAlldata', {})
+                } catch (error) {
+
+                }
+            },
 
 
         },

@@ -1,7 +1,7 @@
 <template>
     <div class="main-right">
         <block-container _title="水环境实时数据" height="2.95rem">
-            <div class="right_1_con" @mouseover="stopAutoSwitch_1()" @mouseout="stationAutoSwitch_1()">
+            <div class="right_1_con">
                 <div class="right_1_data">
                     <div class="right_1_data_l" ref="right_1_1"></div>
                     <div class="right_1_data_r">
@@ -34,7 +34,7 @@
             </div>
         </block-container>
         <block-container _title="水环境质量变化趋势" height="3.36rem">
-            <div style="height: 100%; position: relative;" id="right_2_1" @mouseover="stopAutoSwitch_1()" @mouseout="stationAutoSwitch_1()">
+            <div style="height: 100%; position: relative;" id="right_2_1">
                 <div class="cus_tab_order">
                     <div class="cus_tab_order_item cus_tab_order_active" @click="switchDayOrMonth('std', $event)">日变化</div>
                     <div class="cus_tab_order_item" @click="switchDayOrMonth('day', $event)">月变化</div>
@@ -150,7 +150,7 @@
         },
         mounted () {
             this.handleData1();
-            this.stationAutoSwitch_1();
+            // this.stationAutoSwitch_1();
 
             this.handleData2();
             
@@ -253,7 +253,9 @@
                         }
                     }).reverse();
                 }else{
-                    for(let i=0, len = this.currtimetype_2==='std' ? 24 : 30; i<len; i++){
+                    let start = this.currtimetype_2==='std' ? 0 : 1;
+                    let len = this.currtimetype_2==='std' ? 24 : 31;
+                    for(let i=start; i<len; i++){
                         x.push(i<10 ? '0'+i : ''+i);
                         y.push('');
                     }

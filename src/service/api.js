@@ -160,3 +160,20 @@ export async function getRiverGridData(data){
 export async function getHomeStatInfo(){
   return await http.post('/we/area/getHomeStatInfo');
 }
+
+// 大气————月历数据 /dq/statistic/getDataByMonth
+export async function getMonthCalendar(data){
+  return await http.get('/dq/statistic/getDataByMonth', {
+    params: data
+  });
+}
+
+// 大气————污染源  /wuranyuan/air.json
+export async function getPollutionListA(){
+  return await http_json.get('/wuranyuan/air.json');
+}
+
+// 水————污染源   /wuranyuan/water.json
+export async function getPollutionListW(){
+  return await http_json.get('/wuranyuan/water.json');
+}

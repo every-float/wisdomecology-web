@@ -1,19 +1,23 @@
 <template>
   <div class="main-right">  <!-- 总9.54rem -->
     <block-container _title="水环境数据变化趋势" height="3.24rem">
-      <div style="position: relative; height: 100%; padding-top: 0.35rem;">
+      <div style="position: relative; height: 100%; padding-top: 0.35rem;" @mouseover="stopAutoSwitch_1()" @mouseout="zbAutoSwitch_1()">
           <div class="right_1_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
-              <div class="right_1_tab_item right_1_tab_item_active">COD</div>
-              <div class="right_1_tab_item">氨氮</div>
-              <div class="right_1_tab_item">总磷</div>
-              <div class="right_1_tab_item">高锰酸盐</div>
-          </div>
-          <div style="height: 100%; position: relative;">
-              <div class="cus_tab_order">
-                  <div class="cus_tab_order_item cus_tab_order_active">日变化</div>
-                  <div class="cus_tab_order_item">月变化</div>
+              <div class="right_1_tab_item"
+                  v-for="(vo, index) in zblist_1"
+                  :class="{ active: true, 'right_1_tab_item_active': vo.name === currzb_1 }"
+                  :key="vo.name"
+                  @click="currzb_1=vo.name; index_1=index"
+              >
+                  {{ vo.bigName }}
               </div>
-              <div id="right_1_1" style="height: 100%;" ref="right_1_1"></div>
+          </div>
+          <div style="height: 100%; position: relative;" id="right_1_1">
+              <div class="cus_tab_order">
+                  <div class="cus_tab_order_item cus_tab_order_active" @click="switchDayOrMonth('std', $event)">日变化</div>
+                  <div class="cus_tab_order_item" @click="switchDayOrMonth('day', $event)">月变化</div>
+              </div>
+              <div style="height: 100%;" ref="right_1_1"></div>
           </div>
       </div>
     </block-container>
@@ -29,26 +33,26 @@
       >
         <div class="cus_table_head">
           <div class="cus_table_th" style="width: 80%">企业名称</div>
-          <div class="cus_table_th" style="width: 80%">行业类别</div>
-          <div class="cus_table_th" style="width: 20%">数量</div>
-          <div class="cus_table_th" style="width: 20%">参数</div>
+          <div class="cus_table_th" style="width: 30%">机构代码</div>
+          <!-- <div class="cus_table_th" style="width: 20%">数量</div>
+          <div class="cus_table_th" style="width: 20%">参数</div> -->
         </div>
         <div class="cus_table_body" style="height: 100%">
           <vue-seamless-scroll
-            :data="zdqywryglTable"
+            :data="pollutionListW"
             :class-option="optionSetting"
             class="seamless-warp"
           >
             <ul>
               <li
                 class="cus_table_tr"
-                v-for="vo in zdqywryglTable"
-                :key="vo.id"
+                v-for="vo in pollutionListW"
+                :key="vo.coId"
               >
-                <div class="cus_table_td" style="width: 80%">{{ vo.companyName }}</div>
-                <div class="cus_table_td" style="width: 80%">{{ vo.hylb }}</div>
-                <div class="cus_table_td" style="width: 20%">{{ vo.number }}</div>
-                <div class="cus_table_td" style="width: 20%">{{ vo.param }}</div>
+                <div class="cus_table_td" style="width: 80%" :title="vo.coName">{{ vo.coName }}</div>
+                <div class="cus_table_td" style="width: 30%" :title="vo.coCode">{{ vo.coCode }}</div>
+                <!-- <div class="cus_table_td" style="width: 20%">{{ vo.number }}</div>
+                <div class="cus_table_td" style="width: 20%">{{ vo.param }}</div> -->
               </li>
             </ul>
           </vue-seamless-scroll>
@@ -56,17 +60,17 @@
       </div>
     </block-container>
     <block-container _title="污水排放重点源现场监控" height="3.2rem">
-        <div class="right_3_video_container">
+        <div class="right_3_video_container" style="position: relative">
           <div class="right_3_video_btns_wrap">
-            <div class="right_3_video_btns">
+            <!-- <div class="right_3_video_btns">
               <span class="right_3_video_btn right_3_video_btn_active">大寺镇</span>
               <span class="right_3_video_btn">中北镇</span>
               <span class="right_3_video_btn">杨柳青镇</span>
               <span class="right_3_video_btn">张家窝镇</span>
               <span class="right_3_video_btn">精武镇</span>
-            </div>
+            </div> -->
             <div class="right_3_video_btns_more">
-              <span class="right_3_video_btn">更多</span>
+              <a class="right_3_video_btn" :href="moreUrl">更多</a>
             </div>
           </div>
           <div class="right_3_video_main_wrap">
@@ -78,9 +82,10 @@
 </template>
 
 <script>
-import rightTable from "@/mock/rightTable.js";
 import BlockContainer from "@/components/BlockContainer";
 import vueSeamlessScroll from "vue-seamless-scroll";
+import { mapState } from 'vuex';
+import bus from  '@/bus/index';
 
 export default {
   components: {
@@ -89,15 +94,52 @@ export default {
   },
   data() {
     return {
+      currStation_1: '',
+      zblist_1: [
+          {
+              name: 'item_hxxyl',
+              bigName: 'COD',
+              max: 40,
+              min: 0,
+              barColor: "#3E47EA",
+              value: '0',
+              percentage: '0%'
+          },{
+              name: 'item_ad',
+              bigName: '氨氮',
+              max: 2.0,
+              min: 0,
+              barColor: "#E6C341",
+              value: '0',
+              percentage: '0%'
+          },{
+              name: 'item_zonglin',
+              bigName: '总磷',
+              max: 0.4,
+              min: 0,
+              barColor: "#0241FE",
+              value: '0',
+              percentage: '0%'
+          },{
+              name: 'item_gmsyzs',
+              bigName: '高锰酸盐',
+              max: 15,
+              min: 0,
+              barColor: "#3DF5FF",
+              value: '0',
+              percentage: '0%'
+          }
+      ],
+      currzb_1: 'item_hxxyl',
+      currtimetype_1: 'std',  //std:日变化    day:月变化
+      timer_1: '',
+      index_1: 0,
+
       zdqywryglTable: [],
-      activeName: '1'
+      activeName: '1',
+
+      moreUrl: '',
     };
-  },
-  created() {
-    this.zdqywryglTable = rightTable.data;
-  },
-  mounted() {
-    this.initCharts_1();
   },
   computed: {
     optionSetting() {
@@ -112,14 +154,90 @@ export default {
         waitTime: 1000, // 单步运动停止的时间(默认值1000ms)
       };
     },
+    ...mapState('page3', ['riverGridDataAllR', 'riverGridDataAllD', 'pollutionListW'])
+  },
+  mounted() {
+    this.handleData1();
+    this.zbAutoSwitch_1();
+
+    // 监听左边组件的站点切换
+    bus.$on('stationChange', ({currStation}) => {
+        this.currStation_1 = currStation;
+    });
+
+    this.moreUrl = `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755#views/dq/overheadVideo_list.html`;
+  },
+  watch: {
+    currStation_1(now, old) {
+        this.handleData1();
+    },
+    currzb_1(now, old) {
+        this.handleData1();
+    },
+    currtimetype_1(now, old) {
+        this.handleData1();
+    },
   },
   methods: {
-    initCharts_1() {
+    handleData1() {
+      // console.log(this.riverGridDataAllR);
+      let baseData = [];
+      if(this.currtimetype_1 === 'std'){
+          baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
+      }else if(this.currtimetype_1 === 'day'){
+          baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+      }
+      let x=[], y=[];
+      if(baseData && baseData.length > 0){
+          x = baseData.map(v => {
+              if(this.currtimetype_1 === 'std'){
+                  return v['monitortime'].split(':')[0];
+              }else if(this.currtimetype_1 === 'day'){
+                  return v['monitordate'].split('-')[2];
+              }
+          }).reverse();
+          y = baseData.map(v => {
+              return v[this.currzb_1]
+          }).reverse();
+      }else{
+          let start = this.currtimetype_1==='std' ? 0 : 1;
+          let len = this.currtimetype_1==='std' ? 24 : 31;
+          for(let i=start; i<len; i++){
+              x.push(i<10 ? '0'+i : ''+i);
+              y.push('');
+          }
+      }
+      this.initCharts_1(x,y);
+    },
+    switchDayOrMonth(timetype, e) {
+      if(!e.target.classList.contains('cus_tab_order_active')){
+          const tabList = document.querySelectorAll("#right_1_1 .cus_tab_order_item");
+          for(let i=0; i<tabList.length; i++){
+              tabList[i].classList.remove('cus_tab_order_active');
+          }
+          e.target.classList.add('cus_tab_order_active');
+          this.currtimetype_1 = timetype;
+      }
+    },
+    zbAutoSwitch_1 () {
+        this.timer_1 = setInterval(() => {
+            this.currzb_1 = this.zblist_1[this.index_1].name;
+            this.index_1++;
+            if(this.index_1 >= this.zblist_1.length){
+                this.index_1 = 0;
+            }
+        }, 2500);
+    },
+    stopAutoSwitch_1 () {
+        clearInterval(this.timer_1)
+    },
+
+    initCharts_1(x,y) {
       const _echarts = this.$echarts;
   　　let myChart = _echarts.init(this.$refs.right_1_1);
   　　// 绘制图表
-      var data_val = [46, 56, 66, 76, 80, 75, 96, 104, 100, 102, 112, 122, 132],
-          xdata = ['0点', '2点', '4点', '6点', '8点', '10点', '12点', '14点', '16点', '18点', '20点', '22点', '24点'];
+      var data_val = y,
+          xdata = x;
   　　myChart.setOption({
           grid: {
               left: '2%',
@@ -130,18 +248,20 @@ export default {
           },
           tooltip: {
               show: true,
-              backgroundColor: '#E8E093',
-              borderColor: '#E8E093',
-              borderWidth: 4,
-              textStyle: {
-                  color: '#354060'
-              },
-              formatter: '{b} : {c}',
-              extraCssText: 'box-shadow: 0 0 10px rgba(37,47,77,0.8)'
+              trigger: 'axis',
+              formatter: '{b} : {c}'
           },
           xAxis: {
               type: 'category',
               data: xdata,
+              axisPointer: {	//指示器
+                  type: 'line',
+                  lineStyle: {
+                      color: "rgba(255,255,255,0.3)",
+                      width: 1,
+                      type: "dotted"
+                  }
+              },
               boundaryGap: false,
               axisLabel: {
                   interval: 0,
@@ -205,14 +325,14 @@ export default {
                           color: '#DEEA36',
                           shadowBlur: 10,
                           shadowColor: "rgba(213,225,55,0.8)",
-                          label: {
-                              show: true,
-                              position: 'top',
-                              textStyle: {
-                                  color: '#36F4DA',
-                                  fontSize: 9
-                              }
-                          }
+                          // label: {
+                          //     show: true,
+                          //     position: 'top',
+                          //     textStyle: {
+                          //         color: '#36F4DA',
+                          //         fontSize: 9
+                          //     }
+                          // }
                       }
                   },
                   areaStyle: {
@@ -246,12 +366,34 @@ export default {
     height: 100%; 
     flex-direction: column;
     font-size: 0.14rem;
+
+    .cus_btn_more{
+      position: absolute;
+      top: 0.04rem;
+      right: 0.1rem;
+      z-index: 9;
+      text-align: center;
+      color: #fff !important;
+      height: 0.24rem;
+      padding: 0 0.15rem;
+      line-height: 0.23rem;
+      border-radius: 0.15rem;
+      font-size: 0.13rem;
+      letter-spacing: 0.01rem;
+      background-color: transparent !important;
+      background: #502AE3;
+      background: -moz-linear-gradient(top, #54E8DF, #2F3AEF);
+      background: -webkit-gradient(linear, 0 0, 0 bottom, from(#54E8DF), to(#2F3AEF));
+      cursor: pointer;
+      border: 0.01rem solid #091220;
+    }
   }
   .right_3_video_btns_wrap{
     height: 0.27rem;
     margin-bottom: 0.11rem;
     display: flex;
     display: -webkit-flex;
+    justify-content: flex-end;
   }
   .right_3_video_btns_more{
     width: 0.6rem;

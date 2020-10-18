@@ -3,11 +3,11 @@
 </template>
 
 <script>
-	import {getAirQuality, getXiangzhenData} from '@/service/api.js';
 	import mapMarkerStyle from '@/utils/mapMarkerStyle';
 	import mapStyle from '@/utils/mapStyle';
 	import mapIconDong from '@/assets/image/icon_dong.gif';
 	import mapWinDown from '@/assets/image/down.png';
+	import { mapState } from 'vuex';
 
     let map;
     const mapAreaName = "天津市西青区";
@@ -21,37 +21,26 @@
         data() {
             return {
                 airQualityData: {},
-                xiangzhenData: {},
             }
-        },
-        async created () {
-			this.getAirQuality();
-			await this.getXiangzhenData();
-        },
-         mounted () {
+		},
+		computed: {
+			...mapState('page2', ['shizhan', 'xiangzhen'])
+		},
+		beforeMount () {
+			this.handleAirQuality();
+		},
+        mounted () {
             this.bmap_init();
         },
         methods: {
             // 获取空气质量信息
-            getAirQuality() {
-				getAirQuality().then(res => {
-					if(res.code == 0){
-                        this.airQualityData = res.data.filter(function(v){
-                            return v.pointId === '4e4860553999471883954ecde87d540c';	//取的辛老路数据
-                        })[0];
-                        var arr = ['aqi', 'pm2_5', 'pm10', 'so2', 'no2', 'co', 'o3'];
-                        arr.forEach(v => {
-                            this.airQualityData[v] = mapMarkerStyle(v, this.airQualityData[v]);
-                        });
-                    }
-				}); 
-			},
-			// 获取乡镇数据
-			getXiangzhenData() {
-				getXiangzhenData().then(res => {
-					if(res.code == 0){
-                        this.xiangzhenData = res.data;
-                    }
+            handleAirQuality() {
+				this.airQualityData = JSON.parse(JSON.stringify(this.shizhan.filter(function(v){
+					return v.pointId === '4e4860553999471883954ecde87d540c';	//取的辛老路数据
+				})[0]));
+				var arr = ['aqi', 'pm2_5', 'pm10', 'so2', 'no2', 'co', 'o3'];
+				arr.forEach(v => {
+					this.airQualityData[v] = mapMarkerStyle(v, this.airQualityData[v]);
 				});
 			},
 
@@ -94,8 +83,8 @@
 			},
 			bmap_addMarker(map) {
 				this.$set(this.airQualityData, 'areaType', 'shizhan');
-				if(JSON.stringify(this.xiangzhenData)!='{}'){
-					let xiangzhenArr = JSON.parse(JSON.stringify(this.xiangzhenData));
+				if(JSON.stringify(this.xiangzhen)!='{}'){
+					let xiangzhenArr = JSON.parse(JSON.stringify(this.xiangzhen));
 					let arr = ['aqi', 'pm2_5', 'pm10', 'so2', 'no2', 'co', 'o3'];
 					xiangzhenArr.forEach(v1 => {
 						this.$set(v1, 'areaType', 'xiangzhen');

@@ -4,14 +4,12 @@ import {
     getDataByDay, 
     getDataByMonth,
     getLeftBottomData,
-    getRiverTree,
-    getRiverGridData,
-    getHomeStatInfo,
+    getPollutionListA,
+    getMonthCalendar,
 } from '@/service/api.js';
 import axios from 'axios';
 import moment from 'moment';
 import { Loading } from 'element-ui';
-import riverTree from '@/mock/riverTree.js';    //水环境站点模拟数据
 
 export default {
     namespaced: true,
@@ -22,17 +20,12 @@ export default {
         dataByDay: {},
         dataByMonth: [],
         leftBottomData: [],
-        riverTree: [],
-        riverGridDataAllR: {},     //各站点水日每小时数据
-        riverGridDataAllD: {},     //各站点水月每日数据
-        homeStatInfo: {}
+        pollutionListA: [],
+        monthCalendar: [],
     },
     mutations: {
         updateCompleteState: (state) => {
             state.isComplete = true;
-        },
-        updateRiverTree: (state, data) => {
-            state.riverTree = data
         },
         updateRequestData: (state, data) => {
             state.shizhan = data[0];
@@ -52,22 +45,13 @@ export default {
             state.dataByMonth['o3'] = data[14];
             state.dataByMonth['co'] = data[15];
             state.leftBottomData = data[16];
-            state.homeStatInfo = data[17];
-        },
-        updateRiverGridDataAllR: (state, data) => {
-            data.forEach((v, index) => {
-                state.riverGridDataAllR[state.riverTree[index]['id']] = v;
-            });
-        },
-        updateRiverGridDataAllD: (state, data) => {
-            data.forEach((v, index) => {
-                state.riverGridDataAllD[state.riverTree[index]['id']] = v;
-            });
+            state.pollutionListA = data[17];
+            state.monthCalendar = data[18];
         },
         
     },
     actions: {
-        getAlldata: async ({commit}) => {
+        getAlldata: ({commit}) => {
             const loading = Loading.service({
                 lock: true,
                 text: '数据加载中',
@@ -76,9 +60,6 @@ export default {
             });
             
             try {
-                // const riverTree = await getRiverTree();
-                // commit('updateRiverTree', riverTree.data.children);
-                commit('updateRiverTree', riverTree.data.children);     //暂时取的模拟数据
                 axios.all([
                     getAirQuality(),
                     getXiangzhenData(),
@@ -97,33 +78,14 @@ export default {
                     getDataByMonth('CO'),
                     getDataByMonth('O3'),
                     getLeftBottomData(),
-                    getHomeStatInfo(),
+                    getPollutionListA(),
+                    getMonthCalendar({
+                        ids: "4e4860553999471883954ecde87d540c",         //取辛老路数据
+                        time: moment().format("YYYY-MM"),
+                        index: "AQI"
+                    }),
                 ]).then(axios.spread(function (...values) {
                     commit('updateRequestData', values.map(v => v.data));
-                    let arr1 = [];
-                    riverTree.data.children.forEach(v => {
-                        arr1.push(getRiverGridData({
-                            sectionCode: v.id,
-                            dataType: 'Rtd',
-                            startTime: moment().format("YYYY-MM-DD"),
-                            endTime: moment().format("YYYY-MM-DD")
-                        }));
-                    });
-                    return axios.all(arr1);
-                })).then(axios.spread(function (...values) {
-                    commit('updateRiverGridDataAllR', values.map(v => v.data));
-                    let arr2 = [];
-                    riverTree.data.children.forEach(v => {
-                        arr2.push(getRiverGridData({
-                            sectionCode: v.id,
-                            dataType: 'Day',
-                            startTime: moment().format("YYYY-MM") + "-01",
-                            endTime: moment().format("YYYY-MM-DD")
-                        }));
-                    });
-                    return axios.all(arr2);
-                })).then(axios.spread(function (...values) {
-                    commit('updateRiverGridDataAllD', values.map(v => v.data));
                     commit('updateCompleteState');
                     setTimeout(() => {
                         loading.close();

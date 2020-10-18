@@ -1,80 +1,65 @@
 <template>
-    <div class="main-left">  <!-- 总9.54rem -->
-        <block-container _title="水环境实时数据" height="3.1rem">
-            <div class="left_1_con">
-                <div class="left_1_data" style="flex: 1; height: 100%;">
-                    <div class="left_1_data_l" ref="left_1_1">
-                        <!-- <span style="margin-top: -0.2rem">IV类</span> -->
-                    </div>
-                    <div class="left_1_data_r">
-                        <div class="cus_bar_con">
-                            <div class="cus_bar_text">COD</div>
+    <div class="main-left">
+        <block-container _title="水环境实时数据" height="2.95rem">
+            <div class="right_1_con">
+                <div class="right_1_data">
+                    <div class="right_1_data_l" ref="right_1_1"></div>
+                    <div class="right_1_data_r">
+                        <div class="cus_bar_con"
+                            v-for="vo in zblist_1"
+                            :key="vo.name"
+                        >
+                            <div class="cus_bar_text">{{ vo.bigName }}</div>
                             <div class="cus_bar_shade">
-                                <span class="cus_bar_main" style="background-color: #3E47EA; width: 56%;"></span>
-                                <span class="cus_bar_value">43(mg/L)</span>
-                            </div>
-                        </div>
-                        <div class="cus_bar_con">
-                            <div class="cus_bar_text">氨氮</div>
-                            <div class="cus_bar_shade">
-                                <span class="cus_bar_main" style="background-color: #E6C341; width: 30%;"></span>
-                                <span class="cus_bar_value">43(mg/L)</span>
-                            </div>
-                        </div>
-                        <div class="cus_bar_con">
-                            <div class="cus_bar_text">总磷</div>
-                            <div class="cus_bar_shade">
-                                <span class="cus_bar_main" style="background-color: #0241FE; width: 40%;"></span>
-                                <span class="cus_bar_value">43(mg/L)</span>
-                            </div>
-                        </div>
-                        <div class="cus_bar_con">
-                            <div class="cus_bar_text">高锰酸盐</div>
-                            <div class="cus_bar_shade">
-                                <span class="cus_bar_main" style="background-color: #3DF5FF; width: 75%;"></span>
-                                <span class="cus_bar_value">43(mg/L)</span>
+                                <span class="cus_bar_main" 
+                                    :style="{backgroundColor: vo.barColor, width: vo.percentage}"
+                                >
+                                    <span>{{ vo.value }}</span>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div style="height: 0.83rem; display: flex; display: -webkit-flex; flex-direction: column; justify-content: space-between;">
-                    <div class="left_1_btn_top">
-                        <div class="cus_btn_active">赤龙河</div>
-                        <div>陈台子排水河</div>
-                        <div>大沽排水河</div>
-                    </div>
-                    <div class="left_1_btn_bot">
-                        <div>外环河</div>
-                        <div>南运河</div>
-                        <div>子牙河</div>
-                        <div>中亭河</div>
+                <div class="right_btns_area">
+                    <div class="right_btns_item"
+                        v-for="(vo, index) in riverTree"
+                        :key="vo.id"
+                        :class="{ active: true, 'right_btns_item_active': vo.id === currStation_1 }"
+                        :title="vo.name"
+                        @click="currStation_1=vo.id; index_1=index;"
+                    >
+                        {{ vo.name }}
                     </div>
                 </div>
             </div>
         </block-container>
-        <block-container _title="水环境质量变化趋势" height="3.24rem">
-            <div style="height: 100%; position: relative;">
+        <block-container _title="水环境质量变化趋势" height="3.36rem">
+            <div style="height: 100%; position: relative;" id="right_2_1">
                 <div class="cus_tab_order">
-                    <div class="cus_tab_order_item cus_tab_order_active">日变化</div>
-                    <div class="cus_tab_order_item">月变化</div>
+                    <div class="cus_tab_order_item cus_tab_order_active" @click="switchDayOrMonth('std', $event)">日变化</div>
+                    <div class="cus_tab_order_item" @click="switchDayOrMonth('day', $event)">月变化</div>
                 </div>
-                <div id="left_2_1" style="height: 100%;" ref="left_2_1"></div>
+                <div style="height: 100%;" ref="right_2_1"></div>
             </div>
         </block-container>
-        <block-container _title="水环境质量天津市考核排名" height="3.2rem">
-            <div style="position: relative; height: 100%; padding-top: 0.35rem;">
-                <div class="left_3_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
-                    <div class="left_3_tab_item left_3_tab_item_active">COD</div>
-                    <div class="left_3_tab_item">氨氮</div>
-                    <div class="left_3_tab_item">总磷</div>
-                    <div class="left_3_tab_item">高锰酸盐</div>
-                </div>
-                <div style="height: 100%; position: relative;">
-                    <div class="cus_tab_order">
-                        <div class="cus_tab_order_item cus_tab_order_active">正序</div>
-                        <div class="cus_tab_order_item">倒序</div>
+        <block-container _title="水环境质量天津市考核排名" height="3.40rem">
+            <div style="position: relative; height: 100%; padding-top: 0.35rem;" @mouseover="stopAutoSwitch_3()" @mouseout="zbAutoSwitch_3()">
+                <div class="right_3_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
+                    <div class="right_3_tab_item"
+                        v-for="(vo, index) in zblist_3"
+                        :class="{ active: true, 'right_3_tab_item_active': vo.name === currzb_3 }"
+                        :key="vo.name"
+                        @click="currzb_3=vo.name; index_3=index"
+                    >
+                        {{ vo.bigName }}
                     </div>
-                    <div id="left_3_1" style="height: 100%;" ref="left_3_1"></div>
+                </div>
+                <div style="height: 100%; position: relative;" id="right_3_1">
+                    <div class="cus_tab_order">
+                        <div class="cus_tab_order_item cus_tab_order_active" @click="switchAscOrDesc('desc', $event)">正序</div>
+                        <div class="cus_tab_order_item" @click="switchAscOrDesc('asc', $event)">倒序</div>
+                    </div>
+                    <div style="height: 100%;" ref="right_3_1"></div>
                 </div>
             </div>
         </block-container>
@@ -84,30 +69,286 @@
 <script>
     import BlockContainer from "@/components/BlockContainer"
     import echartsLiquidfill from 'echarts-liquidfill';
+    import { mapState } from 'vuex';
+    import moment from 'moment';
+    import bus from  '@/bus/index';
 
     export default {
-        data() {
-            return {
-               
-            }
-        },
         components: {
             BlockContainer,
         },
+        data() {
+            return {
+                zblist_1: [
+                    {
+                        name: 'item_hxxyl',
+                        bigName: 'COD',
+                        max: 40,
+                        min: 0,
+                        barColor: "#3E47EA",
+                        value: '0',
+                        percentage: '0%'
+                    },{
+                        name: 'item_ad',
+                        bigName: '氨氮',
+                        max: 2.0,
+                        min: 0,
+                        barColor: "#E6C341",
+                        value: '0',
+                        percentage: '0%'
+                    },{
+                        name: 'item_zonglin',
+                        bigName: '总磷',
+                        max: 0.4,
+                        min: 0,
+                        barColor: "#0241FE",
+                        value: '0',
+                        percentage: '0%'
+                    },{
+                        name: 'item_gmsyzs',
+                        bigName: '高锰酸盐',
+                        max: 15,
+                        min: 0,
+                        barColor: "#3DF5FF",
+                        value: '0',
+                        percentage: '0%'
+                    }
+                ],
+                realData_1: {},
+                currStation_1: '',
+                timer_1: '',
+                index_1: 0,
+
+                currtimetype_2: 'std',  //std:日变化    day:月变化
+
+                zblist_3: [
+                    {
+                        name: 'cod',
+                        bigName: 'COD'
+                    },{
+                        name: 'andan',
+                        bigName: '氨氮'
+                    },{
+                        name: 'zonglin',
+                        bigName: '总磷'
+                    },{
+                        name: 'gaomengsuanyan',
+                        bigName: '高锰酸盐'
+                    }
+                ],
+                currzb_3: 'cod',
+                order_3: 'desc',
+                timer_3: '',
+                index_3: 0,
+
+            }
+        },
+        computed: {
+            ...mapState('page3', ['riverTree', 'riverGridDataAllR', 'riverGridDataAllD', 'homeStatInfo'])
+        },
+        beforeMount () {
+            this.currStation_1 = this.riverTree[0]['id'];
+        },
         mounted () {
-            this.initCharts_1();
-            this.initCharts_2();
-            this.initCharts_3();
+            this.handleData1();
+            // this.stationAutoSwitch_1();
+
+            this.handleData2();
+            
+            this.handleData3();
+            this.zbAutoSwitch_3();
+        },
+        beforeDestroy () {
+            //清除定时器
+            // clearInterval(this.timer_1);
+            clearInterval(this.timer_3);
+        },
+        watch: {
+            currStation_1(now, old) {
+                this.handleData1();
+                this.handleData2();
+                bus.$emit('stationChange', {currStation: this.currStation_1, index: this.index_1} )
+            },
+            currtimetype_2(now, old) {
+                this.handleData2();
+            },
+            currzb_3(now, old) {
+                this.handleData3();
+            },
+            order_3(now, old) {
+                this.handleData3();
+            }
         },
         methods: {
-            initCharts_1 () {
+            // right_1
+            handleData1 () {
+                const riverGridDataR = this.riverGridDataAllR[this.currStation_1];
+                // console.log(riverGridDataR);
+                if(riverGridDataR && riverGridDataR.length > 0){
+                    this.realData_1 = riverGridDataR.filter(v => v.classname !== '—')[0] || null;
+                }else{
+                    this.realData_1 = null;
+                }
+                this.zblist_1.forEach(v => {
+                    let zhi = '';
+                    // console.log(this.realData_1);
+                    if(this.realData_1 === null){
+                        zhi = '-'
+                    }else{
+                        zhi = this.realData_1[v.name] || '-'
+                    }
+                    v['value'] = zhi;
+                    if(zhi==='-'){
+                        v['percentage'] = '0%'
+                    }else{
+                        if(Number(zhi) > v['max']){
+                            v['percentage'] = '100%'
+                        }else if(Number(zhi) < v['min']){
+                            v['percentage'] = '0%'
+                        }else{
+                            v['percentage'] = (Number(zhi) / (v['max'] - v['min'])) * 100 + '%'
+                        }
+                    }
+                })
+                // console.log(this.zblist_1);
+                this.initCharts_1(this.realData_1 ? this.realData_1['classname'] : '无');
+            },
+            stationAutoSwitch_1 () {
+                this.timer_1 = setInterval(() => {
+                    this.currStation_1 = this.riverTree[this.index_1].id;
+                    this.index_1++;
+                    if(this.index_1 >= this.riverTree.length){
+                        this.index_1 = 0;
+                    }
+                }, 4000);
+            },
+            stopAutoSwitch_1 () {
+                clearInterval(this.timer_1)
+            },
+            // right_2  (跟right_1是联动的)
+            handleData2 () {
+                let baseData = [];
+                if(this.currtimetype_2 === 'std'){
+                    baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
+                }else if(this.currtimetype_2 === 'day'){
+                    baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+                }
+                let x=[], y=[];
+                if(baseData && baseData.length > 0){
+                    x = baseData.map(v => {
+                        if(this.currtimetype_2 === 'std'){
+                            return v['monitortime'].split(':')[0];
+                        }else if(this.currtimetype_2 === 'day'){
+                            return v['monitordate'].split('-')[2];
+                        }
+                    }).reverse();
+                    y = baseData.map(v => {
+                        const testArr = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ'];
+                        let isPass = false;
+                        testArr.forEach(vt => {
+                            vt === v['classname'] && (isPass = true) 
+                        });
+                        if(isPass){
+                            return v['classname']+'类'
+                        }else{
+                            return '无'
+                        }
+                    }).reverse();
+                }else{
+                    let start = this.currtimetype_2==='std' ? 0 : 1;
+                    let len = this.currtimetype_2==='std' ? 24 : 31;
+                    for(let i=start; i<len; i++){
+                        x.push(i<10 ? '0'+i : ''+i);
+                        y.push('');
+                    }
+                }
+                this.initCharts_2(x, y);
+            },
+            switchDayOrMonth (timetype, e) {
+                if(!e.target.classList.contains('cus_tab_order_active')){
+                    const tabList = document.querySelectorAll("#right_2_1 .cus_tab_order_item");
+                    for(let i=0; i<tabList.length; i++){
+                        tabList[i].classList.remove('cus_tab_order_active');
+                    }
+                    e.target.classList.add('cus_tab_order_active');
+                    this.currtimetype_2 = timetype;
+                }
+            },
+            // right_3
+            handleData3 () {
+                // this.order_3             asc | desc
+                const odata = this.homeStatInfo;
+                let x = [], y=[];
+                const zb = this.currzb_3;
+
+                let tempArr = odata.xaxis.map((v, index) => {
+                    return {
+                        x: v,
+                        y: odata.series.filter(v1 => v1.name === zb)[0]['data'][index]
+                    }
+                });
+                tempArr.sort((v1, v2) => this.order_3 === 'asc' ? (v1.y-v2.y) : (v2.y-v1.y));
+                x = tempArr.map(v => v.x);
+                y = tempArr.map(v => v.y);
+                this.initCharts_3(x, y);
+            },
+            switchAscOrDesc (ordertype, e) {
+                if(!e.target.classList.contains('cus_tab_order_active')){
+                    const tabList = document.querySelectorAll("#right_3_1 .cus_tab_order_item");
+                    for(let i=0; i<tabList.length; i++){
+                        tabList[i].classList.remove('cus_tab_order_active');
+                    }
+                    e.target.classList.add('cus_tab_order_active');
+                    this.order_3 = ordertype;
+                }
+            },
+            zbAutoSwitch_3 () {
+                this.timer_3 = setInterval(() => {
+                    this.currzb_3 = this.zblist_3[this.index_3].name;
+                    this.index_3++;
+                    if(this.index_3 >= this.zblist_3.length){
+                        this.index_3 = 0;
+                    }
+                }, 2500);
+            },
+            stopAutoSwitch_3 () {
+                clearInterval(this.timer_3)
+            },
+
+
+            initCharts_1 (classname) {
+                const num = (function(){
+                    switch (classname) {
+                        case 'Ⅰ':
+                            return 0.1;
+                            break;
+                        case 'Ⅱ':
+                            return 0.3;
+                            break;
+                        case 'Ⅲ':
+                            return 0.5;
+                            break;
+                        case 'Ⅳ':
+                            return 0.7;
+                            break;
+                        case 'Ⅴ':
+                            return 0.9;
+                            break;
+                        case '劣Ⅴ':
+                            return 1;
+                            break;
+                        default:
+                            return -0.04
+                            break;
+                    }
+                })();
                 const _echarts = this.$echarts;
-                let myChart = _echarts.init(this.$refs.left_1_1);
+                let myChart = _echarts.init(this.$refs.right_1_1);
                 myChart.setOption(
                     {
                         series: [{
                             type: 'liquidFill',
-                            data: [0.6, 0.6+0.02, 0.6+0.04],
+                            data: [num, num+0.02, num+0.04],
                             shape: 'path://M879.992333 656.007667a367.992333 367.992333 0 0 1-735.984666 0C144.007667 452.875898 479.453123 0 512 0 536.532822 0 879.992333 452.875898 879.992333 656.007667z',
                             color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
                             direction: 'left',
@@ -139,10 +380,10 @@
                             },
                             label:{
                                 show: true,
-                                formatter: odata => this.charts1_getLevelText(odata.value),
+                                formatter: classname + (classname === '无' ? '' : '类'),
                                 color: 'rgba(245,246,10,1)',
                                 insideColor: 'rgba(1,28,39,1)',
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: 'bold',
                                 align: 'center',
                                 baseline: 'middle',
@@ -155,26 +396,13 @@
                     myChart.resize();
                 });
             },
-            charts1_getLevelText(val) {
-                // 0-1
-                if(val>=0 && val<0.2){
-                    return "Ⅰ类"
-                }else if(val>=0.2 && val<0.4){
-                    return "Ⅱ类"
-                }else if(val>=0.4 && val<0.6){
-                    return "Ⅲ类"
-                }else if(val>=0.6 && val<0.8){
-                    return "Ⅳ类"
-                }else if(val>=0.8 && val<=1){
-                    return "Ⅴ类"
-                }
-            },
-            initCharts_2 () {
+            initCharts_2 (x, y) {
                 const _echarts = this.$echarts;
-            　　let myChart = _echarts.init(this.$refs.left_2_1);
+            　　let myChart = _echarts.init(this.$refs.right_2_1);
             　　// 绘制图表
-                var data_val = [46, 56, 66, 76, 80, 75, 96, 104, 100, 102, 112, 122, 132],
-                    xdata = ['0点', '2点', '4点', '6点', '8点', '10点', '12点', '14点', '16点', '18点', '20点', '22点', '24点'];
+                var data_val = y,
+                    xdata = x,
+                    ydata = ['Ⅰ类', 'Ⅱ类', 'Ⅲ类', 'Ⅳ类', 'Ⅴ类', '劣Ⅴ类']
             　　myChart.setOption({
                     grid: {
                         left: '2%',
@@ -185,15 +413,17 @@
                     },
                     tooltip: {
                         show: true,
-                        backgroundColor: '#E8E093',
-                        borderColor: '#E8E093',
-                        borderWidth: 4,
-                        textStyle: {
-                            color: '#354060'
-                        },
+                        trigger: 'axis',
+                        // backgroundColor: '#E8E093',
+                        // borderColor: '#E8E093',
+                        // borderWidth: 4,
+                        // textStyle: {
+                        //     color: '#354060'
+                        // },
                         formatter: '{b} : {c}',
-                        extraCssText: 'box-shadow: 0 0 10px rgba(37,47,77,0.8)'
+                        // extraCssText: 'box-shadow: 0 0 10px rgba(37,47,77,0.8)'
                     },
+                    
                     xAxis: {
                         type: 'category',
                         data: xdata,
@@ -213,10 +443,22 @@
                         },
                         axisTick: {
                             show: false
-                        }
+                        },
+                        axisPointer: {	//指示器
+                            type: 'line',
+                            lineStyle: {
+                                color: "rgba(255,255,255,0.3)",
+                                width: 1,
+                                type: "dotted"
+                            }
+                        },
                     },
                     yAxis: {
-                        name: "单位",
+                        type: "category",
+                        name: "类别",
+                        nameGap: 5,
+                        // boundaryGap: true,
+                        data: ydata,
                         nameTextStyle: {
                             color: "#EBFAFF",
                             fontSize: 10
@@ -225,11 +467,12 @@
                             show: true,
                             lineStyle: {
                                 color: "#5B88B2",
-
                             }
                         },
                         axisTick: {
-                            show: true
+                            show: true,
+                            interval: 0,
+                            // alignWithLabel: true
                         },
                         axisLabel: {
                             color: "#EBFAFF",
@@ -238,14 +481,39 @@
                         splitLine: {
                             show: true,
                             lineStyle: {
-                                color: '#132434',
-                                width:  1
+                                color: '#153554',
+                                width:  1,
+                                type: 'dotted'
                             }
                         },
-
                     },
                     series: [
                         {
+                            type: 'bar',
+                            name: 'linedemo',
+                            tooltip: {
+                                show: false
+                            },
+                            animation: false,
+                            barWidth: 1,
+                            hoverAnimation: false,
+                            data: data_val,
+                            itemStyle: {
+                                normal: {
+                                    color: new _echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#50C0C1'
+                                    }, {
+                                        offset: 1,
+                                        color: '#0D1B40'
+                                    }]),
+                                    opacity: 0.6,
+                                    label: {
+                                        show: false
+                                    }
+                                }
+                            }
+                        },{
                             type: 'line',
                             name: 'linedemo',
                             smooth: false,
@@ -288,12 +556,13 @@
                     myChart.resize();
                 });
             },
-            initCharts_3 () {
+            initCharts_3 (x, y) {
                 const _echarts = this.$echarts;
-            　　let myChart = _echarts.init(this.$refs.left_3_1);
-                const xdata = ['和平区', '南开区', '河西区', '河北区', '红桥区', '河东区', '西青区', '北辰区', '津南区', '武清区'];
-                const seriesData = [50, 44, 36, 30, 25, 20, 16, 11, 8, 3];
-            　　// 绘制图表
+                let myChart = _echarts.init(this.$refs.right_3_1);
+                const data_x = x;
+                const data_val = y;
+                const color1=["rgba(20,161,144,1)", "rgba(44,222,186,1)", "rgba(55,222,170,1)", "rgba(42,255,131,1)", "rgba(88,251,124,1)", "rgba(136,246,99,1)", "rgba(167,227,54,1)", "rgba(182,217,35,1)", "rgba(228,242,0,1)", "rgba(244,223,12,1)"]
+                const color2=["rgba(20,161,144,0.2)", "rgba(44,222,186,0.2)", "rgba(55,222,170,0.2)", "rgba(42,255,131,0.2)", "rgba(88,251,124,0.2)", "rgba(136,246,99,0.2)", "rgba(167,227,54,0.2)", "rgba(182,217,35,0.2)", "rgba(228,242,0.2)", "rgba(244,223,12,0.2)"]
             　　myChart.setOption({
                     tooltip: {
                         trigger: 'axis'
@@ -306,23 +575,23 @@
                     },
                     xAxis: [{
                         type: 'category',
-                        data: xdata,
+                        data: data_x,
                         axisPointer: {	//指示器
                             type: 'line',
                             lineStyle: {
-                                color: "#ff0000",
-                                width: 2,
+                                color: "rgba(255,255,255,0.3)",
+                                width: 1,
                                 type: "dotted"
                             }
                         },
                         axisLabel: {
                             interval: 0,
                             color: '#EBFAFF',
-                            fontSize: 9,
+                            fontSize: 10,
                             margin: 4,
                             formatter:function(value,index) {
                                 var ret = "";//拼接加\n返回的类目项  
-                                var maxLength = 2;//每项显示文字个数  
+                                var maxLength = 1;//每项显示文字个数  
                                 var valLength = value.length;//X轴类目项的文字个数  
                                 var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数  
                                 if (rowN > 1)//如果类目项的文字大于3,  
@@ -364,7 +633,7 @@
                             splitLine: {
                                 show: true,
                                 lineStyle: {
-                                    color: "#192939",
+                                    color: "#142247",
 
                                 }
                             },
@@ -410,7 +679,7 @@
                                     }
                                 },
                             },
-                            data: seriesData
+                            data: data_val
                         }
                     ]
                 });
@@ -425,131 +694,127 @@
 <style lang="scss" scoped>
     .main-left{
 
-        .left_1_con{
+        .right_1_con{
             height: 100%;
             display: flex;
             display: -webkit-flex;
             flex-direction: column;
-            padding-bottom: 0.1rem;
+            flex: 1;
+            flex-basis: auto;
+            min-width: 0;
 
-            .left_1_data{
-                display: flex;
-                display: -webkit-flex;
-            }
-            .left_1_data_l{
-                height: 100%;
-                width: 27.876%;
-                // background: url("~@/assets/image/water_evn.png") no-repeat center;
-                // background-size: 60% auto;
-                // font-size: 0.2rem;
-                // font-weight: 600;
-                // color: #F4EA26;
-                // display: flex;
-                // display: -webkit-flex;
-                // justify-content: center;
-                // align-items: center;
-            }
-            .left_1_data_r{
-                flex: 1;
+            .right_1_data{
+                height: 50%;
+                flex-shrink: 0;
 
-                .cus_bar_con{
-                    height: 0.38rem;
-                    display: flex;
-                    display: -webkit-flex;
-                    align-items: center;
-                }
-                .cus_bar_text{
+                .right_1_data_l{
+                    float: left;
                     height: 100%;
-                    width: 11.552%;
-                    color: #FCFEFF;
-                    font-size: 0.12rem;
-                    word-break: break-all;
-                    overflow: hidden;
-                    display: flex;
-                    display: -webkit-flex;
-                    align-items: center;
-                    line-height: 1;
+                    width: 27%;
                 }
-                .cus_bar_shade{
-                    flex: 1;
-                    height: 0.24rem;
-                    width: 100%;
-                    background-color: #091B43;
-                    border-radius: 0.12rem;
-                    padding: 0.03rem 0;
+                .right_1_data_r{
+                    float: left;
+                    height: 100%;
+                    width: 73%;
                     display: flex;
                     display: -webkit-flex;
+                    flex-direction: column;
+                    justify-content: space-between;
 
-                    .cus_bar_main{
-                        height: 100%;
-                        border-radius: 0.12rem;
+                    .cus_bar_con{
+                        height: 0.24rem;
+                        display: flex;
+                        display: -webkit-flex;
+                        align-items: center;
+                        flex-basis: auto;
+                        min-width: 0;
                     }
-                    .cus_bar_value{
-                        font-size: 0.12rem;
-                        color: #2581C0;
+                    .cus_bar_text{
+                        width: 70px;
+                        min-width: 70px;
+                        text-align: right;
+                        padding-right: 10px;
+                        white-space: nowrap;
+                        color: #FCFEFF;
+                        font-size: 0.13rem;
                         line-height: 1;
-                        margin-left: 0.1rem;
+                    }
+                    .cus_bar_shade{
+                        flex: 1;
+                        flex-basis: auto;
+                        height: 0.24rem;
+                        background-color: #0F2452;
+                        border-radius: 0.13rem;
+                        padding: 0.03rem 0;
+
+                        .cus_bar_main{
+                            display: block;
+                            height: 100%;
+                            border-radius: 0.12rem;
+                            font-size: 0.12rem;
+                            font-weight: 700;
+                            color: #ffffff;
+                            text-align: right;
+                            
+                            span{
+                                display: inline-block;
+                                height: 100%;
+                                background-color: rgba(0,0,0,0.3);
+                                border-radius: 0.06rem;
+                            }
+                        }
                     }
                 }
             }
-
-            .left_1_btn_top{
-                height: 0.35rem;
-                display: flex;
-                display: -webkit-flex;
-                justify-content: space-between;
-
-                div{
-                    width: 31.416%;
-                    height: 100%;
-                    line-height: 0.35rem;
-                    background-color: #051235;
-                    border-radius: 0.06rem;
-                    color: #FCFEFF;
-                    font-size: 0.16rem;
-                    box-shadow: 0 0 8px -4px #0241FE inset;
-                    text-align: center;
-                    cursor: pointer;
-                    @include text-beyond;
-                }
+            .right_1_data::after{
+                clear: both;
             }
-            .left_1_btn_bot{
-                height: 0.35rem;
-                display: flex;
-                display: -webkit-flex;
-                justify-content: space-between;
-
-                div{
-                    width: 23.894%;
-                    height: 100%;
-                    line-height: 0.35rem;
-                    background-color: #051235;
-                    border-radius: 0.06rem;
-                    color: #FCFEFF;
-                    font-size: 0.16rem;
-                    box-shadow: 0 0 8px -4px #0241FE inset;
-                    text-align: center;
-                    cursor: pointer;
-                    @include text-beyond;
-                }
-            }
-            .cus_btn_active{
-                background: #F03F16;
-                background: -moz-linear-gradient(top,  #F37020 0%, #B40000 100%);
-                background: -webkit-gradient(linear, 0 0, 100% 100%, from(#F37020), to(#B40000));
-                background: -webkit-linear-gradient(left top,  #F37020 0%,#B40000 100%);
-                background: -o-linear-gradient(left top,  #F37020 0%,#B40000 100%);
-                background: -ms-linear-gradient(left top,  #F37020 0%,#B40000 100%);
-                background: linear-gradient(to right bottom,  #F37020 0%,#B40000 100%);
-                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F37020', endColorstr='#B40000',GradientType=0 );
-                color: #FFFFFF;
-                box-shadow: none;
-                border: 1px solid #ffffff;
-                border-bottom-color: transparent;
-            }
-            :root .cus_btn_active{filter:none;}
-
             
+            // flex
+            .right_btns_area{
+                flex: 1;
+                flex-basis: auto;
+                display: flex;
+                display: -webkit-flex;
+                flex-wrap: wrap;
+                // justify-content: flex-start;
+                // align-items: center;
+                align-content: center;
+
+                .right_btns_item{
+                    // width: 23.894%;
+                    flex-grow: 1;
+                    // flex-shrink: 1;
+                    // height: 0.35rem;
+                    // line-height: 0.35rem;
+                    background-color: #051235;
+                    border-radius: 0.06rem;
+                    color: #FCFEFF;
+                    font-size: 0.16rem;
+                    box-shadow: 0 0 8px -4px #0241FE inset;
+                    text-align: center;
+                    padding: 0.02rem 0.05rem;
+                    margin: 2px 5px;
+                    cursor: pointer;
+                    border: 1px solid transparent;
+                    @include text-beyond;
+                }
+                .right_btns_item_active{
+                    background: #F03F16;
+                    background: -moz-linear-gradient(top,  #F37020 0%, #B40000 100%);
+                    background: -webkit-gradient(linear, 0 0, 100% 100%, from(#F37020), to(#B40000));
+                    background: -webkit-linear-gradient(left top,  #F37020 0%,#B40000 100%);
+                    background: -o-linear-gradient(left top,  #F37020 0%,#B40000 100%);
+                    background: -ms-linear-gradient(left top,  #F37020 0%,#B40000 100%);
+                    background: linear-gradient(to right bottom,  #F37020 0%,#B40000 100%);
+                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F37020', endColorstr='#B40000',GradientType=0 );
+                    color: #FFFFFF;
+                    box-shadow: none;
+                    border: 1px solid #ffffff;
+                    border-bottom-color: transparent;
+                }
+                :root .right_btns_item_active{filter:none;}
+            }
         }
 
         .cus_tab_order {
@@ -580,12 +845,12 @@
         .cus_tab_order_active{
             background-color: #00A2FF;
         }
-        .left_3_tab{
+        .right_3_tab{
             display: -webkit-flex;
             display: flex;
             justify-content: center;
         }
-        .left_3_tab_item{
+        .right_3_tab_item{
             height: 100%;
             line-height: 0.35rem;
             text-align: center;
@@ -598,7 +863,7 @@
             margin-left: 0.6%;
             padding: 0 0.06rem;
         }
-        .left_3_tab_item_active{
+        .right_3_tab_item_active{
             background-color: #3349F5;
         }
     }

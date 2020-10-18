@@ -1,35 +1,26 @@
 <template>
   <div class="main-right">
     <block-container _title="各街镇环境空气实时数据" height="2.95rem">
-      <div style="position: relative; height: 100%; padding-top: 0.35rem">
-        <div
-          class="right_1_tab"
-          style="
-            position: absolute;
-            width: 100%;
-            height: 0.35rem;
-            top: 0;
-            left: 0;
-          "
-        >
-          <div class="right_1_tab_item right_1_tab_item_active">AQI</div>
-          <div class="right_1_tab_item">PM2.5</div>
-          <div class="right_1_tab_item">PM10</div>
-          <div class="right_1_tab_item">SO<sub>2</sub></div>
-          <div class="right_1_tab_item">NO<sub>2</sub></div>
-          <div class="right_1_tab_item">O<sub>3</sub></div>
-          <div class="right_1_tab_item">CO</div>
-        </div>
-        <div style="height: 100%; position: relative">
-          <div class="cus_tab_order">
-            <div class="cus_tab_order_item cus_tab_order_active">正序</div>
-            <div class="cus_tab_order_item">倒序</div>
+      <div style="position: relative; height: 100%; padding-top: 0.35rem" @mouseover="stopAutoSwitch_1()" @mouseout="zbAutoSwitch_1()">
+        <div class="right_1_tab" style=" position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
+          <div class="right_1_tab_item" 
+              :class="{ active: true, 'right_1_tab_item_active': vo.name === currzb_1 }" 
+              v-for="(vo, index) in zblist"
+              :key="vo.name" 
+              v-html="vo.bigName" 
+              @click="currzb_1=vo.name; index_1=index">
           </div>
-          <div id="right_1_1" style="height: 100%" ref="right_1_1"></div>
+        </div>
+        <div style="height: 100%; position: relative" id="right_1_1">
+          <div class="cus_tab_order">
+              <div class="cus_tab_order_item cus_tab_order_active" @click="switchAscOrDesc('desc', $event)">正序</div>
+              <div class="cus_tab_order_item" @click="switchAscOrDesc('asc', $event)">倒序</div>
+          </div>
+          <div style="height: 100%" ref="right_1_1"></div>
         </div>
       </div>
     </block-container>
-    <block-container _title="废气排放重点污染源实时数据" height="3.36rem">
+    <block-container _title="废气排放重点污染源实时数据" height="3.35rem">
       <div
         style="
           height: 100%;
@@ -41,26 +32,26 @@
       >
         <div class="cus_table_head">
           <div class="cus_table_th" style="width: 80%">企业名称</div>
-          <div class="cus_table_th" style="width: 80%">行业类别</div>
-          <div class="cus_table_th" style="width: 20%">数量</div>
-          <div class="cus_table_th" style="width: 20%">参数</div>
+          <!-- <div class="cus_table_th" style="width: 60%">行业类别</div> -->
+          <div class="cus_table_th" style="width: 30%">机构代码</div>
+          <!-- <div class="cus_table_th" style="width: 20%">参数</div> -->
         </div>
         <div class="cus_table_body" style="height: 100%">
           <vue-seamless-scroll
-            :data="zdqywryglTable"
+            :data="pollutionListA"
             :class-option="optionSetting"
             class="seamless-warp"
           >
             <ul>
               <li
                 class="cus_table_tr"
-                v-for="vo in zdqywryglTable"
-                :key="vo.id"
+                v-for="vo in pollutionListA"
+                :key="vo.co_id"
               >
-                <div class="cus_table_td" style="width: 80%">{{ vo.companyName }}</div>
-                <div class="cus_table_td" style="width: 80%">{{ vo.hylb }}</div>
-                <div class="cus_table_td" style="width: 20%">{{ vo.number }}</div>
-                <div class="cus_table_td" style="width: 20%">{{ vo.param }}</div>
+                <div class="cus_table_td" style="width: 80%" :title="vo.coName">{{ vo.coName }}</div>
+                <!-- <div class="cus_table_td" style="width: 60%" :title="vo.industry_name">{{ vo.industry_name }}</div> -->
+                <div class="cus_table_td" style="width: 30%" :title="vo.coCode">{{ vo.coCode }}</div>
+                <!-- <div class="cus_table_td" style="width: 20%">{{ vo.param }}</div> -->
               </li>
             </ul>
           </vue-seamless-scroll>
@@ -75,9 +66,12 @@
 </template>
 
 <script>
-import rightTable from "@/mock/rightTable.js";
 import BlockContainer from "@/components/BlockContainer";
 import vueSeamlessScroll from "vue-seamless-scroll";
+import { mapState } from "vuex";
+import mapMarkerStyle from '@/utils/mapMarkerStyle';
+import getColorArr from '@/utils/getColorArr';
+import airNormlist from "@/mock/airNormlist.js";
 
 export default {
   components: {
@@ -86,16 +80,17 @@ export default {
   },
   data() {
     return {
-      zdqywryglTable: [],
+      zblist: airNormlist.data,
+
+      currzb_1: 'aqi', //右上的当前指标
+      order_1: 'desc',   // 右上的当前排序方式
+      timer_1: '',     //右上定时器
+      index_1: 0,      //右上计数器
+
       currMonth: new Date(),
-      firstDayOfWeek: 7
+      firstDayOfWeek: 7,
+      mcColorlist: [],
     };
-  },
-  created() {
-    this.zdqywryglTable = rightTable.data;
-  },
-  mounted() {
-    this.initCharts_1();
   },
   computed: {
     optionSetting() {
@@ -110,48 +105,99 @@ export default {
         waitTime: 1000, // 单步运动停止的时间(默认值1000ms)
       };
     },
+    ...mapState('page2', ['xiangzhen', 'pollutionListA', 'monthCalendar'])
+  },
+  mounted() {
+    this.handleData1();
+    this.zbAutoSwitch_1();
+
+    this.handleData3();
+  },
+  beforeDestroy () {
+    //清除定时器
+    clearInterval(this.timer_1);
+  },
+  watch: {
+    currzb_1(now, old) {
+        this.handleData1();
+    },
+    order_1(now, old) {
+        this.handleData1();
+    },
   },
   methods: {
-    initCharts_1() {
+    handleData1() {
+      // this.order_1             asc | desc
+      const odata = this.xiangzhen;
+      let x = [], y=[], colors=[];
+      const zb = this.currzb_1;
+      let tempArr = [];
+      if(odata && odata.length > 0){
+          tempArr = odata.map(v => {
+              return {
+                  x: v.pointName,
+                  y: v[zb],
+                  color: getColorArr(zb, (''+v[zb]).split()).join()
+              }
+          });
+          tempArr.sort((v1, v2) => this.order_1 === 'asc' ? (v1.y-v2.y) : (v2.y-v1.y));
+          x = tempArr.map(v => v.x);
+          y = tempArr.map(v => v.y);
+          colors = tempArr.map(v => v.color);
+      }else{
+          x = ["王稳庄镇", "辛口镇", "开发区", "杨柳青镇", "大寺镇", "精武镇", "张家窝镇（参照点）", "中北镇", "西营门街", "李七庄街"]
+          x.forEach(function(v){
+              y.push('');
+              colors('rgba(0,0,0,0)');
+          })
+      }
+      this.initCharts_1(x, y, colors);
+    },
+    switchAscOrDesc (ordertype, e) {
+        if(!e.target.classList.contains('cus_tab_order_active')){
+            const tabList = document.querySelectorAll("#right_1_1 .cus_tab_order_item");
+            for(let i=0; i<tabList.length; i++){
+                tabList[i].classList.remove('cus_tab_order_active');
+            }
+            e.target.classList.add('cus_tab_order_active');
+            this.order_1 = ordertype;
+        }
+    },
+    zbAutoSwitch_1 () {
+        this.timer_1 = setInterval(() => {
+            this.currzb_1 = this.zblist[this.index_1].name;
+            this.index_1++;
+            if(this.index_1 >= this.zblist.length){
+                this.index_1 = 0;
+            }
+        }, 2500);
+    },
+    stopAutoSwitch_1 () {
+        clearInterval(this.timer_1)
+    },
+
+    handleData3(){
+      const tempArr = [];
+      for(let i in this.monthCalendar[0]){
+        tempArr.push(this.monthCalendar[0][i]);
+      }
+      this.mcColorlist = tempArr.map(v => mapMarkerStyle('aqi', v, 0));
+      // console.log(this.mcColorlist);
+      const domList = document.querySelectorAll(".main-right .el-calendar .el-calendar__body .el-calendar-table .el-calendar-table__row .current");
+      // console.log(domList);
+      for(let i=0; i<domList.length; i++){
+        domList[i].style.backgroundColor = this.mcColorlist[i].bgcolor;
+        domList[i].style.color = this.mcColorlist[i].color;
+      }
+    },
+
+    initCharts_1(x, y, colors) {
       const _echarts = this.$echarts;
       let myChart = _echarts.init(this.$refs.right_1_1); // 绘制图表
-      const xdata = [
-        "王稳庄镇",
-        "辛口镇",
-        "开发区",
-        "杨柳青镇",
-        "大寺镇",
-        "精武镇",
-        "张家窝镇",
-        "中北镇",
-        "西营门街",
-        "李七庄街",
-      ];
-      const seriesData = [50, 44, 36, 30, 25, 20, 16, 11, 8, 3];
-      const color1 = [
-        "rgba(21,158,130,1)",
-        "rgba(47,187,124,1)",
-        "rgba(114,228,117,1)",
-        "rgba(175,247,43,1)",
-        "rgba(224,247,0,1)",
-        "rgba(244,232,0,1)",
-        "rgba(255,198,22,1)",
-        "rgba(229,133,75,1)",
-        "rgba(199,49,172,1)",
-        "rgba(133,12,253,1)",
-      ];
-      const color2 = [
-        "rgba(21,158,130,0.2)",
-        "rgba(47,187,124,0.2)",
-        "rgba(114,228,117,0.2)",
-        "rgba(175,247,43,0.2)",
-        "rgba(224,247,0,0.2)",
-        "rgba(244,232,0,0.2)",
-        "rgba(255,198,22,0.2)",
-        "rgba(229,133,75,0.2)",
-        "rgba(199,49,172,0.2)",
-        "rgba(133,12,253,0.2)",
-      ];
+      const xdata = x;
+      const seriesData = y;
+      const color1 = colors;
+      const color2 = colors.map(v => 'rgba(0,0,0,0.1)');
       myChart.setOption({
         tooltip: {
           trigger: "axis",
@@ -159,7 +205,7 @@ export default {
         grid: {
           left: "7%",
           right: "3%",
-          bottom: "20%",
+          bottom: "22%",
           top: "20%",
         },
         xAxis: [
@@ -182,7 +228,7 @@ export default {
               margin: 4,
               formatter: function (value, index) {
                 var ret = ""; //拼接加\n返回的类目项
-                var maxLength = 2; //每项显示文字个数
+                var maxLength = 3; //每项显示文字个数
                 var valLength = value.length; //X轴类目项的文字个数
                 var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
                 if (rowN > 1) {
@@ -257,16 +303,17 @@ export default {
               normal: {
                 // barBorderRadius: [5,5,0,0],
                 color: function (p) {
-                  return new _echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    {
-                      offset: 0,
-                      color: "#24D688",
-                    },
-                    {
-                      offset: 1,
-                      color: "#F4FB21",
-                    },
-                  ]);
+                  return new _echarts.graphic.LinearGradient(
+                      0,0,0,1,[
+                          {
+                              offset: 0,
+                              color: color1[p.dataIndex]
+                          }, {
+                              offset: 1,
+                              color: color2[p.dataIndex]
+                          }
+                      ]
+                  )
                 },
               },
             },
@@ -362,6 +409,7 @@ export default {
     display: -webkit-flex;
     display: flex;
     align-items: center;
+    cursor: pointer;
   }
   .cus_table_tr:nth-child(2n-1) {
     background-color: #033f7d;
@@ -441,7 +489,7 @@ export default {
     border: 1px solid #000;
   }
   .el-calendar-table td.is-today{
-    background: #FFFF00;
+    background: transparent;
     color: #000000;
   }
   .el-calendar-table td.is-selected{
