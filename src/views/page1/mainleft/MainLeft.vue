@@ -26,14 +26,17 @@
             </div>
         </block-container>
         <block-container _title="大气环境质量变化趋势" height="3.63rem">
-            <div style="position: relative; height: 100%; padding-top: 0.35rem;" @mouseover="stopAutoSwitch()" @mouseout="zbAutoSwitch()">
+            <div style="position: relative; height: 100%; padding-top: 0.35rem;" 
+                @mouseenter="stopAutoSwitch(); mouseIsInSelf=true;" 
+                @mouseleave="mouseleaveIsOpenTimer1 && zbAutoSwitch(); mouseIsInSelf=false;"
+            >
                 <div class="left_2_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
                     <div class="left_2_tab_item"
-                        :class="{ active: true, 'left_2_tab_item_active': vo.name === currzb_1 }" 
+                        :class="{ 'left_2_tab_item_active': vo.name === currzb_1 }" 
                         v-for="(vo, index) in zblist" 
                         :key="vo.name" 
                         v-html="vo.bigName"
-                        @click="currzb_1=vo.name; index_1=index"
+                        @click="tabItemClick(vo, index, $event)"
                     >
                     </div>
                 </div>
@@ -71,10 +74,13 @@
 
 <script>
     import BlockContainer from "@/components/BlockContainer";
-    import { mapState } from "vuex";
+    import { mapActions, mapState } from "vuex";
     import mapMarkerStyle from '@/utils/mapMarkerStyle';
     import getColorArr from '@/utils/getColorArr';
     import airNormlist from "@/mock/airNormlist.js";
+    import { getDataByDay } from "@/service/api.js";
+    import moment from 'moment';
+    import { Loading } from 'element-ui';
 
     export default {
         data() {
@@ -83,10 +89,15 @@
                left_1_2_list: [],
                zblist: airNormlist.data,
 
-               currzb_1: 'aqi', //左中的当前指标
+               xinlaoluTime: '',
+
+               currzb_1: '', //左中的当前指标
                currtimetype_1: 'day',   // 左中的当前时间类型
                timer_1: '',     //左中定时器
                index_1: 0,      //左中计数器
+               mouseleaveIsOpenTimer1: true,
+               mouseIsInSelf: false,
+               timer1IsOpen: false,
 
                currzb_2: 'aqi', //左下的当前指标
                order_2: 'desc',   // 左下的当前排序方式
@@ -101,32 +112,50 @@
             ...mapState('page1', ['shizhan', 'dataByDay', 'dataByMonth', 'leftBottomData'])
         },
         beforeMount () {
-            this.handleData1();
+            this.handleData1();    //左上角不牵扯dom，挂载之前将数据准备好
         },
-        mounted () {
+        async mounted () {
+            /**
+             * 这是一堆初始化工作
+             */
             this.calcLeft_1_1_rotate_height();
             window.addEventListener('resize', () => {
                 this.calcLeft_1_1_rotate_height();
             });
-
-            this.handleData2();
-            this.zbAutoSwitch();
-
-            this.handleData3();
-            this.zbAutoSwitch_2();
+            this.handleData2();     //echarts元素已挂载
+            this.handleData3();     //echarts元素已挂载
+            this.zbAutoSwitch_2();  //左下角的数据
+            
+            this.xinlaoluTime = Object.assign({}, this.shizhan.filter(v => v.pointId===window.xinlaoluId)[0])['time'];
+            // 1、先获取第一个指标的数据展示到页面
+            await this.getXinlaoluR({
+                ids: window.xinlaoluId,
+                time: moment(this.xinlaoluTime).format("YYYY-MM-DD"),
+                index: this.zblist[0]['index'],
+                name: this.zblist[0]['name']
+            });
+            this.currzb_1 = this.zblist[this.index_1]['name'];
+            // 2、再获取剩余的其他指标的数据，并开启状态变化，开启定时器
+            await this.getXinlaoluR_batch({
+                xinlaoluTime: this.xinlaoluTime,
+                zblist: this.zblist
+            });
+            if(!this.mouseIsInSelf && !this.timer1IsOpen){
+                this.zbAutoSwitch();
+            }
         },
         beforeDestroy () {
             //清除定时器
-            clearInterval(this.timer_1);
-            clearInterval(this.timer_2);
+            this.stopAutoSwitch();
+            this.stopAutoSwitch_2();
         },
         watch: {
             currzb_1(now, old) {
                 this.handleData2();
             },
-            currtimetype_1(now, old) {
-                this.handleData2();
-            },
+            // currtimetype_1(now, old) {
+            //     this.handleData2();
+            // },
             currzb_2(now, old) {
                 this.handleData3();
             },
@@ -135,6 +164,8 @@
             }
         },
         methods: {
+            ...mapActions('page1', ['getXinlaoluR', 'getXinlaoluR_batch', 'getXinlaoluD_batch']),
+            // 动态计算left_1的圆圈的高度
             calcLeft_1_1_rotate_height() {
                 const outerwidth = this.$refs.left_1_1_rotate_outer.clientWidth;
                 this.$refs.left_1_1_rotate_outer.style.height = outerwidth + "px";
@@ -143,11 +174,11 @@
             },
             // left_1
             handleData1 () {
-                this.xinlaoluData = Object.assign(this.xinlaoluData, this.shizhan.filter( v => v.pointId === '4e4860553999471883954ecde87d540c')[0]);
+                this.xinlaoluData = Object.assign(this.xinlaoluData, this.shizhan.filter( v => v.pointId === window.xinlaoluId)[0]);
                 airNormlist.data.forEach(v => {
                     this.xinlaoluData[v.name] = mapMarkerStyle(v.name, this.xinlaoluData[v.name]);
                     const vname = this.xinlaoluData[v.name];
-                    const percentage = Number(vname['value']) / (v['max'] - v['min']);
+                    const percentage = Number(vname['value']) / (v['max'] - v['min'])>1 ? 1 : Number(vname['value']) / (v['max'] - v['min']);
                     this.xinlaoluData[v.name]['percentage'] = percentage*100 + '%';
                 });
                 this.left_1_2_list = airNormlist.data.map( v => {
@@ -157,19 +188,59 @@
                 }).filter( v => v.name !== 'aqi');
             },
             // left_2
-            handleData2 () {
-                const odata = (() => {
-                    switch (this.currtimetype_1) {
-                        case 'day':
-                            return this.dataByDay
-                            break;
-                        case 'month':
-                            return this.dataByMonth
-                        default:
-                            return []
-                            break;
+            async tabItemClick (vo, index, e) {
+                if(!this.dataByDay[vo.name]){
+                    this.mouseleaveIsOpenTimer1 = false;
+                    const loading = Loading.service({
+                        target: e.currentTarget,
+                        lock: true,
+                        text: '',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.8)'
+                    });
+                    await this.getXinlaoluR({
+                        ids: window.xinlaoluId,
+                        time: moment(this.xinlaoluTime).format("YYYY-MM-DD"),
+                        index: vo.index,
+                        name: vo.name
+                    });
+                    loading.close();
+                    if(!this.mouseIsInSelf && !this.timer1IsOpen){
+                        this.zbAutoSwitch();
                     }
-                })();
+                    this.mouseleaveIsOpenTimer1 = true;
+                }
+                this.currzb_1 = vo.name;
+                this.index_1 = index;
+            },
+            async handleData2 (e = null) {
+                let odata;
+                if(this.currtimetype_1 === 'day'){
+                    odata = this.dataByDay;
+                }else if(this.currtimetype_1 === 'month'){
+                    if(this.dataByMonth[this.currzb_1]){
+                        odata = this.dataByMonth;
+                    }else{
+                        this.mouseleaveIsOpenTimer1 = false;
+                        const loading = Loading.service({
+                            target: e.currentTarget,
+                            lock: true,
+                            text: '',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.8)'
+                        });
+                        await this.getXinlaoluD_batch({
+                            xinlaoluTime: this.xinlaoluTime,
+                            zblist: this.zblist
+                        });
+                        loading.close();
+                        if(!this.mouseIsInSelf && !this.timer1IsOpen){
+                            this.zbAutoSwitch();
+                        }
+                        this.mouseleaveIsOpenTimer1 = true;
+                        odata = this.dataByMonth
+                    }
+                }
                 let x = [], y=[];
                 const zb = this.currzb_1;
                 if(odata[zb] && odata[zb].length > 0){
@@ -194,19 +265,24 @@
                     }
                     e.target.classList.add('cus_tab_order_active');
                     this.currtimetype_1 = timetype;
+                    this.handleData2(e)
                 }
             },
             zbAutoSwitch () {
+                console.log('定时器开启');
+                this.timer1IsOpen = true;
                 this.timer_1 = setInterval(() => {
-                    this.currzb_1 = this.zblist[this.index_1].name;
                     this.index_1++;
                     if(this.index_1 >= this.zblist.length){
                         this.index_1 = 0;
                     }
+                    this.currzb_1 = this.zblist[this.index_1].name;
                 }, 2500);
             },
             stopAutoSwitch () {
-                clearInterval(this.timer_1)
+                console.log('定时器关闭');
+                this.timer1IsOpen = false;
+                clearInterval(this.timer_1);
             },
             // left_3
             handleData3 () {
@@ -631,6 +707,10 @@
             border: 1px solid #8BABFE;
             width: 13.9%;
             cursor: pointer;
+
+            /deep/ .el-loading-spinner{
+                margin-top: -0.175rem;
+            }
         }
         .left_2_tab_item_active{
             background-color: #3349F5;
@@ -659,6 +739,10 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: clip;
+
+            /deep/ .el-loading-spinner{
+                margin-top: -0.1rem;
+            }
         }
         .cus_tab_order_active{
             background-color: #00A2FF;

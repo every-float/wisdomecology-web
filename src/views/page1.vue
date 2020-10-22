@@ -44,13 +44,18 @@
             }
         },
         created () {
-            this.getAllData();
+            this.getFirstdata();
         },
         mounted () {
-            this.setBasbgSize();
-            window.addEventListener('resize', () => {
+            try{
                 this.setBasbgSize();
-            })
+            }catch(err){
+                //
+            }finally{
+                window.addEventListener('resize', () => {
+                    this.setBasbgSize();
+                })
+            }
         },
         updated () {
             this.setBasbgSize();
@@ -80,9 +85,9 @@
                 }
             },
 
-            getAllData() {
+            getFirstdata() {
                 try {
-                    this.$store.dispatch('page1/getAlldata', {})
+                    this.$store.dispatch('page1/getFirstdata', {})
                 } catch (error) {
 
                 }

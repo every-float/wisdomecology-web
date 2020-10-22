@@ -31,6 +31,7 @@ module.exports = {
         proxy: {
             '/wisdomecology-boot': {
                 target: 'https://www.wisdomjyhc.com:19501',
+                // target: 'https://xqhj.wisdom-spring.cn:19501',
                 changeOrigin: true,
                 pathRewrite: {
                   '^/wisdomecology-boot': '/wisdomecology-boot'
@@ -38,6 +39,7 @@ module.exports = {
             },
             '/wisdomecology': {
                 target: 'https://www.wisdomjyhc.com:18091',
+                // target: 'https://xqhj.wisdom-spring.cn:18091',
                 changeOrigin: true,
                 pathRewrite: {
                   '^/wisdomecology': '/bigdata/file/wisdomecology'

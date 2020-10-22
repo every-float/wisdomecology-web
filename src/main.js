@@ -1,3 +1,5 @@
+window.xinlaoluId = "4e4860553999471883954ecde87d540c";    //辛老路id统一管理
+
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';

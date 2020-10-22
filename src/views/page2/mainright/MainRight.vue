@@ -181,10 +181,11 @@ export default {
       for(let i in this.monthCalendar[0]){
         tempArr.push(this.monthCalendar[0][i]);
       }
+      console.log(tempArr);
       this.mcColorlist = tempArr.map(v => mapMarkerStyle('aqi', v, 0));
-      // console.log(this.mcColorlist);
+      console.log(this.mcColorlist.map(v => v.bgcolor));
       const domList = document.querySelectorAll(".main-right .el-calendar .el-calendar__body .el-calendar-table .el-calendar-table__row .current");
-      // console.log(domList);
+      console.log(domList);
       for(let i=0; i<domList.length; i++){
         domList[i].style.backgroundColor = this.mcColorlist[i].bgcolor;
         domList[i].style.color = this.mcColorlist[i].color;

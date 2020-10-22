@@ -36,7 +36,7 @@
             // 获取空气质量信息
             handleAirQuality() {
 				this.airQualityData = JSON.parse(JSON.stringify(this.shizhan.filter(function(v){
-					return v.pointId === '4e4860553999471883954ecde87d540c';	//取的辛老路数据
+					return v.pointId === window.xinlaoluId;	//取的辛老路数据
 				})[0]));
 				var arr = ['aqi', 'pm2_5', 'pm10', 'so2', 'no2', 'co', 'o3'];
 				arr.forEach(v => {

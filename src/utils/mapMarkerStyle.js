@@ -7,7 +7,13 @@ export default (type,value,icon_y) => {
 	};
 	switch (type) {
 		case 'aqi':
-			if(value<=50){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=50){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -43,16 +49,16 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=6;
 				result.level='严重';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 		case 'so2':
-			if(value<=150){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=150){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -82,16 +88,16 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=5;
 				result.level='重度';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 		case 'no2':
-			if(value<=100){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=100){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -127,16 +133,16 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=6;
 				result.level='严重';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 		case 'pm2_5':
-			if(value<=35){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=35){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -172,16 +178,16 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=6;
 				result.level='严重';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 		case 'pm10':
-			if(value<=50){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=50){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -217,16 +223,16 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=6;
 				result.level='严重';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 		case 'co':
-			if(value<=5){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=5){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -262,16 +268,16 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=6;
 				result.level='严重';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 		case 'o3':
-			if(value<=160){
+			if(isNaN(value) || value==='' || value===null || value===true || value===false || value===[]){
+				result.value=value;
+				result.bgcolor='#7b7b7b';
+				result.color='#9E9E9E';
+				result.icon_x=1;
+				result.level='无';
+			}else if(value<=160){
 				result.value=value;
 				result.bgcolor='rgb(0,228,0)';
 				result.color='white';
@@ -307,12 +313,6 @@ export default (type,value,icon_y) => {
 				result.color='white';
 				result.icon_x=6;
 				result.level='严重';
-			}else if(isNaN(value)){
-				result.value=value;
-				result.bgcolor='rgb(0,228,0)';
-				result.color='white';
-				result.icon_x=1;
-				result.level='优';
 			}
 			break;
 

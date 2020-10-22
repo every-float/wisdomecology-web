@@ -24,9 +24,9 @@
                     <div class="right_btns_item"
                         v-for="(vo, index) in riverTree"
                         :key="vo.id"
-                        :class="{ active: true, 'right_btns_item_active': vo.id === currStation_1 }"
+                        :class="{ 'right_btns_item_active': vo.id === currStation_1 }"
                         :title="vo.name"
-                        @click="currStation_1=vo.id; index_1=index;"
+                        @click="btnItemClick(vo, index, $event)"
                     >
                         {{ vo.name }}
                     </div>
@@ -69,8 +69,9 @@
 <script>
     import BlockContainer from "@/components/BlockContainer"
     import echartsLiquidfill from 'echarts-liquidfill';
-    import { mapState } from 'vuex';
-    import moment from 'moment';
+    import { mapActions, mapState } from 'vuex';
+    import { getRiverGridData } from "@/service/api.js";
+    import { Loading } from 'element-ui';
     import bus from  '@/bus/index';
 
     export default {
@@ -149,14 +150,18 @@
         beforeMount () {
             this.currStation_1 = this.riverTree[0]['id'];
         },
-        mounted () {
-            this.handleData1();
-            // this.stationAutoSwitch_1();
-
-            this.handleData2();
-            
+        async mounted () {
+            // 一堆初始化
             this.handleData3();
             this.zbAutoSwitch_3();
+            
+            // 获取第一个站点的日数据
+            await this.getRiverGridDataR({
+                sectionCode: this.currStation_1
+            });
+            this.handleData1();
+            this.handleData2();
+            bus.$emit('stationChange', {currStation: this.currStation_1, index: this.index_1} )
         },
         beforeDestroy () {
             //清除定时器
@@ -164,14 +169,12 @@
             clearInterval(this.timer_3);
         },
         watch: {
-            currStation_1(now, old) {
-                this.handleData1();
-                this.handleData2();
-                bus.$emit('stationChange', {currStation: this.currStation_1, index: this.index_1} )
-            },
-            currtimetype_2(now, old) {
-                this.handleData2();
-            },
+            // currStation_1(now, old) {
+            
+            // },
+            // currtimetype_2(now, old) {
+            //     
+            // },
             currzb_3(now, old) {
                 this.handleData3();
             },
@@ -180,7 +183,30 @@
             }
         },
         methods: {
+            ...mapActions('page3', ['getRiverGridDataR', 'getRiverGridDataD_batch']),
             // right_1
+            async btnItemClick(vo, index, e) {
+                this.currStation_1 = vo.id;
+                if(this.currtimetype_2 === 'std'){
+                    if(!this.riverGridDataAllR[this.currStation_1]){
+                        const loading = Loading.service({
+                            target: e.currentTarget,
+                            lock: true,
+                            text: '',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.8)'
+                        });
+                        await this.getRiverGridDataR({
+                            sectionCode: this.currStation_1
+                        });
+                        loading.close();
+                    }
+                }
+                this.index_1 = index;
+                this.handleData1();
+                this.handleData2();
+                bus.$emit('stationChange', {currStation: this.currStation_1, index: this.index_1} )
+            },
             handleData1 () {
                 const riverGridDataR = this.riverGridDataAllR[this.currStation_1];
                 // console.log(riverGridDataR);
@@ -226,12 +252,27 @@
                 clearInterval(this.timer_1)
             },
             // right_2  (跟right_1是联动的)
-            handleData2 () {
+            async handleData2 (e = null) {
                 let baseData = [];
                 if(this.currtimetype_2 === 'std'){
                     baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
                 }else if(this.currtimetype_2 === 'day'){
-                    baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+                    if(this.riverGridDataAllD[this.currStation_1]){
+                        baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+                    }else{
+                        const loading = Loading.service({
+                            target: e.currentTarget,
+                            lock: true,
+                            text: '',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.8)'
+                        });
+                        await this.getRiverGridDataD_batch({
+                            riverTree: this.riverTree
+                        });
+                        loading.close();
+                        baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+                    }
                 }
                 let x=[], y=[];
                 if(baseData && baseData.length > 0){
@@ -272,6 +313,7 @@
                     }
                     e.target.classList.add('cus_tab_order_active');
                     this.currtimetype_2 = timetype;
+                    this.handleData2(e);
                 }
             },
             // right_3
@@ -798,6 +840,12 @@
                     cursor: pointer;
                     border: 1px solid transparent;
                     @include text-beyond;
+                    position: relative;
+
+                    /deep/ .el-loading-spinner{
+                        margin-top: 0;
+                        transform: translateY(-50%);
+                    }
                 }
                 .right_btns_item_active{
                     background: #F03F16;
@@ -841,6 +889,11 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: clip;
+
+            /deep/ .el-loading-spinner{
+                margin-top: 0;
+                transform: translateY(-50%);
+            }
         }
         .cus_tab_order_active{
             background-color: #00A2FF;

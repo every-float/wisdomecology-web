@@ -51,15 +51,15 @@
             }
         },
         created () {
-            this.getAllData();
+            this.getFirstdata();
         },
         mounted () {
             
         },
         methods: {
-            getAllData() {
+            getFirstdata() {
                 try {
-                    this.$store.dispatch('page3/getAlldata', {})
+                    this.$store.dispatch('page3/getFirstdata', {})
                 } catch (error) {
 
                 }

@@ -83,13 +83,13 @@ export async function getUserInfo(){
 }
 
 // 大气环境质量变化趋势日变化
-export async function getDataByDay(index){
+export async function getDataByDay({ids, time, index}){
   return await http.get(
     '/dq/statistic/getDataByDay', 
     {
       params: {
-        ids: "4e4860553999471883954ecde87d540c", //辛老路数据
-        time: moment().format("YYYY-MM-DD"),
+        ids,
+        time,
         index,
       }
     }
@@ -97,13 +97,13 @@ export async function getDataByDay(index){
 }
 
 // 大气环境质量变化趋势月变化
-export async function getDataByMonth(index){
+export async function getDataByMonth({ids, time, index}){
   return await http.get(
     '/dq/statistic/getDataByMonth', 
     {
       params: {
-        ids: "4e4860553999471883954ecde87d540c", //辛老路数据
-        time: moment().format("YYYY-MM"),
+        ids,
+        time,
         index,
       }
     }

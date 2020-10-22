@@ -84,7 +84,8 @@
 <script>
 import BlockContainer from "@/components/BlockContainer";
 import vueSeamlessScroll from "vue-seamless-scroll";
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
+import { Loading } from 'element-ui';
 import bus from  '@/bus/index';
 
 export default {
@@ -154,7 +155,7 @@ export default {
         waitTime: 1000, // 单步运动停止的时间(默认值1000ms)
       };
     },
-    ...mapState('page3', ['riverGridDataAllR', 'riverGridDataAllD', 'pollutionListW'])
+    ...mapState('page3', ['riverTree', 'riverGridDataAllR', 'riverGridDataAllD', 'pollutionListW'])
   },
   mounted() {
     this.handleData1();
@@ -174,18 +175,34 @@ export default {
     currzb_1(now, old) {
         this.handleData1();
     },
-    currtimetype_1(now, old) {
-        this.handleData1();
-    },
+    // currtimetype_1(now, old) {
+    //     this.handleData1();
+    // },
   },
   methods: {
-    handleData1() {
+    ...mapActions('page3', ['getRiverGridDataD_batch']),
+    async handleData1(e = null) {
       // console.log(this.riverGridDataAllR);
       let baseData = [];
       if(this.currtimetype_1 === 'std'){
           baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
       }else if(this.currtimetype_1 === 'day'){
-          baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+          if(this.riverGridDataAllD[this.currStation_1]){
+              baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+          }else{
+              const loading = Loading.service({
+                  target: e.currentTarget,
+                  lock: true,
+                  text: '',
+                  spinner: 'el-icon-loading',
+                  background: 'rgba(0, 0, 0, 0.8)'
+              });
+              await this.getRiverGridDataD_batch({
+                  riverTree: this.riverTree
+              });
+              loading.close();
+              baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
+          }
       }
       let x=[], y=[];
       if(baseData && baseData.length > 0){
@@ -217,6 +234,7 @@ export default {
           }
           e.target.classList.add('cus_tab_order_active');
           this.currtimetype_1 = timetype;
+          this.handleData1(e);
       }
     },
     zbAutoSwitch_1 () {
@@ -468,6 +486,11 @@ export default {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: clip;
+
+      /deep/ .el-loading-spinner{
+          margin-top: 0;
+          transform: translateY(-50%);
+      }
   }
   .cus_tab_order_active{
       background-color: #00A2FF;

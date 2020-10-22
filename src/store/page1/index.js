@@ -1,136 +1,166 @@
 import { 
     getAirQuality, 
     getXiangzhenData, 
+    getLeftBottomData,
+    getHomeStatInfo,
     getDataByDay, 
     getDataByMonth,
-    getLeftBottomData,
-    getRiverTree,
     getRiverGridData,
-    getHomeStatInfo,
 } from '@/service/api.js';
 import axios from 'axios';
-import moment from 'moment';
 import { Loading } from 'element-ui';
 import riverTree from '@/mock/riverTree.js';    //水环境站点模拟数据
+import moment from 'moment';
 
 export default {
     namespaced: true,
     state: {
         isComplete: false,
+        riverTree: [],
         shizhan: [],
         xiangzhen: [],
-        dataByDay: {},
-        dataByMonth: [],
         leftBottomData: [],
-        riverTree: [],
+        homeStatInfo: {},
+        dataByDay: {},
+        dataByMonth: {},
         riverGridDataAllR: {},     //各站点水日每小时数据
         riverGridDataAllD: {},     //各站点水月每日数据
-        homeStatInfo: {}
     },
     mutations: {
+        // 首批数据加载状态，何时挂载以及关闭loading
         updateCompleteState: (state) => {
             state.isComplete = true;
         },
+        // 河流站点列表
         updateRiverTree: (state, data) => {
-            state.riverTree = data
+            state.riverTree = data;
         },
+        // 首批数据存入
         updateRequestData: (state, data) => {
             state.shizhan = data[0];
             state.xiangzhen = data[1];
-            state.dataByDay['aqi'] = data[2];
-            state.dataByDay['pm2.5'] = data[3];
-            state.dataByDay['pm10'] = data[4];
-            state.dataByDay['so2'] = data[5];
-            state.dataByDay['no2'] = data[6];
-            state.dataByDay['o3'] = data[7];
-            state.dataByDay['co'] = data[8];
-            state.dataByMonth['aqi'] = data[9];
-            state.dataByMonth['pm2.5'] = data[10];
-            state.dataByMonth['pm10'] = data[11];
-            state.dataByMonth['so2'] = data[12];
-            state.dataByMonth['no2'] = data[13];
-            state.dataByMonth['o3'] = data[14];
-            state.dataByMonth['co'] = data[15];
-            state.leftBottomData = data[16];
-            state.homeStatInfo = data[17];
+            state.leftBottomData = data[2];
+            state.homeStatInfo = data[3];
         },
-        updateRiverGridDataAllR: (state, data) => {
-            data.forEach((v, index) => {
-                state.riverGridDataAllR[state.riverTree[index]['id']] = v;
+        // 更新辛老路日数据
+        updateXinlaoluR: (state, load) => {
+            state.dataByDay[load.name] = load.data;
+        },
+        // 批量更新辛老路日数据
+        updateXinlaoluR_batch: (state, load) => {
+            load.data.forEach((v, index) => {
+                state.dataByDay[load.names[index]] = v
+            })
+        },
+        // 批量更新辛老路月数据
+        updateXinlaoluD_batch: (state, load) => {
+            load.data.forEach((v, index) => {
+                state.dataByMonth[load.names[index]] = v
+            })
+        },
+        // 更新河流日数据
+        updateRiverGridDataR: (state, load) => {
+            state.riverGridDataAllR[load.id] = load.data;
+        },
+        // 批量更新河流月数据
+        updateRiverGridDataD_batch: (state, load) => {
+            load.datas.forEach((v, index) => {
+                state.riverGridDataAllD[load.ids[index]] = v;
             });
         },
-        updateRiverGridDataAllD: (state, data) => {
-            data.forEach((v, index) => {
-                state.riverGridDataAllD[state.riverTree[index]['id']] = v;
-            });
-        },
-        
     },
     actions: {
-        getAlldata: async ({commit}) => {
+        getFirstdata: async ({commit}) => {
             const loading = Loading.service({
                 lock: true,
                 text: '数据加载中',
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.9)'
             });
-            
-            try {
-                // const riverTree = await getRiverTree();
-                // commit('updateRiverTree', riverTree.data.children);
-                commit('updateRiverTree', riverTree.data.children);     //暂时取的模拟数据
-                axios.all([
-                    getAirQuality(),
-                    getXiangzhenData(),
-                    getDataByDay('AQI'),
-                    getDataByDay('PM25'),
-                    getDataByDay('PM10'),
-                    getDataByDay('SO2'),
-                    getDataByDay('NO2'),
-                    getDataByDay('CO'),
-                    getDataByDay('O3'),
-                    getDataByMonth('AQI'),
-                    getDataByMonth('PM25'),
-                    getDataByMonth('PM10'),
-                    getDataByMonth('SO2'),
-                    getDataByMonth('NO2'),
-                    getDataByMonth('CO'),
-                    getDataByMonth('O3'),
-                    getLeftBottomData(),
-                    getHomeStatInfo(),
-                ]).then(axios.spread(function (...values) {
-                    commit('updateRequestData', values.map(v => v.data));
-                    let arr1 = [];
-                    riverTree.data.children.forEach(v => {
-                        arr1.push(getRiverGridData({
-                            sectionCode: v.id,
-                            dataType: 'Rtd',
-                            startTime: moment().format("YYYY-MM-DD"),
-                            endTime: moment().format("YYYY-MM-DD")
-                        }));
-                    });
-                    return axios.all(arr1);
-                })).then(axios.spread(function (...values) {
-                    commit('updateRiverGridDataAllR', values.map(v => v.data));
-                    let arr2 = [];
-                    riverTree.data.children.forEach(v => {
-                        arr2.push(getRiverGridData({
-                            sectionCode: v.id,
-                            dataType: 'Day',
-                            startTime: moment().format("YYYY-MM") + "-01",
-                            endTime: moment().format("YYYY-MM-DD")
-                        }));
-                    });
-                    return axios.all(arr2);
-                })).then(axios.spread(function (...values) {
-                    commit('updateRiverGridDataAllD', values.map(v => v.data));
-                    commit('updateCompleteState');
-                    setTimeout(() => {
-                        loading.close();
-                    }, 300);
-                }));
-            } catch (e) {}
+            // const riverTree = await getRiverTree();
+            // commit('updateRiverTree', riverTree.data.children);
+            commit('updateRiverTree', riverTree.data.children);     //暂时取的模拟数据
+            axios.all([
+                getAirQuality(),
+                getXiangzhenData(),
+                getLeftBottomData(),
+                getHomeStatInfo(),
+            ])
+            .then(axios.spread(function (...values) {
+                commit('updateRequestData', values.map(v => v.data));
+                commit('updateCompleteState');
+                setTimeout(() => {
+                    loading.close();
+                }, 300);
+            }));
         },
-
+        getXinlaoluR: async ({commit}, params) => {
+            const xinlaoluR = await getDataByDay(params);
+            commit({
+                type: 'updateXinlaoluR',
+                data: xinlaoluR.data,
+                name: params.name
+            });
+        },
+        getXinlaoluR_batch: async ({commit}, {xinlaoluTime, zblist}) => {
+            const getXinlaoluRarr = zblist.filter(v => v.name !== 'aqi').map(v => getDataByDay({
+                ids: window.xinlaoluId,
+                time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                index: v.index
+            }));
+            return axios.all(getXinlaoluRarr)
+            .then(axios.spread(function (...values) {
+                commit({
+                    type: 'updateXinlaoluR_batch',
+                    data: values.map(v => v.data),
+                    names: zblist.filter(v => v.name !== 'aqi').map(v => v.name)
+                })
+            }));
+        },
+        getXinlaoluD_batch: async ({commit}, {xinlaoluTime, zblist}) => {
+            const getXinlaoluRarr = zblist.map(v => getDataByMonth({
+                ids: window.xinlaoluId,
+                time: moment(xinlaoluTime).format("YYYY-MM"),
+                index: v.index
+            }));
+            return axios.all(getXinlaoluRarr)
+            .then(axios.spread(function (...values) {
+                commit({
+                    type: 'updateXinlaoluD_batch',
+                    data: values.map(v => v.data),
+                    names: zblist.map(v => v.name)
+                })
+            }));
+        },
+        getRiverGridDataR: async ({commit}, {sectionCode}) => {
+            const riverGridDataR = await getRiverGridData({
+                sectionCode: sectionCode,
+                dataType: 'Rtd',
+                startTime: moment().format("YYYY-MM-DD"),
+                endTime: moment().format("YYYY-MM-DD")
+            });
+            commit({
+                type: 'updateRiverGridDataR',
+                data: riverGridDataR.data,
+                id: sectionCode
+            });
+        },
+        getRiverGridDataD_batch: async ({commit}, {riverTree}) => {
+            const fnArr = riverTree.map(v => getRiverGridData({
+                sectionCode: v.id,
+                dataType: 'Day',
+                startTime: moment().format("YYYY-MM") + "-01",
+                endTime: moment().format("YYYY-MM-DD")
+            }));
+            // riverGridDataD
+            return axios.all(fnArr)
+            .then(axios.spread(function (...values) {
+                commit({
+                    type: 'updateRiverGridDataD_batch',
+                    datas: values.map(v => v.data),
+                    ids: riverTree.map(v => v.id)
+                })
+            }));
+        }
     },
 }
