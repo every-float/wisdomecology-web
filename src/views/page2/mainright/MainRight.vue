@@ -177,18 +177,18 @@ export default {
     },
 
     handleData3(){
-      const tempArr = [];
+      const obj = {};
       for(let i in this.monthCalendar[0]){
-        tempArr.push(this.monthCalendar[0][i]);
+        obj[i] = mapMarkerStyle('aqi', this.monthCalendar[0][i], 0)
       }
-      console.log(tempArr);
-      this.mcColorlist = tempArr.map(v => mapMarkerStyle('aqi', v, 0));
-      console.log(this.mcColorlist.map(v => v.bgcolor));
+      // console.log(obj);
+      // console.log(obj['01']);
       const domList = document.querySelectorAll(".main-right .el-calendar .el-calendar__body .el-calendar-table .el-calendar-table__row .current");
-      console.log(domList);
+      // console.log(domList);
       for(let i=0; i<domList.length; i++){
-        domList[i].style.backgroundColor = this.mcColorlist[i].bgcolor;
-        domList[i].style.color = this.mcColorlist[i].color;
+        const key = i+1<10 ? '0'+(i+1) : ''+(i+1);
+        domList[i].style.backgroundColor = obj[key].bgcolor;
+        domList[i].style.color = obj[key].color;
       }
     },
 
