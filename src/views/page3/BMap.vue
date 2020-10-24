@@ -98,7 +98,7 @@
 					}
 					pointerList[0].classList.add("mapicon_zoom");
 					bus.$on('stationChange', ({index}) => {
-						console.log('chufale')
+						// console.log('chufale')
 						for(let i=0; i<pointerList.length; i++){
 							pointerList[i].classList.remove("mapicon_zoom");
 						}

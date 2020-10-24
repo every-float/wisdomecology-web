@@ -59,22 +59,23 @@
         </div>
       </div>
     </block-container>
-    <block-container _title="污水排放重点源现场监控" height="3.2rem">
-        <div class="right_3_video_container" style="position: relative">
-          <div class="right_3_video_btns_wrap">
-            <!-- <div class="right_3_video_btns">
+    <block-container _title="污水排放重点源现场监控" height="3.2rem" :btn="{type:'link', text: '更多', href: moreUrl}">
+        <div class="right_3_video_container" style="position: relative;">
+          <!-- <div class="right_3_video_btns_wrap">
+            <div class="right_3_video_btns">
               <span class="right_3_video_btn right_3_video_btn_active">大寺镇</span>
               <span class="right_3_video_btn">中北镇</span>
               <span class="right_3_video_btn">杨柳青镇</span>
               <span class="right_3_video_btn">张家窝镇</span>
               <span class="right_3_video_btn">精武镇</span>
-            </div> -->
+            </div>
             <div class="right_3_video_btns_more">
               <a class="right_3_video_btn" :href="moreUrl">更多</a>
             </div>
-          </div>
+          </div> -->
           <div class="right_3_video_main_wrap">
-            <img src="~@/assets/image/video_img_seize_seat.png" alt="">
+            <!-- <img src="~@/assets/image/video_img_seize_seat.png" alt=""> -->
+            <img src="http://39.98.156.37:8300/wisdomecology-web/views/dq/images/channel_15.png" alt="加载失败">
           </div>
         </div>
     </block-container>
@@ -166,7 +167,8 @@ export default {
         this.currStation_1 = currStation;
     });
 
-    this.moreUrl = `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755#views/dq/overheadVideo_list.html`;
+    // this.moreUrl = `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755#views/dq/overheadVideo_list.html`;
+    this.moreUrl = `${this.$store.state.pageUrl}views/index2.html?menuId=26a6c508b37d465f910800d4e73f93d8&menuName=重点污染源管理#views/sop/companyVideo_list.html`;
   },
   watch: {
     currStation_1(now, old) {
