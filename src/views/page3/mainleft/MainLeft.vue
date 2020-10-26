@@ -255,7 +255,7 @@
             async handleData2 (e = null) {
                 let baseData = [];
                 if(this.currtimetype_2 === 'std'){
-                    baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
+                    baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]).filter(v => v.classname !== '—');
                 }else if(this.currtimetype_2 === 'day'){
                     if(this.riverGridDataAllD[this.currStation_1]){
                         baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
@@ -471,7 +471,7 @@
                         data: xdata,
                         boundaryGap: false,
                         axisLabel: {
-                            interval: 0,
+                            // interval: 0,
                             textStyle: {
                                 color: "#EBFAFF",
                                 fontSize: 9

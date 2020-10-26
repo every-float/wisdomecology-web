@@ -136,7 +136,8 @@ export default {
             const riverGridDataR = await getRiverGridData({
                 sectionCode: sectionCode,
                 dataType: 'Rtd',
-                startTime: moment().format("YYYY-MM-DD"),
+                // startTime: moment().format("YYYY-MM-DD"),
+                startTime: moment().subtract('days', 2).format('YYYY-MM-DD'),
                 endTime: moment().format("YYYY-MM-DD")
             });
             commit({

@@ -187,7 +187,10 @@ export default {
       // console.log(this.riverGridDataAllR);
       let baseData = [];
       if(this.currtimetype_1 === 'std'){
-          baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
+          // console.log(Object.assign([], this.riverGridDataAllR[this.currStation_1]));
+          // console.log(Object.assign([], this.riverGridDataAllR[this.currStation_1]).filter(v => v.classname !== '—'));
+          // baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]);
+          baseData = Object.assign([], this.riverGridDataAllR[this.currStation_1]).filter(v => v.classname !== '—');
       }else if(this.currtimetype_1 === 'day'){
           if(this.riverGridDataAllD[this.currStation_1]){
               baseData = Object.assign([], this.riverGridDataAllD[this.currStation_1]);
@@ -260,7 +263,7 @@ export default {
           xdata = x;
   　　myChart.setOption({
           grid: {
-              left: '2%',
+              left: '3%',
               right: '4%',
               bottom: '10%',
               top: '20%',
@@ -284,7 +287,7 @@ export default {
               },
               boundaryGap: false,
               axisLabel: {
-                  interval: 0,
+                  // interval: 0,
                   textStyle: {
                       color: "#EBFAFF",
                       fontSize: 9

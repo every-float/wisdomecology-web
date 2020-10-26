@@ -10,6 +10,7 @@
 	import mapWinDown from '@/assets/image/down.png';
 	import { mapState } from 'vuex';
 	import bus from  '@/bus/index';
+	import riverLine from '@/mock/riverLine';
 
     let map;
     const mapAreaName = "天津市西青区";
@@ -68,6 +69,7 @@
 						// map.setViewport(polyline.getPath());
 					}
 					this.bmap_addMarker(map);
+					this.bmap_drawLine(map);
 				});
 			},
 			bmap_addMarker(map) {
@@ -106,6 +108,11 @@
 					});
 				}, 20);
 			},
+			bmap_drawLine(map) {
+				for(let key in riverLine){
+					this.fnDrawLine(riverLine[key].points, riverLine[key].width, map);
+				}
+			},
 			createInfoWindow_shui(v) {
 				const json = v;
 				const opts = {
@@ -123,6 +130,30 @@
 							  </div>`;
 				const iw = new BMap.InfoWindow(html, opts);
 				return iw;
+			},
+			// 河流
+			fnDrawLine(points, width, map) {
+				var linePoints=points;
+				var lineArr=[];
+				for (var k = 0; k < linePoints.length; k++) {
+					lineArr.push({
+						lng: linePoints[k].lng,
+						lat: linePoints[k].lat
+					});
+				}
+				// 生成坐标点
+				var trackPoint = [];
+				for (var i = 0, j = lineArr.length; i < j; i++) {
+					trackPoint.push(new BMap.Point(lineArr[i].lng, lineArr[i].lat));
+				}
+				// 画线
+				var polyline = new BMap.Polyline(trackPoint, {
+					strokeColor: "#62A5FC",
+					strokeWeight: width,
+					strokeOpacity: 1
+				});
+				polyline.name='river_line';
+				map.addOverlay(polyline);
 			},
         },
     }
