@@ -45,6 +45,9 @@
         },
         created () {
             this.getFirstdata();
+            setTimeout(() => {
+                location.reload();
+            }, 1000*60*10);
         },
         mounted () {
             try{

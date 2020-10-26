@@ -118,7 +118,7 @@
                     },{
                         pointId: "4df4622633de48129826765410abcb96",    //开发区
                         top: "39%",
-                        left: "70%"
+                        left: "69%"
                     },{
                         pointId: "523a63eeadb2466d8ec147778c5f75fd",    //杨柳青镇
                         top: "11%",
@@ -134,7 +134,7 @@
                     },{
                         pointId: "adb3f2b4a8e54c9db7eed777a070e3f7",    //张家窝镇（参照点）
                         top: "34%",
-                        left: "34%"
+                        left: "35.6%"
                     },{
                         pointId: "af0dd1c3a32a46a69a5d9259c3827d75",    //中北镇
                         top: "12%",

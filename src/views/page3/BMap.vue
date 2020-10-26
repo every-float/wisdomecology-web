@@ -17,7 +17,7 @@
 		lng: 117.16331968147409,
 		lat: 39.017172739051034,
 	};
-	const mapLevel = 11;
+	const mapLevel = 12;
 
     export default {
         data() {
