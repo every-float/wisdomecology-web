@@ -363,19 +363,19 @@
                             return 0.1;
                             break;
                         case 'Ⅱ':
-                            return 0.3;
+                            return 0.2;
                             break;
                         case 'Ⅲ':
-                            return 0.5;
+                            return 0.3;
                             break;
                         case 'Ⅳ':
-                            return 0.7;
+                            return 0.4;
                             break;
                         case 'Ⅴ':
-                            return 0.9;
+                            return 0.5;
                             break;
                         case '劣Ⅴ':
-                            return 1;
+                            return 0.6;
                             break;
                         default:
                             return -0.04

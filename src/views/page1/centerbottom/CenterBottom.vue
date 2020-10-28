@@ -12,6 +12,7 @@
 
 <script>
     import BottomItem from "./BottomItem";
+    import Cookie from 'js-cookie';
 
     export default {
         components: {
@@ -65,7 +66,7 @@
                         img: "page1_yingji.png",
                         bottom: "3%",
                         left: "64.3%",
-                        menuUrl: `${this.$store.state.pageUrl}theme/theme_1/contactList.html`
+                        menuUrl: `${this.$store.state.chatUrl}theme/theme_1/contactList.html?accesstoken=${Cookie.get('login_sid_t_we')}`
                     },
                 ]
             }

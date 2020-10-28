@@ -15,6 +15,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     pageUrl: process.env.NODE_ENV === 'development' ? process.env.VUE_APP_PAGEURL : window.pageUrl,
+    chatUrl: process.env.NODE_ENV === 'development' ? process.env.VUE_APP_PAGEURL : window.chatUrl,
   },
   mutations: {
   },

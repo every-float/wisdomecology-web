@@ -62,6 +62,12 @@ export default {
         updateRiverGridDataR: (state, load) => {
             state.riverGridDataAllR[load.id] = load.data;
         },
+        // 批量更新河流日数据
+        updateRiverGridDataR_batch: (state, load) => {
+            load.datas.forEach((v, index) => {
+                state.riverGridDataAllR[load.ids[index]] = v;
+            });
+        },
         // 批量更新河流月数据
         updateRiverGridDataD_batch: (state, load) => {
             load.datas.forEach((v, index) => {

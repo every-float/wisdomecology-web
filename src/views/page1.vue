@@ -27,7 +27,22 @@
     import MainLeft from '@/views/page1/mainleft/MainLeft'
     import MainRight from '@/views/page1/mainright/MainRight'
     import CenterTop from '@/views/page1/CenterTop'
-    import CenterBottom from '@/views/page1/centerbottom/CenterBottom'
+    import CenterBottom from '@/views/page1/centerbottom/CenterBottom';
+    import { mapActions, mapMutations, mapState } from 'vuex';
+    import { 
+        getAirQuality, 
+        getXiangzhenData, 
+        getLeftBottomData,
+        getHomeStatInfo,
+        getDataByDay, 
+        getDataByMonth,
+        getRiverGridData, 
+    } from "@/service/api.js";
+    import axios from 'axios';
+    import { Loading } from 'element-ui';
+    import riverTree from '@/mock/riverTree.js';    //水环境站点模拟数据
+    import moment from 'moment';
+    import airNormlist from "@/mock/airNormlist.js";
 
     export default {
         components: {
@@ -41,13 +56,85 @@
         data () {
             return {
                 headerHeight: '1.10rem',
+                timer: '',
             }
+        },
+        computed: {
+            ...mapState('page1', ['shizhan', 'riverTree'])
         },
         created () {
             this.getFirstdata();
-            setTimeout(() => {
-                location.reload();
+            // 定时10分钟，静默加载一遍最新数据
+            this.timer = setInterval(() => {
+                this.updateRiverTree(riverTree.data.children);
+                axios.all([
+                    getAirQuality(),
+                    getXiangzhenData(),
+                    getLeftBottomData(),
+                    getHomeStatInfo(),
+                ])
+                .then(axios.spread( (...values) => {
+                    this.updateRequestData(values.map(v => v.data));
+                    const xinlaoluTime = Object.assign({}, this.shizhan.filter(v => v.pointId===window.xinlaoluId)[0])['time'];
+                    const zblist = airNormlist.data;
+                    const getXinlaoluRarr = zblist.map(v => getDataByDay({
+                        ids: window.xinlaoluId,
+                        time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                        index: v.index
+                    }));
+                    return axios.all(getXinlaoluRarr); 
+                }))
+                .then(axios.spread( (...values) => {
+                    this.updateXinlaoluR_batch({
+                        data: values.map(v => v.data),
+                        names: airNormlist.data.map(v => v.name)
+                    });
+                    const xinlaoluTime = Object.assign({}, this.shizhan.filter(v => v.pointId===window.xinlaoluId)[0])['time'];
+                    const zblist = airNormlist.data;
+                    const getXinlaoluDarr = zblist.map(v => getDataByMonth({
+                        ids: window.xinlaoluId,
+                        time: moment(xinlaoluTime).format("YYYY-MM"),
+                        index: v.index
+                    }));
+                    return axios.all(getXinlaoluDarr);
+                }))
+                .then(axios.spread( (...values) => {
+                    this.updateXinlaoluD_batch({
+                        data: values.map(v => v.data),
+                        names: airNormlist.data.map(v => v.name)
+                    });
+                    const riverGridDataRarr = this.riverTree.map(v => getRiverGridData({
+                        sectionCode: v.id,
+                        dataType: 'Rtd',
+                        // startTime: moment().format("YYYY-MM-DD"),
+                        startTime: moment().subtract('days', 2).format('YYYY-MM-DD'),
+                        endTime: moment().format("YYYY-MM-DD")
+                    }));
+                    return axios.all(riverGridDataRarr);
+                }))
+                .then(axios.spread( (...values) => {
+                    this.updateRiverGridDataR_batch({
+                        datas: values.map(v => v.data),
+                        ids: this.riverTree.map(v => v.id)
+                    });
+                    const riverGridDataDarr = this.riverTree.map(v => getRiverGridData({
+                        sectionCode: v.id,
+                        dataType: 'Day',
+                        startTime: moment().format("YYYY-MM") + "-01",
+                        endTime: moment().format("YYYY-MM-DD")
+                    }));
+                    return axios.all(riverGridDataDarr);
+                }))
+                .then(axios.spread( (...values) => {
+                    this.updateRiverGridDataD_batch({
+                        datas: values.map(v => v.data),
+                        ids: this.riverTree.map(v => v.id)
+                    })
+                }))
             }, 1000*60*10);
+        },
+        beforeDestroy () {
+            clearInterval(this.timer);
         },
         mounted () {
             try{
@@ -64,6 +151,14 @@
             this.setBasbgSize();
         },
         methods: {
+            ...mapMutations('page1', [
+                'updateRiverTree',
+                'updateRequestData',
+                'updateXinlaoluR_batch', 
+                'updateXinlaoluD_batch', 
+                'updateRiverGridDataR_batch',
+                'updateRiverGridDataD_batch',
+            ]),
             setBasbgSize() {  // 保证1920/1080
                 const criticalRatio = 1920 / 1080;  //临界宽高比
                 const mainWidth = this.$refs.cusMain.$el.clientWidth;
