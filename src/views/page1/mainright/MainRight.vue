@@ -363,19 +363,19 @@
                             return 0.1;
                             break;
                         case 'Ⅱ':
-                            return 0.2;
+                            return 0.25;
                             break;
                         case 'Ⅲ':
-                            return 0.3;
+                            return 0.35;
                             break;
                         case 'Ⅳ':
-                            return 0.4;
+                            return 0.45;
                             break;
                         case 'Ⅴ':
-                            return 0.5;
+                            return 0.55;
                             break;
                         case '劣Ⅴ':
-                            return 0.6;
+                            return 0.65;
                             break;
                         default:
                             return -0.04
@@ -390,7 +390,8 @@
                             type: 'liquidFill',
                             data: [num, num+0.02, num+0.04],
                             shape: 'path://M879.992333 656.007667a367.992333 367.992333 0 0 1-735.984666 0C144.007667 452.875898 479.453123 0 512 0 536.532822 0 879.992333 452.875898 879.992333 656.007667z',
-                            color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
+                            // color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
+                            color: ['rgba(0,162,255,1)', 'rgba(0,162,255,0.8)', 'rgba(0,162,255,0.6)'],
                             direction: 'left',
                             radius: '80%',
                             center: ['50%', '50%'],
@@ -399,7 +400,7 @@
                                 borderDistance: 0,
                                 itemStyle: {
                                     color: 'none',
-                                    borderColor: 'rgba(248,234,13,1)',
+                                    borderColor: 'rgba(0,147,242,1)',
                                     borderWidth: 4,
                                     shadowBlur: 20,
                                     shadowColor: 'rgba(0, 0, 0, 0.25)'
@@ -421,10 +422,10 @@
                             label:{
                                 show: true,
                                 formatter: classname + (classname === '无' ? '' : '类'),
-                                color: 'rgba(245,246,10,1)',
-                                insideColor: 'rgba(1,28,39,1)',
+                                color: 'rgba(255,255,255,1)',
+                                insideColor: 'rgba(255,255,255,1)',
                                 fontSize: 13,
-                                fontWeight: 'bold',
+                                // fontWeight: 'bold',
                                 align: 'center',
                                 baseline: 'middle',
                                 position: 'inside'
