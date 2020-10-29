@@ -9,6 +9,13 @@
         </div> -->
         <div class="center-top-img">
             <div class="center-top-img-map"></div>
+            <span
+                class="map_point_water"
+                v-for="vo in waterPointList" 
+                :key="vo.id"
+                :style="{top: vo.top, left: vo.left}"
+                :id="`map_point_water_${vo.id}`"
+            ></span>
             <span 
                 class="map_icon" 
                 v-for="vo in list" 
@@ -89,6 +96,7 @@
     import {getAirQuality, getXiangzhenData} from '@/service/api.js';
     import mapMarkerStyle from '@/utils/mapMarkerStyle';
     import { mapState } from 'vuex';
+    import bus from  '@/bus/index';
 
     export default {
         data() {
@@ -105,54 +113,55 @@
                 positionList: [
                     {
                         pointId: "4e4860553999471883954ecde87d540c",    //辛老路
-                        top: "33%",
-                        left: "31%"
+                        top: "40%",
+                        left: "29%"
                     },{
                         pointId: "172515c7a57042d19213988d65d2fa00",    //王稳庄镇
-                        top: "79%",
-                        left: "83%"
+                        top: "82%",
+                        left: "80%"
                     },{
                         pointId: "38ec3358c4e24869b0a14cdb4a9f5b02",    //辛口镇
-                        top: "22%",
-                        left: "17%"
+                        top: "30.5%",
+                        left: "18.2%"
                     },{
                         pointId: "4df4622633de48129826765410abcb96",    //开发区
-                        top: "39%",
-                        left: "69%"
+                        top: "40%",
+                        left: "65%"
                     },{
                         pointId: "523a63eeadb2466d8ec147778c5f75fd",    //杨柳青镇
-                        top: "11%",
+                        top: "17%",
                         left: "29%"
                     },{
                         pointId: "5c10a9d149b2454abfcc4236edae8e45",    //大寺镇
-                        top: "39.5%",
-                        left: "73%"
+                        top: "40%",
+                        left: "70%"
                     },{
                         pointId: "67545bbf23f94a63af8aa2196e343c22",    //精武镇
-                        top: "34%",
-                        left: "50%"
+                        top: "39%",
+                        left: "46%"
                     },{
                         pointId: "adb3f2b4a8e54c9db7eed777a070e3f7",    //张家窝镇（参照点）
-                        top: "34%",
-                        left: "35.6%"
+                        top: "41%",
+                        left: "35.2%"
                     },{
                         pointId: "af0dd1c3a32a46a69a5d9259c3827d75",    //中北镇
-                        top: "12%",
-                        left: "46%"
+                        top: "13.2%",
+                        left: "41.7%"
                     },{
                         pointId: "b2eb2f142124436098787a688525c67b",    //西营门街
-                        top: "1.5%",
-                        left: "46%"
+                        top: "2.3%",
+                        left: "41.2%"
                     },{
                         pointId: "e48ae20a578d4b08b096fc7d04342eef",    //李七庄街
-                        top: "27%",
-                        left: "54%"
+                        top: "28%",
+                        left: "48%"
                     }
-                ]
+                ],
+                waterPointList: [],
             }
         },
         computed: {
-            
+            ...mapState('page1', ['riverTree'])
         },
         created () {
             this.airQualityData = Object.assign(this.airQualityData, this.$store.state.page1.shizhan.filter(function(v){
@@ -172,10 +181,19 @@
                 })[0].left;
             })
             this.currInfo = this.list[0];
+            // 处理河流pointer数据
+            this.waterPointList = this.riverTree.map(v => this.getWaterPointInfo(v));
         },
         mounted () {
             document.addEventListener('click', () => {
                 this.isShow = false;
+            });
+            bus.$on('stationChange', ({currStation}) => {
+                const domlist = document.querySelectorAll(`.map_point_water:not(#map_point_water_${currStation})`);
+                for(let i=0; i<domlist.length; i++){
+                    domlist[i].classList.remove('mapicon_zoom');
+                }
+                document.querySelector(`#map_point_water_${currStation}`).classList.add("mapicon_zoom");
             });
         },
         methods: {
@@ -215,7 +233,48 @@
             },
             onMouseOut() {
                 this.isOver = true;
-            }
+            },
+            // 处理水环境站点数据
+            getWaterPointInfo(v) {
+                let opt = {id: v.id, name:v.name, top:'', left:''};
+                switch (v.id) {
+                    case '1045':            //大柳滩泵站
+                        opt.top = '17%';
+                        opt.left = '24%';
+                        break;
+                    case '1044':            //当城桥
+                        opt.top = '31%';
+                        opt.left = '16.6%';
+                        break;
+                    case '1106':            //纪庄子桥
+                        opt.top = '29%';
+                        opt.left = '62.3%';
+                        break;
+                    case '1042':            //十一堡新桥
+                        opt.top = '50%';
+                        opt.left = '10%';
+                        break;
+                    case '19121106':        //天河桥
+                        opt.top = '1%';
+                        opt.left = '45%';
+                        break;
+                    case '1046':            //万达鸡场
+                        opt.top = '7%';
+                        opt.left = '23%';
+                        break;
+                    case '4178':            //大柳滩
+                        opt.top = '22%';
+                        opt.left = '25.5%';
+                        break;
+                    case '19121107':        //复康路桥
+                        opt.top = '33%';
+                        opt.left = '53.7%';
+                        break;
+                    default:
+                        break;
+                }
+                return opt
+            },
         },
     }
 </script>
@@ -235,8 +294,53 @@
             .center-top-img-map{
                 height: 100%;
                 width: 100%;
-                background: url('~@/assets/image/page1_map.png') no-repeat center;
+                background: url('~@/assets/image/page1_map.gif') no-repeat center;
                 background-size: 100% 100%;
+            }
+            .map_point_water{
+                position: absolute;
+                width: 5px;
+                height: 5px;
+                background-color: #1600ff;
+                cursor: pointer;
+                transform: scale(1);
+                border-radius: 50%;
+                box-shadow: 0px 0px 2px 4px #1600ff;
+                transition: transform 0.2s linear;
+            }
+            @keyframes mapiconZoom {
+                0%   {
+                    transform: scale(1);
+                    opacity: 0.5;
+                }
+                50% {
+                    transform: scale(2);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 0.5;
+                }
+            }
+            @-webkit-keyframes mapiconZoom {
+                0%   {
+                    -webkit-transform: scale(1);
+                    opacity: 0.5;
+                }
+                50% {
+                    -webkit-transform: scale(2);
+                    opacity: 1;
+                }
+                100% {
+                    -webkit-transform: scale(1);
+                    opacity: 0.5;
+                }
+            }
+            .mapicon_zoom{
+                background-color: #ff3d00;
+                box-shadow: 0px 0px 2px 4px #ff3d00;
+                animation: mapiconZoom 0.66s linear infinite forwards;
+                -webkit-animation: mapiconZoom 0.66s linear infinite forwards;
             }
             .map_icon{
                 position: absolute;
@@ -246,11 +350,12 @@
                 background-repeat: no-repeat;
                 background-position: -28px -28px;
                 cursor: pointer;
-                transform: scale(1);
+                transform: scale(0.8);
                 transition: transform 0.2s linear;
+                border-radius: 50%;
             }
             .map_icon:hover{
-                transform: scale(1.2);
+                transform: scale(1);
             }
         }
 

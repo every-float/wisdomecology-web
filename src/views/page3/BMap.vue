@@ -97,14 +97,17 @@
 					const pointerList = document.querySelectorAll(".BMap_Marker[unselectable=on]>div");
 					for(let i=0; i<pointerList.length; i++){
 						pointerList[i].style.borderRadius = "50%";
+						pointerList[i].style.transform = "scale(0.75)";
+						pointerList[i].style.webkitTransform = "scale(0.75)";
 					}
 					pointerList[0].classList.add("mapicon_zoom");
 					bus.$on('stationChange', ({index}) => {
-						// console.log('chufale')
 						for(let i=0; i<pointerList.length; i++){
 							pointerList[i].classList.remove("mapicon_zoom");
+							pointerList[i].firstChild.style.marginLeft = "-28px";
 						}
 						pointerList[index].classList.add("mapicon_zoom");
+						pointerList[index].firstChild.style.marginLeft = "-84px";
 					});
 				}, 20);
 			},
@@ -162,20 +165,35 @@
 <style lang="scss">
 @keyframes mapiconZoom {
 	0%   {
-		transform: scale(1);
+		transform: scale(0.75);
 		opacity: 0.5;
 	}
 	50% {
-		transform: scale(2);
+		transform: scale(1.25);
 		opacity: 1;
 	}
 	100% {
-		transform: scale(1);
+		transform: scale(0.75);
+		opacity: 0.5;
+	}
+}
+@-webkit-keyframes mapiconZoom {
+	0%   {
+		-webkit-transform: scale(0.75);
+		opacity: 0.5;
+	}
+	50% {
+		-webkit-transform: scale(1.25);
+		opacity: 1;
+	}
+	100% {
+		-webkit-transform: scale(0.75);
 		opacity: 0.5;
 	}
 }
 .mapicon_zoom{
 	animation: mapiconZoom 0.66s linear infinite forwards;
+	-webkit-animation: mapiconZoom 0.66s linear infinite forwards;
 }
 
 #bmap{

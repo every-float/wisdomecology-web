@@ -73,6 +73,7 @@
     import { getRiverGridData } from "@/service/api.js";
     import moment from 'moment';
     import { Loading } from 'element-ui';
+    import bus from  '@/bus/index';
 
     export default {
         components: {
@@ -161,6 +162,7 @@
             });
             this.handleData1();
             this.handleData2();
+            bus.$emit('stationChange', {currStation: this.currStation_1} );
         },
         beforeDestroy () {
             //清除定时器
@@ -168,9 +170,9 @@
             clearInterval(this.timer_3);
         },
         watch: {
-            // currStation_1(now, old) {
+            currStation_1(now, old) {
                 
-            // },
+            },
             // currtimetype_2(now, old) {
             //     this.handleData2();
             // },
@@ -203,6 +205,7 @@
                 }
                 this.handleData1();
                 this.handleData2();
+                bus.$emit('stationChange', {currStation: this.currStation_1} )
             },
             handleData1 () {
                 const riverGridDataR = this.riverGridDataAllR[this.currStation_1];
