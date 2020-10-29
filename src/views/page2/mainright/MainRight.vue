@@ -95,7 +95,7 @@ export default {
   computed: {
     optionSetting() {
       return {
-        step: 0.5, // 数值越大速度滚动越快
+        step: 0.25, // 数值越大速度滚动越快
         limitMoveNum: 2, // 开始无缝滚动的数据量 this.dataList.length
         hoverStop: true, // 是否开启鼠标悬停stop
         direction: 1, // 0向下 1向上 2向左 3向右
@@ -164,13 +164,20 @@ export default {
         }
     },
     zbAutoSwitch_1 () {
+        // 立即执行一次 
+        this.currzb_1 = this.zblist[this.index_1].name;
+        this.index_1++;
+        if(this.index_1 >= this.zblist.length){
+            this.index_1 = 0;
+        }
+        // 同时开启定时器
         this.timer_1 = setInterval(() => {
             this.currzb_1 = this.zblist[this.index_1].name;
             this.index_1++;
             if(this.index_1 >= this.zblist.length){
                 this.index_1 = 0;
             }
-        }, 2500);
+        }, 5000);
     },
     stopAutoSwitch_1 () {
         clearInterval(this.timer_1)

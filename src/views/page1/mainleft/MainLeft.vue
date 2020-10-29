@@ -271,13 +271,20 @@
             zbAutoSwitch () {
                 console.log('定时器开启');
                 this.timer1IsOpen = true;
+                // 立马执行一次
+                this.index_1++;
+                if(this.index_1 >= this.zblist.length){
+                    this.index_1 = 0;
+                }
+                this.currzb_1 = this.zblist[this.index_1].name;
+                // 同时开启定时器
                 this.timer_1 = setInterval(() => {
                     this.index_1++;
                     if(this.index_1 >= this.zblist.length){
                         this.index_1 = 0;
                     }
                     this.currzb_1 = this.zblist[this.index_1].name;
-                }, 2500);
+                }, 5000);
             },
             stopAutoSwitch () {
                 console.log('定时器关闭');
@@ -323,13 +330,20 @@
                 }
             },
             zbAutoSwitch_2 () {
+                // 立马执行一次
+                this.currzb_2 = this.zblist[this.index_2].name;
+                this.index_2++;
+                if(this.index_2 >= this.zblist.length){
+                    this.index_2 = 0;
+                }
+                // 同时开启定时器
                 this.timer_2 = setInterval(() => {
                     this.currzb_2 = this.zblist[this.index_2].name;
                     this.index_2++;
                     if(this.index_2 >= this.zblist.length){
                         this.index_2 = 0;
                     }
-                }, 2500);
+                }, 5000);
             },
             stopAutoSwitch_2 () {
                 clearInterval(this.timer_2)
@@ -636,7 +650,7 @@
                 transform: translateY(-50%) rotate(0deg) scale(0.95);
                 background: url("~@/assets/image/circle-outer.png") no-repeat center;
                 background-size: 100% 100%;
-                animation: antiClockWiseRotate 3.6s linear infinite;
+                animation: antiClockWiseRotate 6.8s linear infinite;
             }
             .left_1_1_rotate_inner{
                 position: absolute;
@@ -646,7 +660,7 @@
                 transform: translate(-50%, -50%) rotate(0deg) scale(0.95);
                 background: url("~@/assets/image/circle-inner.png") no-repeat center;
                 background-size: 100% 100%;
-                animation: clockWiseRotate 3.6s linear infinite;
+                animation: clockWiseRotate 6.8s linear infinite;
             }
             .left_1_1_text{
                 position: absolute;

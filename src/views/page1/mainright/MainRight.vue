@@ -346,13 +346,20 @@
                 }
             },
             zbAutoSwitch_3 () {
+                // 立即执行一次
+                this.currzb_3 = this.zblist_3[this.index_3].name;
+                this.index_3++;
+                if(this.index_3 >= this.zblist_3.length){
+                    this.index_3 = 0;
+                }
+                // 同时开启定时器
                 this.timer_3 = setInterval(() => {
                     this.currzb_3 = this.zblist_3[this.index_3].name;
                     this.index_3++;
                     if(this.index_3 >= this.zblist_3.length){
                         this.index_3 = 0;
                     }
-                }, 2500);
+                }, 5000);
             },
             stopAutoSwitch_3 () {
                 clearInterval(this.timer_3)
