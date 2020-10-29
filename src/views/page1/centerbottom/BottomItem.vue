@@ -62,8 +62,10 @@
             @include text-beyond;
         }
         .item-img{
-            width: 50%;
-            height: 42.9530201342%;
+            // width: 50%;
+            // height: 42.9530201342%;
+            width: 40%;
+            height: 34.36241610736%;
             background-repeat: no-repeat;
             background-position: center;
             background-size: 100% 100%;
