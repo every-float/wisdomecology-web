@@ -11,6 +11,8 @@
                 </div>
                 <div class="cus-header-item2"></div>
                 <div class="cus-header-item3"></div>
+
+                <div class="cus-header-light"></div>
                 <header-left></header-left>
                 <header-right></header-right>
             </el-header>
@@ -113,8 +115,9 @@
         }
 
         .cus-header{
-            background: url("~@/assets/image/page2_title_4000.png") no-repeat center;
-            background-size: auto 100%;
+            background: url("~@/assets/image/page2_title_w4000_v2.png") no-repeat;
+            background-position: center top;
+            background-size: auto 0.86rem;
             padding: 0;
             position: absolute;
             width: 100%;
@@ -144,6 +147,21 @@
             flex-grow: 1;
         }
 
+        .cus-header-light{
+            position: absolute;
+            width: 100%;
+            height: 1.1rem;
+            background: url("~@/assets/image/light.png") no-repeat;
+            background-position: center -0.42rem;
+            background-size: 100% auto;
+            left: 0rem;
+            top: 0rem;
+            opacity: 0.1;
+            // transform: scaleX(0.3);
+            // -webkit-transform: scaleX(0.3);
+            animation: twinkle 3s linear infinite;
+            -webkit-animation: twinkle 3s linear infinite;
+        }
         .cus-header-left{
             position: absolute;
             width: 22.13%;

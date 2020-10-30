@@ -56,3 +56,32 @@
         transform: translate(-50%, -50%) rotate(-360deg) scale(0.95);
     }
 }
+
+@keyframes twinkle {
+    0%{
+        opacity: 0.1;
+        /* // transform: scaleX(0.3); */
+    }
+    30%{
+        opacity: 1;
+        /* // transform: scaleX(1); */
+    }   
+    100%{
+        opacity: 0.1;
+        /* // transform: scaleX(0.3); */
+    }
+}
+@-webkit-keyframes twinkle {
+    0%{
+        opacity: 0.1;
+        /* // -webkit-transform: scaleX(0.3); */
+    }
+    30%{
+        opacity: 1;
+        /* // -webkit-transform: scaleX(1); */
+    }   
+    100%{
+        opacity: 0.1;
+        /* // -webkit-transform: scaleX(0.3); */
+    }
+}
