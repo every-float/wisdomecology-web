@@ -8,7 +8,7 @@
                 {{ $attrs._title }}
             </div>
             <div class="block_btns_wrap" v-if="$attrs.btn">
-                <a class="block_btns_btn" :href="$attrs.btn.href || 'javascript:;'">更多</a>
+                <a class="block_btns_btn" :href="$attrs.btn.href || 'javascript:;'">{{ $attrs.btn.text }}</a>
             </div>
         </el-header>
         <el-main>

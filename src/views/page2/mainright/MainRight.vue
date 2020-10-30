@@ -20,47 +20,12 @@
         </div>
       </div>
     </block-container>
-    <block-container _title="废气排放重点污染源实时数据" height="3.35rem">
-      <div
-        style="
-          height: 100%;
-          padding-top: 0.24rem;
-          position: relative;
-          font-size: 0.12rem;
-          color: #ffffff;
-        "
-      >
-        <div class="cus_table_head">
-          <div class="cus_table_th" style="width: 80%">企业名称</div>
-          <!-- <div class="cus_table_th" style="width: 60%">行业类别</div> -->
-          <div class="cus_table_th" style="width: 30%">机构代码</div>
-          <!-- <div class="cus_table_th" style="width: 20%">参数</div> -->
-        </div>
-        <div class="cus_table_body" style="height: 100%">
-          <vue-seamless-scroll
-            :data="pollutionListA"
-            :class-option="optionSetting"
-            class="seamless-warp"
-          >
-            <ul>
-              <li
-                class="cus_table_tr"
-                v-for="vo in pollutionListA"
-                :key="vo.co_id"
-              >
-                <div class="cus_table_td" style="width: 80%" :title="vo.coName">{{ vo.coName }}</div>
-                <!-- <div class="cus_table_td" style="width: 60%" :title="vo.industry_name">{{ vo.industry_name }}</div> -->
-                <div class="cus_table_td" style="width: 30%" :title="vo.coCode">{{ vo.coCode }}</div>
-                <!-- <div class="cus_table_td" style="width: 20%">{{ vo.param }}</div> -->
-              </li>
-            </ul>
-          </vue-seamless-scroll>
-        </div>
-      </div>
-    </block-container>
     <block-container _title="大气环境质量月历浏览表" height="3.24rem">
         <el-calendar v-model="currMonth" :first-day-of-week="firstDayOfWeek">
         </el-calendar>
+    </block-container>
+    <block-container _title="风场" height="3.35rem" :btn="{type:'link', text: '详情', href: fengchangDetailUrl}">
+        <iframe class="fengchang-iframe" :src="fengchangSrc" frameborder="0"></iframe>
     </block-container>
   </div>
 </template>
@@ -90,24 +55,30 @@ export default {
       currMonth: new Date(),
       firstDayOfWeek: 7,
       mcColorlist: [],
+
+      fengchangSrc: "",
+      fengchangDetailUrl: "",
     };
   },
   computed: {
-    optionSetting() {
-      return {
-        step: 0.25, // 数值越大速度滚动越快
-        limitMoveNum: 2, // 开始无缝滚动的数据量 this.dataList.length
-        hoverStop: true, // 是否开启鼠标悬停stop
-        direction: 1, // 0向下 1向上 2向左 3向右
-        openWatch: true, // 开启数据实时监控刷新dom
-        singleHeight: 0, // 单步运动停止的高度(默认值0是无缝不停止的滚动) direction => 0/1
-        singleWidth: 0, // 单步运动停止的宽度(默认值0是无缝不停止的滚动) direction => 2/3
-        waitTime: 1000, // 单步运动停止的时间(默认值1000ms)
-      };
-    },
+    // optionSetting() {
+    //   return {
+    //     step: 0.25, // 数值越大速度滚动越快
+    //     limitMoveNum: 2, // 开始无缝滚动的数据量 this.dataList.length
+    //     hoverStop: true, // 是否开启鼠标悬停stop
+    //     direction: 1, // 0向下 1向上 2向左 3向右
+    //     openWatch: true, // 开启数据实时监控刷新dom
+    //     singleHeight: 0, // 单步运动停止的高度(默认值0是无缝不停止的滚动) direction => 0/1
+    //     singleWidth: 0, // 单步运动停止的宽度(默认值0是无缝不停止的滚动) direction => 2/3
+    //     waitTime: 1000, // 单步运动停止的时间(默认值1000ms)
+    //   };
+    // },
     ...mapState('page2', ['xiangzhen', 'pollutionListA', 'monthCalendar'])
   },
   mounted() {
+    this.fengchangSrc = `${this.$store.state.pageUrl}views/daqi/index_zonghefenxi_iframe.html`;
+    this.fengchangDetailUrl = `${this.$store.state.pageUrl}views/daqi/index_zonghefenxi_iframe.html`;
+
     this.handleData1();
     this.zbAutoSwitch_1();
 
@@ -502,6 +473,14 @@ export default {
   }
   .el-calendar-table td.is-selected{
     background: #FFFF00;
+  }
+
+  .fengchang-iframe{
+    display: block; 
+    width: 100%; 
+    height: 100%;
+    border: 2px solid #0089FE;
+    border-radius: 3px;
   }
 }
 </style>

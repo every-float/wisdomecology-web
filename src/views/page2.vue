@@ -152,7 +152,7 @@
             width: 100%;
             height: 1.1rem;
             background: url("~@/assets/image/light.png") no-repeat;
-            background-position: center -0.42rem;
+            background-position: center 14%;
             background-size: 100% auto;
             left: 0rem;
             top: 0rem;
