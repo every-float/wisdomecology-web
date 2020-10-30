@@ -19,6 +19,7 @@
         font-size: 0.2rem;
         font-weight: 600;
         cursor: pointer;
+        z-index: 99;
 
         .el-icon-back{
             font-size: 0.2rem;
