@@ -50,7 +50,10 @@
             </div>
         </block-container>
         <block-container _title="大气环境质量天津市考核排名" height="3.33rem">
-            <div style="position: relative; height: 100%; padding-top: 0.35rem;" @mouseover="stopAutoSwitch_2()" @mouseout="zbAutoSwitch_2()">
+            <div style="position: relative; height: 100%; padding-top: 0.35rem;" 
+                @mouseenter="stopAutoSwitch_2()" 
+                @mouseleave="zbAutoSwitch_2()"
+            >
                 <div class="left_2_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
                     <div class="left_2_tab_item" 
                         :class="{ active: true, 'left_2_tab_item_active': vo.name === currzb_2 }" 

@@ -1,7 +1,10 @@
 <template>
   <div class="main-right">
     <block-container _title="各街镇环境空气实时数据" height="2.95rem">
-      <div style="position: relative; height: 100%; padding-top: 0.35rem" @mouseover="stopAutoSwitch_1()" @mouseout="zbAutoSwitch_1()">
+      <div style="position: relative; height: 100%; padding-top: 0.35rem" 
+        @mouseenter="stopAutoSwitch_1()" 
+        @mouseleave="zbAutoSwitch_1()"
+      >
         <div class="right_1_tab" style=" position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
           <div class="right_1_tab_item" 
               :class="{ active: true, 'right_1_tab_item_active': vo.name === currzb_1 }" 
@@ -53,7 +56,7 @@ export default {
       index_1: 0,      //右上计数器
 
       currMonth: new Date(),
-      firstDayOfWeek: 7,
+      firstDayOfWeek: 1,
       mcColorlist: [],
 
       fengchangSrc: "",
@@ -451,7 +454,8 @@ export default {
   }
   .el-calendar-table .el-calendar-day{
     padding: 0;
-    height: 0.395rem;
+    // height: 0.395rem;
+    height: 0.32rem;
     background: transparent !important;
     display: flex;
     display: -webkit-flex;

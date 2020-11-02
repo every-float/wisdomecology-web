@@ -101,13 +101,27 @@
 						pointerList[i].style.webkitTransform = "scale(0.75)";
 					}
 					pointerList[0].classList.add("mapicon_zoom");
+					pointerList[0].firstChild.src = "";
+					pointerList[0].style.backgroundColor = "#0172AC";
+					pointerList[0].style.boxShadow = "0px 0px 2px 4px #0172AC";
+					pointerList[0].style.width = "14px";
+					pointerList[0].style.height = "14px";
+
 					bus.$on('stationChange', ({index}) => {
 						for(let i=0; i<pointerList.length; i++){
 							pointerList[i].classList.remove("mapicon_zoom");
-							pointerList[i].firstChild.style.marginLeft = "-28px";
+							pointerList[i].firstChild.src = mapIconDong;
+							pointerList[i].style.backgroundColor = "none";
+							pointerList[i].style.boxShadow = "none";
+							pointerList[i].style.width = "28px";
+							pointerList[i].style.height = "28px";
 						}
 						pointerList[index].classList.add("mapicon_zoom");
-						pointerList[index].firstChild.style.marginLeft = "-84px";
+						pointerList[index].firstChild.src = "";
+						pointerList[index].style.backgroundColor = "#0172AC";
+						pointerList[index].style.boxShadow = "0px 0px 2px 4px #0172AC";
+						pointerList[index].style.width = "14px";
+						pointerList[index].style.height = "14px";
 					});
 				}, 20);
 			},
@@ -192,8 +206,8 @@
 	}
 }
 .mapicon_zoom{
-	animation: mapiconZoom 0.66s linear infinite forwards;
-	-webkit-animation: mapiconZoom 0.66s linear infinite forwards;
+	animation: mapiconZoom 1.66s linear infinite forwards;
+	-webkit-animation: mapiconZoom 1.66s linear infinite forwards;
 }
 
 #bmap{

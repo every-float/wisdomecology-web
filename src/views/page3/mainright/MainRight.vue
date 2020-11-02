@@ -1,7 +1,10 @@
 <template>
   <div class="main-right">  <!-- 总9.54rem -->
     <block-container _title="水环境数据变化趋势" height="3.24rem">
-      <div style="position: relative; height: 100%; padding-top: 0.35rem;" @mouseover="stopAutoSwitch_1()" @mouseout="zbAutoSwitch_1()">
+      <div style="position: relative; height: 100%; padding-top: 0.35rem;" 
+        @mouseenter="stopAutoSwitch_1()" 
+        @mouseleave="zbAutoSwitch_1()"
+      >
           <div class="right_1_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
               <div class="right_1_tab_item"
                   v-for="(vo, index) in zblist_1"

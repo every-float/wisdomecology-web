@@ -337,10 +337,10 @@
                 }
             }
             .mapicon_zoom{
-                background-color: #ff3d00;
-                box-shadow: 0px 0px 2px 4px #ff3d00;
-                animation: mapiconZoom 0.66s linear infinite forwards;
-                -webkit-animation: mapiconZoom 0.66s linear infinite forwards;
+                background-color: #ffffff;
+                box-shadow: 0px 0px 2px 4px #ffffff;
+                animation: mapiconZoom 1.66s linear infinite forwards;
+                -webkit-animation: mapiconZoom 1.66s linear infinite forwards;
             }
             .map_icon{
                 position: absolute;

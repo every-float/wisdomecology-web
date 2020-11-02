@@ -43,7 +43,10 @@
             </div>
         </block-container>
         <block-container _title="水环境质量天津市考核排名" height="3.40rem">
-            <div style="position: relative; height: 100%; padding-top: 0.35rem;" @mouseover="stopAutoSwitch_3()" @mouseout="zbAutoSwitch_3()">
+            <div style="position: relative; height: 100%; padding-top: 0.35rem;" 
+                @mouseenter="stopAutoSwitch_3()" 
+                @mouseleave="zbAutoSwitch_3()"
+            >
                 <div class="right_3_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
                     <div class="right_3_tab_item"
                         v-for="(vo, index) in zblist_3"
@@ -857,18 +860,19 @@
                     }
                 }
                 .right_btns_item_active{
-                    background: #F03F16;
-                    background: -moz-linear-gradient(top,  #F37020 0%, #B40000 100%);
-                    background: -webkit-gradient(linear, 0 0, 100% 100%, from(#F37020), to(#B40000));
-                    background: -webkit-linear-gradient(left top,  #F37020 0%,#B40000 100%);
-                    background: -o-linear-gradient(left top,  #F37020 0%,#B40000 100%);
-                    background: -ms-linear-gradient(left top,  #F37020 0%,#B40000 100%);
-                    background: linear-gradient(to right bottom,  #F37020 0%,#B40000 100%);
-                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F37020', endColorstr='#B40000',GradientType=0 );
+                    // background: #F03F16;
+                    // background: -moz-linear-gradient(top,  #F37020 0%, #B40000 100%);
+                    // background: -webkit-gradient(linear, 0 0, 100% 100%, from(#F37020), to(#B40000));
+                    // background: -webkit-linear-gradient(left top,  #F37020 0%,#B40000 100%);
+                    // background: -o-linear-gradient(left top,  #F37020 0%,#B40000 100%);
+                    // background: -ms-linear-gradient(left top,  #F37020 0%,#B40000 100%);
+                    // background: linear-gradient(to right bottom,  #F37020 0%,#B40000 100%);
+                    // filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F37020', endColorstr='#B40000',GradientType=0 );
+                    background-color: #0172AC;
                     color: #FFFFFF;
                     box-shadow: none;
-                    border: 1px solid #ffffff;
-                    border-bottom-color: transparent;
+                    // border: 1px solid #ffffff;
+                    // border-bottom-color: transparent;
                 }
                 :root .right_btns_item_active{filter:none;}
             }
