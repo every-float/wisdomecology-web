@@ -523,7 +523,7 @@ export default {
       font-size: 0.14rem;
       background-color: #0D4884;
       border: 1px solid #8BABFE;
-      // width: 13.9%;
+      width: auto;
       cursor: pointer;
       margin-left: 0.6%;
       padding: 0 0.06rem;

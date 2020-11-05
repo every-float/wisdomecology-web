@@ -12,7 +12,7 @@
                 <div class="cus-header-item2"></div>
                 <div class="cus-header-item3"></div>
                 
-                <div class="cus-header-light"></div>
+                <!-- <div class="cus-header-light"></div> -->
                 <header-left></header-left>
                 <header-right></header-right>
             </el-header>
