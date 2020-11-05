@@ -19,7 +19,7 @@
                         <div class="item_outer">
                             <div class="item_inner" :style="{width: vo.percentage, background: vo.bgcolor}"></div>
                         </div>
-                        <span style="color: #F2FFFF; width: 0.5rem; text-align: center; margin: 0;">{{ parseInt(vo.value) }}</span>
+                        <span style="color: #F2FFFF; width: 0.5rem; text-align: center; margin: 0;">{{ vo.value }}</span>
                         <span :style="{color: vo.bgcolor, width: '0.5rem', margin: '0'}">{{ vo.level }}</span>
                     </div>
                 </div>
