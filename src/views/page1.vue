@@ -9,14 +9,14 @@
                 <div class="cus-header-item3"></div>
 
                 <!-- <div class="cus-header-light"></div> -->
-                <header-left></header-left>
-                <header-right></header-right>
+                <header-left :key="hl"></header-left>
+                <header-right :key="hr"></header-right>
             </el-header>
             <el-main class="cus-main" ref="cusMain">
-                <main-left></main-left>
-                <main-right></main-right>
-                <center-top></center-top>
-                <center-bottom ref="baseBg"></center-bottom>
+                <main-left :key="ml"></main-left>
+                <main-right :key="mr"></main-right>
+                <center-top :key="ct"></center-top>
+                <center-bottom ref="baseBg" :key="cb"></center-bottom>
             </el-main>
         </el-container>
     </div>
@@ -58,6 +58,13 @@
             return {
                 headerHeight: '1.10rem',
                 timer: '',
+
+                hl: 0,
+                hr: 1,
+                ml: 2,
+                mr: 3,
+                ct: 4,
+                cb: 5,
             }
         },
         computed: {
@@ -135,7 +142,16 @@
                     this.updateRiverGridDataD_batch({
                         datas: values.map(v => v.data),
                         ids: this.riverTree.map(v => v.id)
-                    })
+                    });
+                    // 数据请求完之后，重新挂载
+                    setTimeout(() => {
+                        this.hl++;
+                        this.hr++;
+                        this.ml++;
+                        this.mr++;
+                        this.ct++;
+                        this.cb++;
+                    }, 20);
                 }))
             }, 1000*60*10);
         },
