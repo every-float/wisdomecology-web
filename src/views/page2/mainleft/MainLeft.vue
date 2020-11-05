@@ -81,7 +81,6 @@
     import mapMarkerStyle from '@/utils/mapMarkerStyle';
     import getColorArr from '@/utils/getColorArr';
     import airNormlist from "@/mock/airNormlist.js";
-    import { getDataByDay, getDataByMonth } from "@/service/api.js";
     import moment from 'moment';
     import { Loading } from 'element-ui';
 
@@ -133,7 +132,9 @@
             // 1、先获取第一个指标的数据展示到页面
             await this.getXinlaoluR({
                 ids: window.xinlaoluId,
-                time: moment(this.xinlaoluTime).format("YYYY-MM-DD"),
+                // time: moment(this.xinlaoluTime).format("YYYY-MM-DD"),
+                startTime: moment(this.xinlaoluTime).subtract(12 ,'hour').format("YYYY-MM-DD HH"),
+                endTime: moment(this.xinlaoluTime).format("YYYY-MM-DD HH"),
                 index: this.zblist[0]['index'],
                 name: this.zblist[0]['name']
             });
@@ -203,7 +204,9 @@
                     });
                     await this.getXinlaoluR({
                         ids: window.xinlaoluId,
-                        time: moment(this.xinlaoluTime).format("YYYY-MM-DD"),
+                        // time: moment(this.xinlaoluTime).format("YYYY-MM-DD"),
+                        startTime: moment(this.xinlaoluTime).subtract(12 ,'hour').format("YYYY-MM-DD HH"),
+                        endTime: moment(this.xinlaoluTime).format("YYYY-MM-DD HH"),
                         index: vo.index,
                         name: vo.name
                     });

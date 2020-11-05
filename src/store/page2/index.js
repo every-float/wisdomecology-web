@@ -38,19 +38,34 @@ export default {
         },
         // 更新辛老路日数据
         updateXinlaoluR: (state, load) => {
-            state.dataByDay[load.name] = load.data;
+            state.dataByDay[load.name] = [{}];
+            const okeys = load.data.xaxis.map(v => v.split(' ')[1]);
+            const ovals = load.data.series[0].data;
+            okeys.forEach((v, index) => {
+                state.dataByDay[load.name][0][v] = ovals[index]
+            });
         },
         // 批量更新辛老路日数据
         updateXinlaoluR_batch: (state, load) => {
-            load.data.forEach((v, index) => {
-                state.dataByDay[load.names[index]] = v
-            })
+            load.data.forEach((vo, indexo) => {
+                state.dataByDay[load.names[indexo]] = [{}];
+                const okeys = vo.xaxis.map(v => v.split(' ')[1]);
+                const ovals = vo.series[0].data;
+                okeys.forEach((v, index) => {
+                    state.dataByDay[load.names[indexo]][0][v] = ovals[index]
+                });
+            });
         },
         // 批量更新辛老路月数据
         updateXinlaoluD_batch: (state, load) => {
-            load.data.forEach((v, index) => {
-                state.dataByMonth[load.names[index]] = v
-            })
+            load.data.forEach((vo, indexo) => {
+                state.dataByMonth[load.names[indexo]] = [{}];
+                const okeys = vo.xaxis.map(v => `${v.split('-')[1]}-${v.split('-')[2]}`);
+                const ovals = vo.series[0].data;
+                okeys.forEach((v, index) => {
+                    state.dataByMonth[load.names[indexo]][0][v] = ovals[index]
+                });
+            });
         },
     },
     actions: {
@@ -91,7 +106,9 @@ export default {
         getXinlaoluR_batch: async ({commit}, {xinlaoluTime, zblist}) => {
             const getXinlaoluRarr = zblist.filter(v => v.name !== 'aqi').map(v => getDataByDay({
                 ids: window.xinlaoluId,
-                time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                // time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                startTime: moment(xinlaoluTime).subtract(12 ,'hour').format("YYYY-MM-DD HH"),
+                endTime: moment(xinlaoluTime).format("YYYY-MM-DD HH"),
                 index: v.index
             }));
             return axios.all(getXinlaoluRarr)
@@ -106,7 +123,9 @@ export default {
         getXinlaoluD_batch: async ({commit}, {xinlaoluTime, zblist}) => {
             const getXinlaoluRarr = zblist.map(v => getDataByMonth({
                 ids: window.xinlaoluId,
-                time: moment(xinlaoluTime).format("YYYY-MM"),
+                // time: moment(xinlaoluTime).format("YYYY-MM"),
+                startTime: moment(xinlaoluTime).subtract(30 ,'days').format("YYYY-MM-DD"),
+                endTime: moment(xinlaoluTime).format("YYYY-MM-DD"),
                 index: v.index
             }));
             return axios.all(getXinlaoluRarr)

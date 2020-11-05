@@ -80,7 +80,9 @@
                     const zblist = airNormlist.data;
                     const getXinlaoluRarr = zblist.map(v => getDataByDay({
                         ids: window.xinlaoluId,
-                        time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                        // time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                        startTime: moment(xinlaoluTime).subtract(12 ,'hour').format("YYYY-MM-DD HH"),
+                        endTime: moment(xinlaoluTime).format("YYYY-MM-DD HH"),
                         index: v.index
                     }));
                     return axios.all(getXinlaoluRarr); 
@@ -94,7 +96,9 @@
                     const zblist = airNormlist.data;
                     const getXinlaoluDarr = zblist.map(v => getDataByMonth({
                         ids: window.xinlaoluId,
-                        time: moment(xinlaoluTime).format("YYYY-MM"),
+                        // time: moment(xinlaoluTime).format("YYYY-MM"),
+                        startTime: moment(xinlaoluTime).subtract(30 ,'days').format("YYYY-MM-DD"),
+                        endTime: moment(xinlaoluTime).format("YYYY-MM-DD"),
                         index: v.index
                     }));
                     return axios.all(getXinlaoluDarr);
