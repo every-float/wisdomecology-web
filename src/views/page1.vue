@@ -82,23 +82,25 @@
                     getHomeStatInfo(),
                 ])
                 .then(axios.spread( (...values) => {
-                    this.updateRequestData(values.map(v => v.data));
-                    const xinlaoluTime = Object.assign({}, this.shizhan.filter(v => v.pointId===window.xinlaoluId)[0])['time'];
-                    const zblist = airNormlist.data;
-                    const getXinlaoluRarr = zblist.map(v => getDataByDay({
-                        ids: window.xinlaoluId,
-                        // time: moment(xinlaoluTime).format("YYYY-MM-DD"),
-                        startTime: moment(xinlaoluTime).subtract(12 ,'hour').format("YYYY-MM-DD HH"),
-                        endTime: moment(xinlaoluTime).format("YYYY-MM-DD HH"),
-                        index: v.index
-                    }));
-                    return axios.all(getXinlaoluRarr); 
+                    // this.updateRequestData(values.map(v => v.data));
+                    // const xinlaoluTime = Object.assign({}, this.shizhan.filter(v => v.pointId===window.xinlaoluId)[0])['time'];
+                    // const zblist = airNormlist.data;
+                    // const getXinlaoluRarr = zblist.map(v => getDataByDay({
+                    //     ids: window.xinlaoluId,
+                    //     // time: moment(xinlaoluTime).format("YYYY-MM-DD"),
+                    //     startTime: moment(xinlaoluTime).subtract(12 ,'hour').format("YYYY-MM-DD HH"),
+                    //     endTime: moment(xinlaoluTime).format("YYYY-MM-DD HH"),
+                    //     index: v.index
+                    // }));
+                    // return axios.all(getXinlaoluRarr); 
                 }))
                 .then(axios.spread( (...values) => {
-                    this.updateXinlaoluR_batch({
-                        data: values.map(v => v.data),
-                        names: airNormlist.data.map(v => v.name)
-                    });
+                    // this.updateXinlaoluR_batch({
+                    //     data: values.map(v => v.data),
+                    //     names: airNormlist.data.map(v => v.name)
+                    // });
+
+                    this.updateRequestData(values.map(v => v.data));
                     const xinlaoluTime = Object.assign({}, this.shizhan.filter(v => v.pointId===window.xinlaoluId)[0])['time'];
                     const zblist = airNormlist.data;
                     const getXinlaoluDarr = zblist.map(v => getDataByMonth({
