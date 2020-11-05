@@ -112,7 +112,7 @@
                         sectionCode: v.id,
                         dataType: 'Rtd',
                         // startTime: moment().format("YYYY-MM-DD"),
-                        startTime: moment().subtract('days', 2).format('YYYY-MM-DD'),
+                        startTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
                         endTime: moment().format("YYYY-MM-DD")
                     }));
                     return axios.all(riverGridDataRarr);
@@ -125,7 +125,8 @@
                     const riverGridDataDarr = this.riverTree.map(v => getRiverGridData({
                         sectionCode: v.id,
                         dataType: 'Day',
-                        startTime: moment().format("YYYY-MM") + "-01",
+                        // startTime: moment().format("YYYY-MM") + "-01",
+                        startTime: moment().subtract(30, 'days').format('YYYY-MM-DD'),
                         endTime: moment().format("YYYY-MM-DD")
                     }));
                     return axios.all(riverGridDataDarr);

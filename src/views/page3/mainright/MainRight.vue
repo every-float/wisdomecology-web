@@ -218,19 +218,20 @@ export default {
               if(this.currtimetype_1 === 'std'){
                   return v['monitortime'].split(':')[0];
               }else if(this.currtimetype_1 === 'day'){
-                  return v['monitordate'].split('-')[2];
+                  // return v['monitordate'].split('-')[2];
+                  return `${v['monitordate'].split('-')[1]}-${v['monitordate'].split('-')[2]}`;
               }
           }).reverse();
           y = baseData.map(v => {
               return v[this.currzb_1]
           }).reverse();
       }else{
-          let start = this.currtimetype_1==='std' ? 0 : 1;
-          let len = this.currtimetype_1==='std' ? 24 : 31;
-          for(let i=start; i<len; i++){
-              x.push(i<10 ? '0'+i : ''+i);
-              y.push('');
-          }
+          // let start = this.currtimetype_1==='std' ? 0 : 1;
+          // let len = this.currtimetype_1==='std' ? 24 : 31;
+          // for(let i=start; i<len; i++){
+          //     x.push(i<10 ? '0'+i : ''+i);
+          //     y.push('');
+          // }
       }
       this.initCharts_1(x,y);
     },
