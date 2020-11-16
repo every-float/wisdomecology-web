@@ -2,7 +2,7 @@ const file_root_path = process.env.VUE_APP_PAGEURL;
 const port = 7070;
 const title = '西青区大气与水环境信息面板';
 const publicPath = '';  //这个值可以被设置为空字符串 ('') 或是相对路径 ('./')，这样所有的资源都会被链接为相对路径，这样打出来的包可以被部署在任意路径
-const outputDir = `E:/lvwenji/SVN/wisdomecology-web/theme/theme_3`;
+const outputDir = `E:/lvwenji/SVN/wisdomecology-web/theme/theme_2`;
 const assetsDir = 'static';
 
 const dev_extra_scripts = [

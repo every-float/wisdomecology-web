@@ -17,6 +17,9 @@
                 <main-right :key="mr"></main-right>
                 <center-top :key="ct"></center-top>
                 <center-bottom ref="baseBg" :key="cb"></center-bottom>
+                <a class="center-bottom-yingjibaozhang" href="javascript:void(0);" @click="openContactListPage()">
+                    <span class="yingjibaozhang_text">应急保障</span>
+                </a>
             </el-main>
         </el-container>
     </div>
@@ -44,6 +47,7 @@
     import riverTree from '@/mock/riverTree.js';    //水环境站点模拟数据
     import moment from 'moment';
     import airNormlist from "@/mock/airNormlist.js";
+    import Cookie from 'js-cookie';
 
     export default {
         components: {
@@ -183,6 +187,13 @@
                 'updateRiverGridDataR_batch',
                 'updateRiverGridDataD_batch',
             ]),
+            openContactListPage() {
+                window.open(
+                    `${this.$store.state.chatUrl}theme/theme_1/contactList.html?accesstoken=${Cookie.get('login_sid_t_we')}`,
+                    "视频通话窗口",
+                    "location=no,menubar=no,status=no,titlebar=no,toolbar=no,width=1000,height=540,left=200,top=100,screenLeft=200,screenTop=150"
+                );
+            },
             setBasbgSize() {  // 保证1920/1080
                 const criticalRatio = 1920 / 1080;  //临界宽高比
                 const mainWidth = this.$refs.cusMain.$el.clientWidth;
@@ -285,39 +296,67 @@
         }
 
         .cus-main{
-        padding: 0;
-        position: relative;
-        overflow: hidden;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
 
-        .main-left, .main-right{
-            position: absolute;
-            width: 24.1%;
-            height: 100%;
-            top: 0;
-            z-index: 9;
-            background-color: $asideBgColor;
-        }
-        .main-left{
-            left: 1.04%;
-        }
-        .main-right{
-            right: 1.04%;
-        }
-        .center-top{
-            position: absolute;
-            width: 49.72%;
-            height: 6.23rem;
-            left: 25.14%;
-            top: 0;
-            z-index: 8;
-        }
-        .center-bottom{
-            position: absolute;
-            background: url("~@/assets/image/page1_base_bg.png") no-repeat center bottom;
-            background-size: 100% 100%;
-            z-index: 7;
-            bottom: 0;
-        }
+            .main-left, .main-right{
+                position: absolute;
+                width: 24.1%;
+                height: 100%;
+                top: 0;
+                z-index: 9;
+                background-color: $asideBgColor;
+            }
+            .main-left{
+                left: 1.04%;
+            }
+            .main-right{
+                right: 1.04%;
+            }
+            .center-top{
+                position: absolute;
+                width: 49.72%;
+                height: 6.23rem;
+                left: 25.14%;
+                top: 0;
+                z-index: 8;
+            }
+            .center-bottom{
+                position: absolute;
+                background: url("~@/assets/image/page1_base_bg.png") no-repeat center bottom;
+                background-size: 100% 100%;
+                z-index: 7;
+                bottom: 0;
+            }
+            .center-bottom-yingjibaozhang{
+                position: absolute;
+                bottom: 20%;
+                left: 28%;
+                width: 0.88rem;
+                height: 0.88rem;
+                background: url("~@/assets/image/page1_yingjibaozhang.png") no-repeat center;
+                background-size: 100% 100%;
+                z-index: 9;
+                transform: scale(1);
+                transform-origin: 50% 100%;
+                transition: transform 0.5s;
+
+                .yingjibaozhang_text{
+                    font-size: 0.16rem;
+                    color: #0EBDDC;
+                    position: absolute;
+                    width: 70px;
+                    text-align: center;
+                    left: 50%;
+                    margin-left: -35px;
+                    bottom: -0.15rem;
+                    cursor: pointer;
+                }
+            }
+            .center-bottom-yingjibaozhang:hover{
+                transform: scale(1.1);
+            }
         }
     }
 </style>

@@ -62,11 +62,11 @@
                         left: "57.2%",
                         menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=f3d055931a64448d8311ac6729c70537&menuName=噪声监控`
                     },{
-                        name: "应急保障",
-                        img: "page1_yingji.png",
+                        name: "污染源管理",
+                        img: "page1_wuranyuan.png",
                         bottom: "3%",
                         left: "64.3%",
-                        menuUrl: `${this.$store.state.chatUrl}theme/theme_1/contactList.html?accesstoken=${Cookie.get('login_sid_t_we')}`
+                        menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=26a6c508b37d465f910800d4e73f93d8&menuName=重点污染源管理`
                     },
                 ]
             }
