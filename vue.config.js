@@ -1,10 +1,8 @@
-process.env.VUE_APP_PAGEURL = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8848/wisdomecology-web/' : '';
-
-const file_root_path = process.env.NODE_ENV === 'development' ? process.env.VUE_APP_PAGEURL : '../../';
+const file_root_path = process.env.VUE_APP_PAGEURL;
 const port = 7070;
 const title = '西青区大气与水环境信息面板';
 const publicPath = '';  //这个值可以被设置为空字符串 ('') 或是相对路径 ('./')，这样所有的资源都会被链接为相对路径，这样打出来的包可以被部署在任意路径
-const outputDir = `E:/lvwenji/SVN/wisdomecology-web/theme/theme_2`;
+const outputDir = `E:/lvwenji/SVN/wisdomecology-web/theme/theme_3`;
 const assetsDir = 'static';
 
 const dev_extra_scripts = [
@@ -54,7 +52,7 @@ module.exports = {
         name: title,
     },
     // 链式的方式配置
-    chainWebpack(config) {
+    chainWebpack: config => {
         // 1、修改当前项目中默认svg配置：排除icons目录
         config.module.rule('svg')
             .exclude.add(resolve('./src/icons'))
@@ -67,25 +65,38 @@ module.exports = {
             .loader('svg-sprite-loader')
             .options({ symbolId: 'icon-[name]' })
 
-        // 3、添加全局scss文件
+        // 3、scss、css规则配置修改
         const types = ['vue-modules', 'vue', 'normal-modules', 'normal'];
-        types.forEach(type => { //匹配到所有需要导入的文件
+        types.forEach(type => { 
             config.module.rule('scss')
                 .oneOf(type)
                 .use('style-resources-loader')
-                .loader('style-resources-loader')
-                .options({
-                    patterns: [
-                        path.resolve(__dirname, './src/assets/css/base.scss')
-                    ]
-                })
-        })
+                    .loader('style-resources-loader')
+                    .options({
+                        patterns: [
+                            path.resolve(__dirname, './src/assets/css/base.scss')
+                        ]
+                    })
+                    .end()
+                .use('postcss-loader')
+                    .loader('postcss-loader')
+                    .end()
+
+            config.module.rule('css')
+                .oneOf(type)
+                .use('postcss-loader')
+                    .loader('postcss-loader')
+                    .end()
+        });
+
+        // plugins配置
+        
 
         // 4、别名设置
         config.resolve.alias
             .set('@', path.resolve(__dirname, './src'))
 
-        // 5、不压缩index.html文件
+        // 5、不压缩index.html文件、加载静态js资源
         config
             .plugin('html')
             .tap(args => {

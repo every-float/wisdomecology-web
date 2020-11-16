@@ -23,4 +23,5 @@ pnpm-debug.log*
 *.sw?
 
 commit.log
+output.js
 yarn.lock
