@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<title>超标噪音</title>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body{
+				height:100%;
+			}
+			.layui-form-label{
+				width: 90px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">所属区域</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="areaTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">噪音信息</div>
+						<div class="layui-card-body">
+							<form class="layui-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">查询时间</label>
+										<div class="layui-input-inline">
+											<input id="searchTime" type="text" class="layui-input" readonly="readonly" placeholder="请选择查询时间" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label"></label>
+										<div class="layui-input-inline">
+											<button class="layui-btn" lay-submit lay-filter="searchInfo">查询</button>
+											<button type="reset" class="layui-btn layui-btn-primary" onclick="toReset()">重置</button>
+										</div>
+									</div>
+								</div>
+							</form>
+							<table id="noiseList" class="layui-table" lay-filter="noiseList"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript">
+		var layer, layerIndex;
+		var menuTree, zNodes=[], pointIds = [];
+		var noiseList;
+		$(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs3").children(".layui-card").height($("body").height()-30);
+			$(".layui-col-xs3").find(".layui-card-body").height($("body").height()-93);
+			$(".well").height($("body").height()-133);
+			$(".layui-col-xs9").height($("body").height()-30);
+			tableHeight = $(".layui-col-xs3").height()-116;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs3").children(".layui-card").height($("body").height()-30);
+				$(".layui-col-xs3").children(".layui-card-body").height($("body").height()-93);
+				$(".well").height($("body").height()-133);
+				$(".layui-col-xs9").height($("body").height()-30);
+				tableHeight = $(".layui-col-xs3").height()-116;
+				searchInfo();
+			}
+
+			layui.use(['form', 'table', 'layer', 'laydate'], function(){
+				var form = layui.form,
+					table = layui.table,
+					laydate = layui.laydate;
+				layer = layui.layer;
+
+				// 获取当前时间
+				var currentTime = new Date();
+				var nowadays = currentTime.getFullYear()+"-"
+							+((currentTime.getMonth()<9)?("0"+(currentTime.getMonth()+1)):(currentTime.getMonth()+1))+"-"
+							+((currentTime.getDate() < 10)?("0"+currentTime.getDate()):currentTime.getDate());
+				laydate.render({
+					elem:"#searchTime",
+					value:nowadays+" ~ "+nowadays,
+					range:"~",
+					trigger:"click",
+					done:function(value, date, endDate){
+						$("#searchTime").val(value);
+					}
+				})
+
+				//加载树
+				getAreaList();
+
+				//监听提交
+				form.on('submit(searchInfo)', function(data){
+					searchInfo();
+					return false;
+				});
+			})
+		})
+
+		var setting = {
+			check: {
+				enable: true
+			},
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: 'id',
+					pIdKey: 'parentId'
+				},
+				key: {
+					name: 'name',
+					title: 'name'
+				}
+			},
+			callback: {
+				onCheck: pointOncheck,
+				onAsyncSuccess:function(event, treeId, treeNode, msg){
+					layer.close(layerIndex);
+				}
+			}
+		};
+
+		function pointOncheck(event, treeId, treeNode){
+			var arr = menuTree.getCheckedNodes(true);
+			pointIds = [];
+			for(var i in arr){
+				if(!arr[i].isParent){
+					pointIds.push(arr[i].id);
+				}
+			}
+		}
+
+		// 获取区域列表
+		function getAreaList(){
+			layerIndex = layer.load(2,{shade:0.5});
+			$.ajax({
+				type: "post",
+				url: URL_area_list,
+				dataType: "json",
+				success: function(ret){
+					if(ret.code == 0){
+						zNodes = ret.data;
+						getNoiseList();
+						//初始化树形菜单
+						menuTree = $.fn.zTree.init($('#areaTree'), setting, zNodes);
+					}else{
+						layer.close(layerIndex);
+						layer.msg("获取区域列表失败！");
+					}
+				},
+				error:function(){
+					layer.close(layerIndex);
+					layer.msg("网络访问出错，列表获取失败！");
+				}
+			});
+		}
+
+		// 获取噪音列表
+		function getNoiseList(){
+			layui.use('table', function(){
+				var table = layui.table;
+
+				noiseList = table.render({
+					elem:"#noiseList",
+					url:URL_over_noise_list,
+					height:tableHeight,
+					where:{
+						page:1,
+						limit:99999,
+						startTime:$("#searchTime").val().split(" ")[0],
+						endTime:$("#searchTime").val().split(" ")[2],
+						pointIds:pointIds.join(",")
+					},
+					page: false,
+					toolbar: false,
+					defaultToolbar: false,
+					cols: [[
+						{field: 'point_alias', title: '站点编号', width:170, align:"center"},
+						{field: 'point_name', title: '站点名称', width:160, align:"center"},
+						{field: 'point_level', title: '站点类别', width:160, align:"center"},
+						{field: 'point_featuretext', title: '声源类别', width:160, align:"center"},
+						{field: 'point_LDN', title: '超标检测值LDN(dB)', width:165, align:"center"},
+						{title: '超标时间区域', width:140, align:"center", templet:function(d){
+							if(d.point_range == 1){
+								return "昼间超标";
+							}else if(d.point_range == 2){
+								return "夜间超标";
+							}
+						}},
+						{field: 'point_rectime', title: '监测时间', width:160, align:"center"}
+					]],
+					done:function(){
+						layer.close(layerIndex);
+					}
+				})
+			})
+		}
+
+		// 查询
+		function searchInfo(){
+			layerIndex = layer.load(2,{shade:0.6});
+			noiseList.reload({
+				height:tableHeight,
+				where:{
+					page:1,
+					limit:99999,
+					startTime:$("#searchTime").val()?($("#searchTime").val().split(" ")[0]):"",
+					endTime:$("#searchTime").val()?($("#searchTime").val().split(" ")[2]):"",
+					pointIds:pointIds.join(",")
+				},
+				done:function(){
+					layer.close(layerIndex);
+				}
+			})
+		}
+
+		// 重置
+		function toReset(){
+			$("#searchTime").val();
+		}
+	</script>
+</html>

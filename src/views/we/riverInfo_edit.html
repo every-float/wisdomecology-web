@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../layuiadmin/style/formSelects-v4.css" />
+		<title>河流信息-新增/编辑</title>
+		<style>
+			[v-cloak]{
+				display: none!important;
+			}
+			.layui-form-label{width: 80px;}
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<form id="dataForm" class="layui-form" lay-filter="dataForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">河流名称<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.riverName" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS经度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLng" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS纬度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLat" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度经度</label>
+							<div class="layui-input-inline">
+								<input id="baiduLng" type="text" class="layui-input" v-model="addition.baiduLng" placeholder="请选择地理位置" @click="getLocation()" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度纬度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.baiduLat" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item" style="display: none">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var form, layer;
+		$(function(){
+			vm.riverId = $.getUrlParam("riverId");
+			layui.use(['form', 'layer'], function(){
+				form = layui.form, layer = layui.layer;
+
+				// 保存监听
+				form.on('submit(btnSave)', function(){
+					vm.saveInfo();
+					return false;
+				})
+
+				if(vm.riverId){
+					vm.getDetail();
+				}
+			})
+		});
+
+		var vm = new Vue({
+			el:"#webPage",
+			data:{
+				riverId:"",
+				addition:{},
+			},
+			methods:{
+				getDetail:function(){
+					$.ajax({
+						type:"get",
+						url:URL_river_info,
+						dataType:"json",
+						data:{
+							riverId:vm.riverId
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.addition = ret.data;
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+
+				// 获取地理位置
+				getLocation:function(){
+					layui.use('admin', function(){
+						var admin = layui.admin;
+						admin.chooseLocation({
+							layerWidth:"130%",
+							needCity: true,
+							onSelect: function(res){
+								vm.addition.baiduLng = res.lng;
+								vm.addition.baiduLat = res.lat;
+							}
+						});
+					})
+				},
+
+				// 保存信息
+				saveInfo:function(){
+					$.ajax({
+						type:"post",
+						url:URL_river_save,
+						dataType:"json",
+						data:{
+							riverId:vm.riverId,
+							riverName:vm.addition.riverName,
+							gpsLng:vm.addition.gpsLng,
+							gpsLat:vm.addition.gpsLat,
+							baiduLng:vm.addition.baiduLng,
+							baiduLat:vm.addition.baiduLat
+						},
+						beforeSend:function(){
+							this.layerIndex = parent.layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.layer.close(index);
+								parent.layer.msg("信息保存成功！");
+								setTimeout(function(){
+									parent.renderRiverList();
+								}, 20);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，信息保存失败！");
+						},
+						complete:function(){
+							parent.layer.close(this.layerIndex);
+						}
+					})
+				},
+
+				// 父页面调用保存
+				toSave:function(){
+					$("#btnSave").trigger("click");
+				},
+			}
+		})
+	</script>
+</html>

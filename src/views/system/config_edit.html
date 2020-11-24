@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>参数管理</title>
+</head>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-body">
+			<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="configId" name="configId">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">参数名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="configName" name="configName" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">参数编码<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="configCode" name="configCode" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">参数值<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="configValue" name="configValue" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">参数类型<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select id="configType" name="configType" lay-verify="required">
+						<option value=""></option>
+						<option value="1">核心配置</option>
+						<option value="2">附件配置</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">是否使用</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="isUse" value="1" lay-skin="switch" lay-text="在用|未用" checked>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">备注</label>
+				<div class="layui-input-block">
+					<textarea name="remark" class="layui-textarea"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+			</form>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var configId = $.getUrlParam('configId');
+		var form;
+		$(function() {
+			layui.use(['form'], function() {
+				form = layui.form;
+				//初始化
+				if(configId!=null&&configId!=''){
+					$('#configId').val(configId);
+					initDataInfo();
+				}
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function checkForm(){
+			$('#btnSave').click();
+		}
+		
+		function initDataInfo(){
+			$.ajax({
+				url : URL_config_detailInfo,
+				data : {
+					configId: configId
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'configId': res.data.configId,
+							'configName': res.data.configName,
+							'configCode': res.data.configCode,
+							'configValue': res.data.configValue,
+							'configType': res.data.configType,
+							'isUse': res.data.isUse,
+							'remark': res.data.remark
+						});
+						form.render('select');
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		function save(){
+			$.ajax({
+				url : URL_config_save,
+				data : $('#form1').serialize(),
+				type : 'post',
+				dataType : 'json',
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

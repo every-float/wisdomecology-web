@@ -1,0 +1,419 @@
+<!-- <link href="../../layuiadmin/layui/css/layui.css" rel="stylesheet" type="text/css"> -->
+<style>
+    .rightBox {
+        position: relative;
+        width: 560px;
+        height: 255px;
+        margin: 0 auto;
+        text-align: center;
+        background: url('../../images/tools/rightPopup-bg.png');
+        background-size: auto auto;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .top_title {
+        position: relative;
+        background: url(../../images/tools/location.png) #007BD9;
+        background-size: 16px auto;
+        background-repeat: no-repeat;
+        background-position: 9px 8px;
+    }
+    .top_title>img.close{
+        position: absolute;
+        right: 9px;
+        top: 7px;
+        cursor: pointer;
+    }
+
+    .top_title_2 {
+        background: url(../../images/tools/title_bg.png);
+        background-size: auto auto;
+        background-repeat: no-repeat;
+        padding: 7px;
+        color: #3677fb;
+        background-position: 7px bottom;
+    }
+
+
+    .rightBox .grid-demo-left {
+        height: 156px;
+    }
+
+    .rightBox .grid-demo-right {
+        height: 25px;
+        line-height: 25px;
+        padding: 6px;
+    }
+    .aqi-info{
+    	width: 100%;
+    	height: 100%;
+        border-radius: 5px;
+    }
+    .aqi-info .data{
+    	width: 100%;
+    	height: 50%;
+    	/*background: green;*/
+    }
+    .aqi-info .data .name{
+    	float: left;
+        width: 30%;
+        height: 100%;
+        padding-top: 9px;
+        /*background: yellow;*/
+        box-sizing: border-box;
+        padding-left: 18px;
+    }
+    .aqi-info .data .value{
+    	float: left;
+    	width: 70%;
+    	height: 100%;
+        overflow: hidden;
+    	font-size: 36px;
+        padding-top: 10px;
+        text-align: center;
+    }
+    .layui-card > .layui-tab-brief > .layui-tab-title li{
+        padding: 0px;
+        margin: 0px;
+    }
+    .layui-input, .layui-textarea{
+        width: 105%;
+    }
+</style>
+<div class="layui-row layui-col-space1">
+    <div class="layui-col-xs12 top_title" style="font-size: 18px;
+                                        font-weight: bold;
+                                        padding: 7px 10px;
+                                        padding-left: 33px;
+                                        line-height: 22px;
+                                        color: white;">
+        {{d.pointName}}
+        <font style="font-size: 12px;">（更新于{{d.time}}）</font>
+        <img ew-event="closeDialog" class="close" src="../../images/tools/close.png" alt="">
+    </div>
+</div>
+<div class="layui-row layui-col-space1" style="padding: 10px 0px;font-size: 15px;font-weight: bold;">
+    <div class="layui-col-xs12 top_title_2">
+        实时数据
+    </div>
+</div>
+<div class="layui-row layui-col-space5 ">
+    <div class="rightBox">
+        <font title="aqi" 
+              style="width: 95px;
+                    font-size: 30px;
+                    text-align: center;
+                    position: absolute;
+                    left: 36px;
+                    top: 99px;
+                    font-weight: bold;
+                    color:{{d.aqi_more.bgcolor}};">{{d.aqi?d.aqi:'-'}}</font>
+        <font title="首要污染物" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 211px;
+                    top: 169px;
+                    color: white;">{{d.primaryPollutant?d.primaryPollutant:'-'}}</font>
+        <font title="PM2.5" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 211px;
+                    top: 79px;
+                    color: #3677fb;">{{d.pm2_5?d.pm2_5:'-'}}</font>
+        <font title="PM10" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 324px;
+                    top: 79px;
+                    color: #3677fb;">{{d.pm10?d.pm10:'-'}}</font>
+        <font title="o3" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 436px;
+                    top: 79px;
+                    color:#3677fb;">{{d.o3?d.o3:'-'}}</font>
+        <font title="no2" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 211px;
+                    top: 185px;
+                    color:#3677fb;">{{d.no2}}</font>
+        <font title="so2" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 324px;
+                    top: 185px;
+                    color:#3677fb;">{{d.so2?d.so2:'-'}}</font>
+        <font title="co" 
+              style="width: 95px;
+                    font-size: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 436px;
+                    top: 185px;
+                    color:#3677fb;">{{d.co?d.co:'-'}}</font>
+    </div>
+</div>
+<div class="layui-row layui-col-space1" style="padding: 10px 0px;font-size: 15px;font-weight: bold;">
+    <div class="layui-col-xs12 top_title_2">
+        统计均值
+    </div>
+</div>
+<div class="col-xs-12">
+    <div class="layui-row layui-col-space10 airmap">
+        <form class="layui-form toolbar">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <!-- <label class="layui-form-label">类型:</label> -->
+                    <div class="layui-input-inline" style="margin-left: 7px;width: 100px;">
+                        <select name="timeType" lay-filter="timeType" >
+                            <option value="day">每日均值</option>
+                            <option value="hour" selected>小时均值</option>
+                            {{#  if(d.code === 'weizhan'||d.code === 'xiangzhen'){ }}
+                                <option value="minute">分钟数据</option>
+                            {{#  } }} 
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" id="day_time_select" style="display: none;">
+                    <div class="layui-input-inline" style="width: 315px;">
+                        <input id="dayInput" name="day" class="layui-input icon-date" placeholder="选择时间段" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="layui-inline" id="hour_time_select" style="display: none;">
+                    <div class="layui-input-inline" style="width: 315px;">
+                        <input id="hourInput" name="hour" class="layui-input icon-date" placeholder="选择时间段" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="layui-inline" id="minute_time_select" style="display: none;">
+                    <div class="layui-input-inline" style="width: 315px;">
+                        <input id="minuteInput" name="minute" class="layui-input icon-date" placeholder="选择时间段" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="layui-inline">&emsp;
+                    <button id="tbAdvTbSearch" style="background-color: #007BD9;" class="layui-btn icon-btn" lay-filter="tbAdvTbSearch" lay-submit>
+                        <i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief">
+            <!-- <ul class="layui-tab-title">
+                <li class="layui-this">AQI</li>
+            </ul> -->
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div id="main" style="width:550px;height:260px;"></div>
+                    <!-- <hr>
+                    <iframe id="iframe_api" width="550px" height="260px" frameborder="no" border="1px solid red;" marginwidth="0" marginheight="0" scrolling="no" scrolling="no" src="echart.html" /> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'admin', 'form', 'laydate', 'fileChoose', 'dropdown', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var admin = layui.admin;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var fileChoose = layui.fileChoose;
+        var xmSelect = layui.xmSelect;
+
+        if('init'){
+            var day1 = new Date();
+            day1.setDate(day1.getDate() - 6);
+            vm.startTime1 = day1.format("yyyy-MM-dd");
+            vm.endTime1=new Date().format("yyyy-MM-dd");
+            laydate.render({
+                elem: '#dayInput',
+                type: 'date',
+                range: '~',
+                trigger: 'click',
+                value:vm.startTime1+' ~ '+vm.endTime1,
+                done: function(value, date, endDate){
+                    vm.startTime1 = value.split(" ~ ")[0];
+                    vm.endTime1=value.split(" ~ ")[1];
+                    vm.echart_search.startTime=value.split(" ~ ")[0];
+                    vm.echart_search.endTime=value.split(" ~ ")[1];
+                }
+            });
+
+            vm.startTime2 = dateFormat(new Date(), 'yyyy-MM-dd') +' 00';
+            vm.endTime2=dateFormat(new Date(), 'yyyy-MM-dd HH');
+            laydate.render({
+                elem: '#hourInput',
+                type: 'datetime',
+                trigger: 'click',
+                value: vm.startTime2+' ~ '+vm.endTime2,
+                format: 'yyyy-MM-dd HH',
+                range: '~',
+                done: function(value, date, endDate){
+                    vm.startTime2 = value.split(" ~ ")[0];
+                    vm.endTime2=value.split(" ~ ")[1];
+                    vm.echart_search.startTime=value.split(" ~ ")[0];
+                    vm.echart_search.endTime=value.split(" ~ ")[1];
+                }
+            });
+
+            vm.startTime3 = dateFormat(new Date(), 'yyyy-MM-dd') +' 00:00';
+            vm.endTime3=dateFormat(new Date(), 'yyyy-MM-dd HH:mm');
+            laydate.render({
+                elem: '#minuteInput',
+                type: 'datetime',
+                trigger: 'click',
+                value: vm.startTime3+' ~ '+vm.endTime3,
+                format: 'yyyy-MM-dd HH:mm',
+                range: '~',
+                done: function(value, date, endDate){
+                    vm.startTime3 = value.split(" ~ ")[0];
+                    vm.endTime3=value.split(" ~ ")[1];
+                    vm.echart_search.startTime=value.split(" ~ ")[0];
+                    vm.echart_search.endTime=value.split(" ~ ")[1];
+                }
+            });
+        }
+
+
+        form.on('select(timeType)', function(data){
+          console.log('________________')
+          console.log(vm.startTime1,vm.endTime1);
+          console.log(vm.startTime2,vm.endTime2);
+          console.log(vm.startTime3,vm.endTime3);
+          $('#day_time_select').hide();
+          $('#hour_time_select').hide();
+          $('#minute_time_select').hide();
+          switch (data.value) {
+              case 'day':
+                  $('#day_time_select').show();
+                  vm.echart_search={
+                    "id":vm.curMarker.pointId,
+                    "type":vm.curMarker.code,
+                    "startTime":vm.startTime1,
+                    "endTime":vm.endTime1
+                  }
+                  break;
+              case 'hour':
+                  $('#hour_time_select').show();
+                  vm.echart_search={
+                    "id":vm.curMarker.pointId,
+                    "type":vm.curMarker.code,
+                    "startTime":vm.startTime2,
+                    "endTime":vm.endTime2
+                  }
+                  break;
+              case 'minute':
+                  $('#minute_time_select').show();
+                  vm.echart_search={
+                    "id":vm.curMarker.pointId,
+                    "type":vm.curMarker.code,
+                    "startTime":vm.startTime3,
+                    "endTime":vm.endTime3
+                  }
+                  break;
+          }
+
+          console.log(vm.echart_search)
+        });  
+
+        //监听提交
+        form.on('submit(tbAdvTbSearch)', function(data){
+            var ajaxUrl='';
+            switch (data.field.timeType) {
+                case 'day':
+                    ajaxUrl=baseUrl + "dq/screen/getDayData";
+                    break;
+                case 'hour':
+                    ajaxUrl=baseUrl + "dq/screen/getHourData";
+                    // vm.echart_search.startTime=vm.echart_search.startTime.slice(0,13);
+                    // vm.echart_search.endTime=vm.echart_search.endTime.slice(0,13);
+                    break;
+                case 'minute':
+                    ajaxUrl=baseUrl + "dq/screen/getMinuteData";
+                    // vm.echart_search.startTime=vm.echart_search.startTime.slice(0,16);
+                    // vm.echart_search.endTime=vm.echart_search.endTime.slice(0,16);
+                    break;
+            }
+            $.ajax({
+                type: "post",
+                url: ajaxUrl,
+                dataType: "json",
+                contentType:"application/json; charset=utf-8",
+                data: JSON.stringify(vm.echart_search),
+                success: function(res) {
+                    var echartJson=res.data;
+                    for (var i = 0; i < echartJson.series.length; i++) {
+                        echartJson.series[i].type='line';
+                    }
+                    var myChart = echarts.init(document.getElementById('main'),'macarons');
+                    var option={
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: echartJson.legend,
+                            selectedMode:'multiple',
+                            selected: {
+                              'AQI': true,
+                              'PM2.5': false,
+                              'PM10': false,
+                              'SO2': false,
+                              'NO2': false,
+                              'CO': false,
+                              'O3': false
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: echartJson.xaxis
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: echartJson.series
+                    };
+
+                    myChart.setOption(option);
+                },
+            });
+            return false;
+        });
+
+        form.render();
+
+        if('默认'){
+            $('#hour_time_select').show();
+            vm.echart_search={
+                  "id":vm.curMarker.pointId,
+                  "type":vm.curMarker.code,
+                  "startTime":vm.startTime2,
+                  "endTime":vm.endTime2
+            }
+            $('#tbAdvTbSearch').trigger('click');
+        }
+    });
+</script>

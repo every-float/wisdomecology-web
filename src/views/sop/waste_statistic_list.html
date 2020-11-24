@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>废气/废水 统计报表</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+			.well{overflow:auto;}
+			.tabItem{
+				width: 42px;
+				height: 24px;
+				line-height: 24px;
+				border: 1px solid #DDD;
+				text-align: center;
+				float:right;
+				margin:9px 0;
+			}
+			.activeItem{
+				background:#009688;
+				color:#FFF;
+				border: 1px solid #FFF;
+			}
+			.layui-form-label{width:35px;}
+			/* 表格样式 */
+			.layui-table{color:#666;}
+			.layui-table tbody{
+				border: 1px solid #E6E6E6;
+				position:absolute;
+				overflow:auto;
+			}
+			.layui-table tr{
+				min-width:100%;
+				height: 38px;
+			}
+			.layui-table tr:nth-child(1), .layui-table tr:nth-child(2), .layui-table tr:nth-child(1):hover, .layui-table tr:nth-child(2):hover{
+				background:#F2F2F2;
+			}
+			.layui-table th{
+				border:1px solid #E6E6E6;
+			}
+			.layui-table tr th, .layui-table tr td{
+				min-width: 70px;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<span>污染源信息</span>
+							<div class="tabItem" :class="tabIndex==2?'activeItem':''" @click="stypeChange(2)">废水</div>
+							<div class="tabItem" :class="tabIndex==1?'activeItem':''" @click="stypeChange(1)">废气</div>
+							<div class="tabItem" :class="tabIndex==0?'activeItem':''" @click="stypeChange(0)">全部</div>
+						</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="pollutionList" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-body">
+							<div class="layui-tab  layui-tab-brief" lay-filter="reportType">
+								<ul class="layui-tab-title">
+									<li class="layui-this">日报表</li>
+									<li>月报表</li>
+									<li>季报表</li>
+									<li>年报表</li>
+								</ul>
+								<div class="layui-tab-content">
+									<!-- 日报表-start -->
+									<div class="layui-tab-item layui-show">
+										<form class="layui-form" lay-filter="search-form">
+											<div class="layui-form-item" style="margin:0;">
+												<div class="layui-inline">【{{ PSName }} => {{ OutPutName }}】</div>
+												<div class="layui-inline">
+													<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+													<div class="layui-input-inline">
+														<input type="text" id="monitorTime1" v-model="monitorTime" class="layui-input dailyTime" placeholder="请选择监测日期" readonly="readonly" lay-verify="required" />
+													</div>
+												</div>
+												<div class="layui-inline" style="width:60px;">
+													<div class="layui-input-inline">
+														<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+														<button type="button" class="layui-btn layui-btn-normal" @click="exportExcel('dataTable1')">导出Excel</button>
+													</div>
+												</div>
+											</div>
+										</form>
+										<!-- <table id="dataList" lay-filter="dataList" class="layui-table"></table> -->
+										<table class="layui-table" lay-size="sm" v-if="stype=='fq'" id="dataTable1_fq">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="3">烟尘</th>
+													<th colspan="3">二氧化硫</th>
+													<th colspan="3">氮氧化物</th>
+													<th rowspan="2">流量(m³)</th>
+												</tr>
+												<tr>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>折算浓度(mg/m³)</th>
+													<!-- <th>折算排放量(kg)</th> -->
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>折算浓度(mg/m³)</th>
+													<!-- <th>折算排放量(kg)</th> -->
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>折算浓度(mg/m³)</th>
+													<!-- <th>折算排放量(kg)</th> -->
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.yanchen }}</td>
+													<td>{{ vo.yanchenll }}</td>
+													<td>{{ vo.yanchenzs }}</td>
+													<!-- <td>{{ vo.yanchenllzs }}</td> -->
+													<td>{{ vo.so2 }}</td>
+													<td>{{ vo.so2ll }}</td>
+													<td>{{ vo.so2zs }}</td>
+													<!-- <td>{{ vo.so2llzs }}</td> -->
+													<td>{{ vo.no2 }}</td>
+													<td>{{ vo.no2ll }}</td>
+													<td>{{ vo.no2zs }}</td>
+													<!-- <td>{{ vo.no2llzs }}</td> -->
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+										<table class="layui-table" lay-size="sm" v-if="stype=='fs'" id="dataTable1_fs">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="2">化学需氧量(COD)</th>
+													<th colspan="2">氨氮</th>
+													<th colspan="2">总磷</th>
+													<th colspan="2">总氮</th>
+													<th rowspan="2">流量(t)</th>
+													<!-- <th rowspan="2">含氧量(%)</th>
+													<th rowspan="2">温度(℃)</th>
+													<th rowspan="2">湿度(%)</th> -->
+												</tr>
+												<tr>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.cod }}</td>
+													<td>{{ vo.codll }}</td>
+													<td>{{ vo.andan }}</td>
+													<td>{{ vo.andanll }}</td>
+													<td>{{ vo.zonglin }}</td>
+													<td>{{ vo.zonglinll }}</td>
+													<td>{{ vo.zongdan }}</td>
+													<td>{{ vo.zongdanll }}</td>
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<!-- 日报表-end -->
+									<!-- 月报表-start -->
+									<div class="layui-tab-item">
+										<form class="layui-form" lay-filter="search-form">
+											<div class="layui-form-item" style="margin:0;">
+												<div class="layui-inline">【{{ PSName }} => {{ OutPutName }}】</div>
+												<div class="layui-inline">
+													<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+													<div class="layui-input-inline">
+														<input type="text" id="monitorTime2" v-model="monitorTime" class="layui-input" placeholder="请选择监测日期" readonly="readonly" lay-verify="required" />
+													</div>
+												</div>
+												<div class="layui-inline" style="width:60px;">
+													<div class="layui-input-inline">
+														<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+														<button type="button" class="layui-btn layui-btn-normal" @click="exportExcel('dataTable2')">导出Excel</button>
+													</div>
+												</div>
+											</div>
+										</form>
+										<!-- <table id="dataList" lay-filter="dataList" class="layui-table"></table> -->
+										<table class="layui-table" lay-size="sm" v-if="stype=='fq'" id="dataTable2_fq">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="3">烟尘</th>
+													<th colspan="3">二氧化硫</th>
+													<th colspan="3">氮氧化物</th>
+													<th rowspan="2">流量(m³)</th>
+												</tr>
+												<tr>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>折算浓度(mg/m³)</th>
+													<!-- <th>折算排放量(kg)</th> -->
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>折算浓度(mg/m³)</th>
+													<!-- <th>折算排放量(kg)</th> -->
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>折算浓度(mg/m³)</th>
+													<!-- <th>折算排放量(kg)</th> -->
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.yanchen }}</td>
+													<td>{{ vo.yanchenll }}</td>
+													<td>{{ vo.yanchenzs }}</td>
+													<!-- <td>{{ vo.yanchenllzs }}</td> -->
+													<td>{{ vo.so2 }}</td>
+													<td>{{ vo.so2ll }}</td>
+													<td>{{ vo.so2zs }}</td>
+													<!-- <td>{{ vo.so2llzs }}</td> -->
+													<td>{{ vo.no2 }}</td>
+													<td>{{ vo.no2ll }}</td>
+													<td>{{ vo.no2zs }}</td>
+													<!-- <td>{{ vo.no2llzs }}</td> -->
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+										<table class="layui-table" lay-size="sm" v-if="stype=='fs'" id="dataTable2_fs">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="2">化学需氧量(COD)</th>
+													<th colspan="2">氨氮</th>
+													<th colspan="2">总磷</th>
+													<th colspan="2">总氮</th>
+													<th rowspan="2">流量(t)</th>
+													<!-- <th rowspan="2">含氧量(%)</th>
+													<th rowspan="2">温度(℃)</th>
+													<th rowspan="2">湿度(%)</th> -->
+												</tr>
+												<tr>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.cod }}</td>
+													<td>{{ vo.codll }}</td>
+													<td>{{ vo.andan }}</td>
+													<td>{{ vo.andanll }}</td>
+													<td>{{ vo.zonglin }}</td>
+													<td>{{ vo.zonglinll }}</td>
+													<td>{{ vo.zongdan }}</td>
+													<td>{{ vo.zongdanll }}</td>
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<!-- 月报表-end -->
+									<!-- 季报表-start -->
+									<div class="layui-tab-item">
+										<form class="layui-form" lay-filter="search-form">
+											<div class="layui-form-item" style="margin:0;">
+												<div class="layui-inline">【{{ PSName }} => {{ OutPutName }}】</div>
+												<div class="layui-inline">
+													<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+													<div class="layui-input-inline">
+														<input type="text" id="monitorTime3" v-model="monitorTime" class="layui-input" placeholder="请选择监测日期" readonly="readonly" lay-verify="required" />
+													</div>
+													<div class="layui-input-inline">
+														<select v-model="quarterValue" lay-filter="quarterValue" lay-verify="required">
+															<option value="0001">第一季度</option>
+															<option value="0002">第二季度</option>
+															<option value="0003">第三季度</option>
+															<option value="0004">第四季度</option>
+														</select>
+													</div>
+												</div>
+												<div class="layui-inline" style="width:60px;">
+													<div class="layui-input-inline">
+														<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+														<button type="button" class="layui-btn layui-btn-normal" @click="exportExcel('dataTable3')">导出Excel</button>
+													</div>
+												</div>
+											</div>
+										</form>
+										<!-- <table id="dataList" lay-filter="dataList" class="layui-table"></table> -->
+										<table class="layui-table" lay-size="sm" v-if="stype=='fq'" id="dataTable3_fq">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="2">烟尘</th>
+													<th colspan="2">二氧化硫</th>
+													<th colspan="2">氮氧化物</th>
+													<th rowspan="2">流量(m³)</th>
+												</tr>
+												<tr>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.yanchen }}</td>
+													<td>{{ vo.yanchenll }}</td>
+													<td>{{ vo.so2 }}</td>
+													<td>{{ vo.so2ll }}</td>
+													<td>{{ vo.no2 }}</td>
+													<td>{{ vo.no2ll }}</td>
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+										<table class="layui-table" lay-size="sm" v-if="stype=='fs'" id="dataTable3_fs">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="2">化学需氧量(COD)</th>
+													<th colspan="2">氨氮</th>
+													<th colspan="2">总磷</th>
+													<th colspan="2">总氮</th>
+													<th rowspan="2">流量(t)</th>
+													<!-- <th rowspan="2">含氧量(%)</th>
+													<th rowspan="2">温度(℃)</th>
+													<th rowspan="2">湿度(%)</th> -->
+												</tr>
+												<tr>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.cod }}</td>
+													<td>{{ vo.codll }}</td>
+													<td>{{ vo.andan }}</td>
+													<td>{{ vo.andanll }}</td>
+													<td>{{ vo.zonglin }}</td>
+													<td>{{ vo.zonglinll }}</td>
+													<td>{{ vo.zongdan }}</td>
+													<td>{{ vo.zongdanll }}</td>
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<!-- 季报表-end -->
+									<!-- 年报表-start -->
+									<div class="layui-tab-item">
+										<form class="layui-form" lay-filter="search-form">
+											<div class="layui-form-item" style="margin:0;">
+												<div class="layui-inline">【{{ PSName }} => {{ OutPutName }}】</div>
+												<div class="layui-inline">
+													<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+													<div class="layui-input-inline">
+														<input type="text" id="monitorTime4" v-model="monitorTime" class="layui-input" placeholder="请选择监测日期" readonly="readonly" lay-verify="required" />
+													</div>
+												</div>
+												<div class="layui-inline" style="width:60px;">
+													<div class="layui-input-inline">
+														<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+														<button type="button" class="layui-btn layui-btn-normal" @click="exportExcel('dataTable4')">导出Excel</button>
+													</div>
+												</div>
+											</div>
+										</form>
+										<!-- <table id="dataList" lay-filter="dataList" class="layui-table"></table> -->
+										<table class="layui-table" lay-size="sm" v-if="stype=='fq'" id="dataTable4_fq">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="2">烟尘</th>
+													<th colspan="2">二氧化硫</th>
+													<th colspan="2">氮氧化物</th>
+													<th rowspan="2">流量(m³)</th>
+												</tr>
+												<tr>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/m³)</th>
+													<th>排放量(kg)</th>
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.yanchen }}</td>
+													<td>{{ vo.yanchenll }}</td>
+													<td>{{ vo.so2 }}</td>
+													<td>{{ vo.so2ll }}</td>
+													<td>{{ vo.no2 }}</td>
+													<td>{{ vo.no2ll }}</td>
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+										<table class="layui-table" lay-size="sm" v-if="stype=='fs'" id="dataTable4_fs">
+											<tbody :style="{'height':tableHeight+'px','width':tableWidth+'px'}">
+												<tr>
+													<th rowspan="2">时间</th>
+													<th colspan="2">化学需氧量(COD)</th>
+													<th colspan="2">氨氮</th>
+													<th colspan="2">总磷</th>
+													<th colspan="2">总氮</th>
+													<th rowspan="2">流量(t)</th>
+													<!-- <th rowspan="2">含氧量(%)</th>
+													<th rowspan="2">温度(℃)</th>
+													<th rowspan="2">湿度(%)</th> -->
+												</tr>
+												<tr>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+													<th>浓度(mg/L)</th>
+													<th>排放量(kg)</th>
+												</tr>
+												<tr v-for="(vo, index) in dataInfo">
+													<td>{{ vo.mt }}</td>
+													<td>{{ vo.cod }}</td>
+													<td>{{ vo.codll }}</td>
+													<td>{{ vo.andan }}</td>
+													<td>{{ vo.andanll }}</td>
+													<td>{{ vo.zonglin }}</td>
+													<td>{{ vo.zonglinll }}</td>
+													<td>{{ vo.zongdan }}</td>
+													<td>{{ vo.zongdanll }}</td>
+													<td>{{ vo.pfl }}</td>
+												</tr>
+												<tr>
+													<td>平均值</td>
+													<td v-for="(vo, index) in averageArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最大值</td>
+													<td v-for="(vo, index) in maxArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>最小值</td>
+													<td v-for="(vo, index) in minArr">{{ vo }}</td>
+												</tr>
+												<tr>
+													<td>排放总量</td>
+													<td v-for="(vo, index) in totalQuantity">{{ vo }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<!-- 年报表-end -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="../../scripts/math.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery/jquery.table2excel.min.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var pollutionList, dataList;
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs9").height($("body").height()-30);
+			$(".well").height($(".layui-col-xs3").height()-103);
+			vm.tableWidth = $(".layui-show").width();
+			vm.tableHeight = $(".layui-col-xs9").height()-131;
+			window.onresize = function(){
+				$(".layui-col-xs9 .layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs9 .layui-col-xs9").height($("body").height()-30);
+				$(".well").height($(".layui-col-xs3").height()-103);
+				vm.tableWidth = $(".layui-show").width();
+				vm.tableHeight = $(".layui-col-xs9").height()-131;
+			}
+            layui.use(['element', 'table', 'form', 'layer', 'laydate'], function(){
+				var element = layui.element;
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				
+				layui.laydate.render({
+					elem:'#monitorTime1',
+					value:getOneWeek().currentTime,
+					trigger:'click',
+                    done:function(value, date, endDate){
+						vm.monitorTime = value;
+                    }
+				})
+				
+				element.on("tab(reportType)", function(data){
+					switch(data.index){
+						// 日报表
+						case 0:
+							vm.monitorTime = getOneWeek().currentTime;
+							vm.reportType = "daily";
+							layui.laydate.render({
+								elem:'#monitorTime1',
+								value:getOneWeek().currentTime,
+								trigger:'click',
+								done:function(value, date, endDate){
+									vm.monitorTime = value;
+								}
+							})
+							break;
+						// 月报表
+						case 1:
+							vm.monitorTime = getOneWeek().currentTime.substring(0,7);
+							vm.reportType = "monthly";
+							layui.laydate.render({
+								elem:'#monitorTime2',
+								type:"month",
+								value:getOneWeek().currentTime.substring(0,7),
+								trigger:'click',
+								done:function(value, date, endDate){
+									vm.monitorTime = value;
+								}
+							})
+							break;
+						// 季报表
+						case 2:
+							vm.monitorTime = getOneWeek().currentTime.substring(0,4);
+							vm.reportType = "quarter";
+							layui.laydate.render({
+								elem:'#monitorTime3',
+								type:"year",
+								value:getOneWeek().currentTime.substring(0,4),
+								trigger:'click',
+								done:function(value, date, endDate){
+									vm.monitorTime = value;
+								}
+							})
+							break;
+						// 年报表
+						case 3:
+							vm.monitorTime = getOneWeek().currentTime.substring(0,4);
+							vm.reportType = "yearly";
+							layui.laydate.render({
+								elem:'#monitorTime4',
+								type:"year",
+								value:getOneWeek().currentTime.substring(0,4),
+								trigger:'click',
+								done:function(value, date, endDate){
+									vm.monitorTime = value;
+								}
+							})
+							break;
+					}
+					if(vm.stype == "fq"){
+						vm.getGasDataList();
+					}else{
+						vm.getWaterDataList();
+					}
+				})
+                
+				vm.initTree();
+				
+				// 查询监听
+				form.on('submit(toSearch)', function(){
+					if(vm.stype == "fq"){
+						vm.getGasDataList();
+					}else{
+						vm.getWaterDataList();
+					}
+					return false;
+				})
+
+				form.on("select(quarterValue)", function(data){
+					vm.quarterValue = data.value;
+				})
+			})
+		});
+
+		var vm = new Vue({
+			el:"#webPage",
+			data:{
+				tabIndex:0,		// tree类型切换
+				stype:"",
+				PSCode:"",		// 污染源编码
+				PSName:"",
+				OutputCode:"",		// 排放口编码
+				OutPutName:"",
+				reportType:"daily",	// 报表类型
+				monitorTime:getOneWeek().currentTime,		// 查询时间
+				quarterValue:"0001",
+				tableWidth:0,		// 表格宽度
+				tableHeight:0,		// 表格高度
+				dataInfo:[],
+				averageArr:[],
+				maxArr:[],
+				minArr:[],
+				totalQuantity:[],
+			},
+			methods:{
+				// 污染源&排放口列表
+				initTree:function(){
+					if(vm.tabIndex == 0){
+						var wrytype = "fs,fq";
+					}else if(vm.tabIndex == 1){
+						var wrytype = "fq";
+					}else{
+						var wrytype = "fs";
+					}
+					$.ajax({
+						type:"get",
+						url:URL_pollution_company_list,
+						dataType:"json",
+						data:{
+							wrytype:wrytype
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								var treeNodes = ret.data;
+								var setting = {
+									check: {
+										enable: false
+									},
+									data: {
+										simpleData: {
+											enable: true,
+											idKey: 'id',
+											pIdKey: 'parentId'
+										},
+										key: {
+											name: 'name',
+											title: 'name'
+										}
+									},
+									callback: {
+										onClick: vm.treeOnClick
+									}
+								};
+								pollutionList = $.fn.zTree.init($('#pollutionList'), setting, treeNodes);
+								if(treeNodes[0].children && treeNodes[0].children.length){
+									vm.PSCode = treeNodes[0].id;
+									vm.PSName = treeNodes[0].name;
+									vm.OutputCode = treeNodes[0].children[0].id;
+									vm.OutPutName = treeNodes[0].children[0].name;
+									vm.stype = treeNodes[0].children[0].stype;
+									if(treeNodes[0].children[0].stype == "fq"){
+										vm.getGasDataList();
+									}else{
+										vm.getWaterDataList();
+									}
+								}else{
+									vm.PSCode = treeNodes[1].id;
+									vm.PSName = treeNodes[1].name;
+									vm.OutputCode = treeNodes[1].children[0].id;
+									vm.OutPutName = treeNodes[1].children[0].name;
+									vm.stype = treeNodes[1].children[0].stype;
+									if(treeNodes[1].children[0].stype == "fq"){
+										vm.getGasDataList();
+									}else{
+										vm.getWaterDataList();
+									}
+								}
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到信息！");
+						}
+					})
+				},
+
+				treeOnClick:function(event, treeId, treeNode){
+					if(!treeNode.isParent && treeNode.level){
+						vm.PSCode = treeNode.parentId;
+						vm.OutputCode = treeNode.id;
+						vm.PSName = treeNode.getParentNode().name;
+						vm.OutPutName = treeNode.name;
+						vm.stype = treeNode.stype;
+						if(treeNode.stype == "fq"){
+							vm.getGasDataList();
+						}else{
+							vm.getWaterDataList();
+						}
+					}
+				},
+
+				// 树形图类型切换
+				stypeChange:function(tabIndex){
+					if(vm.tabIndex == tabIndex){
+						return false;
+					}else{
+						vm.tabIndex = tabIndex;
+						vm.initTree();
+					}
+				},
+		
+				// 数据信息列表
+				getGasDataList:function(){
+					var index = layer.load(2,{shade:0.6});
+					switch(vm.reportType){
+						case "daily":
+							var url = URL_waste_gas_report_daily;
+							if(vm.tableWidth/11 > 60){
+								$(".layui-table").find("td").width(vm.tableWidth/10);
+							}
+							break;
+						case "monthly":
+							var url = URL_waste_gas_report_monthly;
+							if(vm.tableWidth/11 > 80){
+								$(".layui-table").find("td").width(vm.tableWidth/10);
+							}
+							break;
+						case "quarter":
+							var url = URL_waste_gas_report_quarter;
+							if(vm.tableWidth/8 > 60){
+								$(".layui-table").find("td").width(vm.tableWidth/8);
+							}
+							break;
+						case "yearly":
+							var url = URL_waste_gas_report_yearly;
+							if(vm.tableWidth/8 > 60){
+								$(".layui-table").find("td").width(vm.tableWidth/8);
+							}
+							break;
+					}
+					$.ajax({
+						type:"post",
+						url:url,
+						dataType:"json",
+						data:{
+							PSCode:vm.PSCode,
+							OutputCode:vm.OutputCode,
+							MonitorTime:vm.reportType=="quarter"?(vm.monitorTime+"-"+vm.quarterValue):vm.monitorTime
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.dataInfo = ret.data;
+								var yanchenArr1 = [], yanchenArr2 = [], yanchenArr3 = [], yanchenArr4 = [];
+								var so2Arr1 = [], so2Arr2 = [], so2Arr3 = [], so2Arr4 = [];
+								var nxoyArr1 = [], nxoyArr2 = [], nxoyArr3 = [], nxoyArr4 = [];
+								var flowQuantity = [];
+								for(var i in ret.data){
+									// 时间
+									if(ret.data[i].mt){
+										if(vm.reportType == "daily"){
+											vm.dataInfo[i].mt = gettingTimeYYYMMddhhmmss(ret.data[i].mt).split(" ")[1];
+										}else if(vm.reportType == "monthly"){
+											vm.dataInfo[i].mt = gettingTime(ret.data[i].mt);
+										}else{
+											vm.dataInfo[i].mt = ret.data[i].mt;
+										}
+									}else{
+										vm.dataInfo[i].mt = "-";
+									}
+
+									// 烟尘浓度
+									if(ret.data[i].yanchen){
+										yanchenArr1.push(confirmCalculation(ret.data[i].yanchen));
+										vm.dataInfo[i].yanchen = confirmCalculation(ret.data[i].yanchen);
+									}else{
+										vm.dataInfo[i].yanchen = "-";
+									}
+									// 烟尘折算浓度
+									if(ret.data[i].yanchenll){
+										yanchenArr2.push(confirmCalculation(ret.data[i].yanchenll));
+										vm.dataInfo[i].yanchenll = confirmCalculation(ret.data[i].yanchenll);
+									}else{
+										vm.dataInfo[i].yanchenll = "-";
+									}
+									// 烟尘排放量
+									if(ret.data[i].yanchenzs){
+										yanchenArr3.push(confirmCalculation(ret.data[i].yanchenzs));
+										vm.dataInfo[i].yanchenzs = confirmCalculation(ret.data[i].yanchenzs);
+									}else{
+										vm.dataInfo[i].yanchenzs = "-";
+									}
+									// 烟尘折算排放量
+									// if(ret.data[i].yanchenllzs){
+									// 	yanchenArr4.push(confirmCalculation(ret.data[i].yanchenllzs));
+									// 	vm.dataInfo[i].yanchenllzs = confirmCalculation(ret.data[i].yanchenllzs);
+									// }else{
+									// 	vm.dataInfo[i].yanchenllzs = "-";
+									// }
+
+									// 二氧化硫浓度
+									if(ret.data[i].so2){
+										so2Arr1.push(confirmCalculation(ret.data[i].so2));
+										vm.dataInfo[i].so2 = confirmCalculation(ret.data[i].so2);
+									}else{
+										vm.dataInfo[i].so2 = "-";
+									}
+									// 二氧化硫排放量
+									if(ret.data[i].so2ll){
+										so2Arr2.push(confirmCalculation(ret.data[i].so2ll));
+										vm.dataInfo[i].so2ll = confirmCalculation(ret.data[i].so2ll);
+									}else{
+										vm.dataInfo[i].so2ll = "-";
+									}
+									// 二氧化硫折算浓度
+									if(ret.data[i].so2zs){
+										so2Arr3.push(confirmCalculation(ret.data[i].so2zs));
+										vm.dataInfo[i].so2zs = confirmCalculation(ret.data[i].so2zs);
+									}else{
+										vm.dataInfo[i].so2zs = "-";
+									}
+									// 二氧化硫折算排放量
+									// if(ret.data[i].so2llzs){
+									// 	so2Arr4.push(confirmCalculation(ret.data[i].so2llzs));
+									// 	vm.dataInfo[i].so2llzs = confirmCalculation(ret.data[i].so2llzs);
+									// }else{
+									// 	vm.dataInfo[i].so2llzs = "-";
+									// }
+
+									// 氮氧化物浓度
+									if(ret.data[i].no2){
+										nxoyArr1.push(confirmCalculation(ret.data[i].no2));
+										vm.dataInfo[i].no2 = confirmCalculation(ret.data[i].no2);
+									}else{
+										vm.dataInfo[i].no2 = "-";
+									}
+									// 氮氧化物排放量
+									if(ret.data[i].no2ll){
+										nxoyArr2.push(confirmCalculation(ret.data[i].no2ll));
+										vm.dataInfo[i].no2ll = confirmCalculation(ret.data[i].no2ll);
+									}else{
+										vm.dataInfo[i].no2ll = "-";
+									}
+									// 氮氧化物折算浓度
+									if(ret.data[i].no2zs){
+										nxoyArr3.push(confirmCalculation(ret.data[i].no2zs));
+										vm.dataInfo[i].no2zs = confirmCalculation(ret.data[i].no2zs);
+									}else{
+										vm.dataInfo[i].no2zs = "-";
+									}
+									// 氮氧化物折算排放量
+									// if(ret.data[i].no2llzs){
+									// 	nxoyArr4.push(confirmCalculation(ret.data[i].no2llzs));
+									// 	vm.dataInfo[i].no2llzs = confirmCalculation(ret.data[i].no2llzs);
+									// }else{
+									// 	vm.dataInfo[i].no2llzs = "-";
+									// }
+
+									// 流量
+									if(ret.data[i].pfl){
+										flowQuantity.push(confirmCalculation(ret.data[i].pfl));
+										vm.dataInfo[i].pfl = confirmCalculation(ret.data[i].pfl);
+									}else{
+										vm.dataInfo[i].pfl = "-";
+									}
+								}
+
+								// 计算平均值
+								vm.averageArr = [];
+								vm.getAverage(yanchenArr1);
+								vm.getAverage(yanchenArr2);
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.getAverage(yanchenArr3);
+									// vm.getAverage(yanchenArr4);
+								}
+								vm.getAverage(so2Arr1);
+								vm.getAverage(so2Arr2);
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.getAverage(so2Arr3);
+									// vm.getAverage(so2Arr4);
+								}
+								vm.getAverage(nxoyArr1);
+								vm.getAverage(nxoyArr2);
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.getAverage(nxoyArr3);
+									// vm.getAverage(nxoyArr4);
+								}
+								vm.getAverage(flowQuantity);
+
+								// 最大值
+								vm.maxArr = [];
+								vm.maxArr.push(yanchenArr1.length?Math.max(...yanchenArr1):"-");
+								vm.maxArr.push(yanchenArr2.length?Math.max(...yanchenArr2):"-");
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.maxArr.push(yanchenArr3.length?Math.max(...yanchenArr3):"-");
+									// vm.maxArr.push(yanchenArr4.length?Math.max(...yanchenArr4):"-");
+								}
+								vm.maxArr.push(so2Arr1.length?Math.max(...so2Arr1):"-");
+								vm.maxArr.push(so2Arr2.length?Math.max(...so2Arr2):"-");
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.maxArr.push(so2Arr3.length?Math.max(...so2Arr3):"-");
+									// vm.maxArr.push(so2Arr4.length?Math.max(...so2Arr4):"-");
+								}
+								vm.maxArr.push(nxoyArr1.length?Math.max(...nxoyArr1):"-");
+								vm.maxArr.push(nxoyArr2.length?Math.max(...nxoyArr2):"-");
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.maxArr.push(nxoyArr3.length?Math.max(...nxoyArr3):"-");
+									// vm.maxArr.push(nxoyArr4.length?Math.max(...nxoyArr4):"-");
+								}
+								vm.maxArr.push(flowQuantity.length?Math.max(...flowQuantity):"-");
+
+								// 最小值
+								vm.minArr = [];
+								vm.minArr.push(yanchenArr1.length?Math.min(...yanchenArr1):"-");
+								vm.minArr.push(yanchenArr2.length?Math.min(...yanchenArr2):"-");
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.minArr.push(yanchenArr3.length?Math.min(...yanchenArr3):"-");
+									// vm.minArr.push(yanchenArr4.length?Math.min(...yanchenArr4):"-");
+								}
+								vm.minArr.push(so2Arr1.length?Math.min(...so2Arr1):"-");
+								vm.minArr.push(so2Arr2.length?Math.min(...so2Arr2):"-");
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.minArr.push(so2Arr3.length?Math.min(...so2Arr3):"-");
+									// vm.minArr.push(so2Arr4.length?Math.min(...so2Arr4):"-");
+								}
+								vm.minArr.push(nxoyArr1.length?Math.min(...nxoyArr1):"-");
+								vm.minArr.push(nxoyArr2.length?Math.min(...nxoyArr2):"-");
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.minArr.push(nxoyArr3.length?Math.min(...nxoyArr3):"-");
+									// vm.minArr.push(nxoyArr4.length?Math.min(...nxoyArr4):"-");
+								}
+								vm.minArr.push(flowQuantity.length?Math.min(...flowQuantity):"-");
+
+								// 排放总量
+								vm.totalQuantity = [];
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(yanchenArr2);
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.getTotalQuantity("-");
+									// vm.getTotalQuantity(yanchenArr4);
+								}
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(so2Arr2);
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.getTotalQuantity("-");
+									// vm.getTotalQuantity(so2Arr4);
+								}
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(nxoyArr2);
+								if(vm.reportType=="daily" || vm.reportType == "monthly"){
+									vm.getTotalQuantity("-");
+									// vm.getTotalQuantity(nxoyArr4);
+								}
+								vm.getTotalQuantity(flowQuantity);
+
+								layer.close(index);
+							}else{
+								layer.close(index);
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.close(index);
+							layer.msg("网络访问出错，查询失败！");
+						}
+					})
+				},
+				getWaterDataList:function(){
+					var index = layer.load(2,{shade:0.6});
+					if(vm.tableWidth/10 > 60){
+						$(".layui-table").find("td").width(vm.tableWidth/10);
+					}
+					switch(vm.reportType){
+						case "daily":
+							var url = URL_waste_water_report_daily;
+							break;
+						case "monthly":
+							var url = URL_waste_water_report_monthly;
+							break;
+						case "quarter":
+							var url = URL_waste_water_report_quarter;
+							break;
+						case "yearly":
+							var url = URL_waste_water_report_yearly;
+							break;
+					}
+					$.ajax({
+						type:"post",
+						url:url,
+						dataType:"json",
+						data:{
+							PSCode:vm.PSCode,
+							OutputCode:vm.OutputCode,
+							MonitorTime:vm.reportType=="quarter"?(vm.monitorTime+"-"+vm.quarterValue):vm.monitorTime
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.dataInfo = ret.data;
+								var codArr1 = [], codArr2 = [];
+								var andanArr1 = [], andanArr2 = [];
+								var zonglinArr1 = [], zonglinArr2 = [];
+								var zongdanArr1 = [], zongdanArr2 = [];
+								var flowQuantity = [];
+								for(var i in ret.data){
+									// 时间
+									if(ret.data[i].mt){
+										if(vm.reportType == "daily"){
+											vm.dataInfo[i].mt = gettingTimeYYYMMddhhmmss(ret.data[i].mt).split(" ")[1];
+										}else if(vm.reportType == "monthly"){
+											vm.dataInfo[i].mt = gettingTimeYYYMMddhhmmss(ret.data[i].mt).split(" ")[0];
+										}else{
+											vm.dataInfo[i].mt = ret.data[i].mt;
+										}
+									}else{
+										vm.dataInfo[i].mt = "-";
+									}
+
+									// COD浓度
+									if(ret.data[i].cod){
+										codArr1.push(confirmCalculation(ret.data[i].cod));
+										vm.dataInfo[i].cod = confirmCalculation(ret.data[i].cod);
+									}else{
+										vm.dataInfo[i].cod = "-";
+									}
+									// COD排放量
+									if(ret.data[i].codll){
+										codArr2.push(confirmCalculation(ret.data[i].codll));
+										vm.dataInfo[i].codll = confirmCalculation(ret.data[i].codll);
+									}else{
+										vm.dataInfo[i].codll = "-";
+									}
+
+									// 氨氮浓度
+									if(ret.data[i].andan){
+										andanArr1.push(confirmCalculation(ret.data[i].andan));
+										vm.dataInfo[i].andan = confirmCalculation(ret.data[i].andan);
+									}else{
+										vm.dataInfo[i].andan = "-";
+									}
+									// 氨氮排放量
+									if(ret.data[i].andanll){
+										andanArr2.push(confirmCalculation(ret.data[i].andanll));
+										vm.dataInfo[i].andanll = confirmCalculation(ret.data[i].andanll);
+									}else{
+										vm.dataInfo[i].andanll = "-";
+									}
+
+									// 总氮浓度
+									if(ret.data[i].zongdan){
+										zongdanArr1.push(confirmCalculation(ret.data[i].zongdan));
+										vm.dataInfo[i].zongdan = confirmCalculation(ret.data[i].zongdan);
+									}else{
+										vm.dataInfo[i].zongdan = "-";
+									}
+									// 总氮排放量
+									if(ret.data[i].zongdanll){
+										zongdanArr2.push(confirmCalculation(ret.data[i].zongdanll));
+										vm.dataInfo[i].zongdanll = confirmCalculation(ret.data[i].zongdanll);
+									}else{
+										vm.dataInfo[i].zongdanll = "-";
+									}
+
+									// 总磷浓度
+									if(ret.data[i].zonglin){
+										zonglinArr1.push(confirmCalculation(ret.data[i].zonglin));
+										vm.dataInfo[i].zonglin = confirmCalculation(ret.data[i].zonglin);
+									}else{
+										vm.dataInfo[i].zonglin = "-";
+									}
+									// 总磷排放量
+									if(ret.data[i].zonglinll){
+										zonglinArr2.push(confirmCalculation(ret.data[i].zonglinll));
+										vm.dataInfo[i].zonglinll = confirmCalculation(ret.data[i].zonglinll);
+									}else{
+										vm.dataInfo[i].zonglinll = "-";
+									}
+
+									// 流量
+									if(ret.data[i].pfl){
+										flowQuantity.push(confirmCalculation(ret.data[i].pfl));
+										vm.dataInfo[i].pfl = confirmCalculation(ret.data[i].pfl);
+									}else{
+										vm.dataInfo[i].pfl = "-";
+									}
+								}
+
+								// 计算平均值
+								vm.averageArr = [];
+								vm.getAverage(codArr1);
+								vm.getAverage(codArr2);
+								vm.getAverage(andanArr1);
+								vm.getAverage(andanArr2);
+								vm.getAverage(zongdanArr1);
+								vm.getAverage(zongdanArr2);
+								vm.getAverage(zonglinArr1);
+								vm.getAverage(zonglinArr2);
+								vm.getAverage(flowQuantity);
+
+								// 最大值
+								vm.maxArr = [];
+								vm.maxArr.push(codArr1.length?Math.max(...codArr1):"-");
+								vm.maxArr.push(codArr2.length?Math.max(...codArr2):"-");
+								vm.maxArr.push(andanArr1.length?Math.max(...andanArr1):"-");
+								vm.maxArr.push(andanArr2.length?Math.max(...andanArr2):"-");
+								vm.maxArr.push(zongdanArr1.length?Math.max(...zongdanArr1):"-");
+								vm.maxArr.push(zongdanArr2.length?Math.max(...zongdanArr2):"-");
+								vm.maxArr.push(zonglinArr1.length?Math.max(...zonglinArr1):"-");
+								vm.maxArr.push(zonglinArr2.length?Math.max(...zonglinArr2):"-");
+								vm.maxArr.push(flowQuantity.length?Math.max(...flowQuantity):"-");
+
+								// 最小值
+								vm.minArr = [];
+								vm.minArr.push(codArr1.length?Math.min(...codArr1):"-");
+								vm.minArr.push(codArr2.length?Math.min(...codArr2):"-");
+								vm.minArr.push(andanArr1.length?Math.min(...andanArr1):"-");
+								vm.minArr.push(andanArr2.length?Math.min(...andanArr2):"-");
+								vm.minArr.push(zongdanArr1.length?Math.min(...zongdanArr1):"-");
+								vm.minArr.push(zongdanArr2.length?Math.min(...zongdanArr2):"-");
+								vm.minArr.push(zonglinArr1.length?Math.min(...zonglinArr1):"-");
+								vm.minArr.push(zonglinArr2.length?Math.min(...zonglinArr2):"-");
+								vm.minArr.push(flowQuantity.length?Math.min(...flowQuantity):"-");
+
+								// 排放总量
+								vm.totalQuantity = [];
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(codArr2);
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(andanArr2);
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(zongdanArr2);
+								vm.getTotalQuantity("-");
+								vm.getTotalQuantity(zonglinArr2);
+								vm.getTotalQuantity(flowQuantity);
+
+								layer.close(index);
+							}else{
+								layer.close(index);
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.close(index);
+							layer.msg("网络访问出错，查询失败！");
+						}
+					})
+				},
+
+				// 平均值计算
+				getAverage:function(arr){
+					var totalNum = 0;
+					if(arr.length){
+						var totalNum = arr[0];
+						for(var i = 1; i < arr.length; i++){
+							totalNum = math.format(math.add(math.bignumber(totalNum), math.bignumber(arr[i])));
+						}
+						vm.averageArr.push(confirmCalculation(math.format(math.divide(math.bignumber(totalNum), math.bignumber(arr.length)))));
+					}else{
+						vm.averageArr.push("-");
+					}
+				},
+
+				// 排放总量计算
+				getTotalQuantity:function(arr){
+					if(typeof arr == "string"){
+						vm.totalQuantity.push(arr);
+					}else{
+						if(arr.length){
+							var totalNum = arr[0];
+							for(var i = 1; i < arr.length; i++){
+								totalNum = math.format(math.add(math.bignumber(totalNum), math.bignumber(arr[i])))
+							}
+							vm.totalQuantity.push(confirmCalculation(totalNum));
+						}else{
+							vm.totalQuantity.push("-");
+						}
+					}
+				},
+
+				// 导出Excel
+				exportExcel:function(idName){
+					switch(vm.reportType){
+						case "daily":
+							var fileName = vm.PSName+vm.OutPutName+"日报表";	//对下载的文件命名
+							break;
+						case "monthly":
+							var fileName = vm.PSName+vm.OutPutName+"月报表";	//对下载的文件命名
+							break;
+						case "quarter":
+							var fileName = vm.PSName+vm.OutPutName+"季度报表";	//对下载的文件命名
+							break;
+						case "yearly":
+							var fileName = vm.PSName+vm.OutPutName+"年报表";	//对下载的文件命名
+							break;
+					}
+					$("#"+idName+"_"+vm.stype).table2excel({
+						// 不被导出的表格行的CSS class类
+						// exclude: ".noExl",
+						name: "Excel Document Name",	// 导出的Excel文档的名称
+						filename: fileName+".xls",	// Excel文件的名称
+						fileext: ".xls",
+						exclude_img: true,
+						exclude_links: true,
+						exclude_inputs: true
+					});
+					return false;
+				},
+			}
+		})
+
+		// 获取以当前时间为截止时间的一个星期的时间段
+		function getOneWeek(){
+			var currentTime = new Date().getTime();
+			var previousTime = currentTime - 24*60*60*1000*6;
+			var weekTime = {
+				"previousTime":gettingTime(previousTime).split(" ")[0],
+				"currentTime":gettingTime(currentTime).split(" ")[0]
+			}
+			return weekTime;
+		}
+
+		// 数值相加
+		function numAdd(arr){
+			var numCount = math.chain(math.bignumber(arr[0]));
+			for(var i = 1; i < arr.length; i++){
+				numCount.add(math.bignumber(arr[i]));
+			}
+			return numCount;
+		}
+		
+		// 保留两位小数
+		function confirmCalculation(num){
+			if(typeof num=="string"){
+				if(num.indexOf("+")==-1 && Number(num) % 1 === 0){
+					return num;
+				}else{
+					var y = num.indexOf(".") + 1;//获取小数点的位置
+					var count = num.length - y;//获取小数点后的个数
+					if(count <= 2){
+						return num;
+					}else{
+						if(num.indexOf("+")==-1){
+							num = math.multiply(math.bignumber(Number(num)),100);
+							num = math.round(Number(num));
+							num = math.format(math.divide(math.bignumber(Number(num)),100));
+							if(String(num).indexOf("+")==-1){
+								return num;
+							}else{
+								return parseFloat(num).toFixed(2);
+							}
+						}else{
+							return parseFloat(num).toFixed(2);
+						}
+					}
+				}
+			}else{
+				if(num % 1 === 0){
+					return num;
+				}else{
+					var y = String(num).indexOf(".") + 1;//获取小数点的位置
+					var count = String(num).length - y;//获取小数点后的个数
+					if(count <= 2){
+						return num;
+					}else{
+						if(String(num).indexOf("+")==-1){
+							num = math.multiply(math.bignumber(num),100);
+							num = math.round(num);
+							num = math.format(math.divide(math.bignumber(num),100));
+							if(String(num).indexOf("+")==-1){
+								return num;
+							}else{
+								return parseFloat(num).toFixed(2);
+							}
+						}else{
+							return parseFloat(num).toFixed(2);
+						}
+					}
+				}
+			}
+		}
+	</script>
+</html>

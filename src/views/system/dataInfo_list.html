@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>数据字典</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">数据类型
+			<div class="layui-btn-group" style="margin-bottom: 10px;float: right">
+				<button type="button" class="layui-btn layui-btn-sm" onclick="addType()">新增</button>
+				<button type="button" class="layui-btn layui-btn-sm" onclick="editType()">修改</button>
+				<button type="button" class="layui-btn layui-btn-sm" onclick="delType()">删除</button>
+			</div>
+		</div>
+		<div class="layui-card-body">
+			<div class="well">
+			<ul id="zTreeList" class="ztree" style="margin-top:0; width:100%;height: 467px;overflow: auto;"></ul>
+			</div>
+		</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+		<div class="layui-card-header">数据信息</div>
+		<div class="layui-card-body">
+			<script type="text/html" id="toolbar">
+				<button type="button" class="layui-btn layui-btn-primary" onclick="add()">新增</button>
+				<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+			</script>
+			<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+			<script type="text/html" id="barOpt">
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			</script>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+<script type="text/javascript" src="js/dataInfo_list.js"></script>
+<link rel="stylesheet" href="../../scripts/ztree/bootstrapStyle/bootstrapStyle.css" type="text/css">
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+</body>
+</html>

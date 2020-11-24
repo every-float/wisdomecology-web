@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>联系人列表</title>
+    <link href="../../layuiadmin/layui/css/layui.css" rel="stylesheet" type="text/css">
+    <link href="../../layuiadmin/style/formSelects-v4.css" rel="stylesheet" type="text/css">
+    <link href="../../css/admin.css" rel="stylesheet" type="text/css">
+    <link href="../../css/main.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="layui-card">
+      <table id="contactList" class="layui-table" lay-filter="contactList"></table>
+    </div>
+  </body>
+	<script src="../../common/commonUrl.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../common/commonJs.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+    var userId;
+    $(function(){
+      getContactList();
+      layui.use('table',function(){
+        var table = layui.table;
+        table.on("radio(contactList)", function(obj){
+          userId = obj.data.token;
+        })
+      })
+    })
+
+    // 获取用户列表
+    function getContactList(){
+      layui.use(['table', 'layer'],function(){
+        var table = layui.table;
+        var layer = layui.layer;
+
+        layer.load(2,{shade:0.5});
+        table.render({
+          elem:'#contactList',
+          url:baseUrl+"index/getXJAppOnlineUserList",
+          page: true,
+          toolbar: false,
+          cols: [[
+            {type: 'radio', fixed: 'left'},
+            {title: '序号', align: 'center', templet:function(d){
+              return d.LAY_TABLE_INDEX+1;
+            }},
+            {field: 'device_name', title: '设备名称', width:180, align: 'center'},
+            {field: 'device_model', title: '设备类型', minWidth:180, align: 'center'},
+            {field: 'real_name', title: '用户姓名', width:180, align: 'center'},
+            // {field: 'depart_name', title: '公司名称', width:220, align: 'center'}
+          ]],
+          done:function(){
+            layer.closeAll("loading");
+          }
+        })
+      })
+    }
+
+    function getUserId(){
+      return userId;
+    }
+  </script>
+</html>

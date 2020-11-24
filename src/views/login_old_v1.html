@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>西青区智慧生态环境大数据分析及指挥调度平台控制台</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../layuiadmin/layui/css/layui.css" media="all">
+		<script type="text/javascript">
+			(function() {
+				// 适配
+				var baseWidth = 1920;
+				var baseHeight = 1080;
+				var baseHtmlFontSize = 100;
+				
+				setHtmlFontSize();
+				if (window.innerHeight >= 560) {
+					setHtmlFontSize();
+				} else {
+					document.documentElement.style.fontSize = 560 / baseHeight * baseHtmlFontSize + 'px';
+				}
+				window.addEventListener('resize', function() {
+					if (window.innerHeight >= 560) {
+						setHtmlFontSize();
+					}
+				});
+				
+				function setHtmlFontSize() {
+					var heightScale = Math.min(baseHeight, window.innerHeight) / baseHeight;
+					var fontSize = heightScale * baseHtmlFontSize;
+					document.documentElement.style.fontSize = fontSize + 'px';
+				}
+			})();
+		</script>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+				border: 0;
+				box-sizing: border-box;
+			}
+			html, body{
+				height: 100%;
+			}
+			#app{
+				height: 100%;
+				background: url(../images/login_bg_v1.png) no-repeat center;
+				background-size: cover;
+				min-height: 560px;
+				min-width: 900px;
+				position: relative;
+			}
+			.login_header{
+				position: absolute;
+				width: 100%;
+				top: 0;
+				left: 0;
+				height: 0.8rem;
+				background: url(../images/login_head_v1.png) no-repeat center;
+				background-size: auto 100%;
+			}
+			.login_content{
+				position: absolute;
+				width: 5.08rem;
+				height: 5.95rem;
+				background: url(../images/login_input_v1.png) no-repeat center;
+				background-size: 100%;
+				top: 2.75rem;
+				right: 1.98rem;
+				z-index: 1;
+			}
+			.login_main{
+				width: 4.8rem;
+				height: 5.03rem;
+				margin-left: 0.08rem;
+				padding: 0.49rem 0.33rem 0.56rem 0.29rem;
+			}
+			.login_user_icon{
+				position: absolute;
+				width: 0.5rem;
+				height: 0.5rem;
+				background: url(../images/login_user_icon_v1.png) no-repeat center;
+				background-size: 0.22rem 0.24rem;
+				top: 0;
+				left: 0;
+			}
+			.login_pwd_icon{
+				position: absolute;
+				width: 0.5rem;
+				height: 0.5rem;
+				background: url(../images/login_pwd_icon_v1.png) no-repeat center;
+				background-size: 0.22rem 0.24rem;
+				top: 0;
+				left: 0;
+			}
+			.cus_input{
+				border: none;
+				background: none;
+				outline: none;
+				height: 100%;
+				width: 100%;
+				font-size: 0.2rem;
+				color: #FFFFFD;
+				letter-spacing: 0.03rem;
+				text-shadow: 0 0 0.03rem #FFFFFF;
+			}
+			.cus_input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+			    color: #4A7192;
+			    text-shadow: none;
+			    letter-spacing: 0.01rem;
+			}
+			.cus_input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+			   color: #4A7192;
+			   text-shadow: none;
+			   letter-spacing: 0.01rem;
+			}
+			.cus_input::-moz-placeholder { /* Mozilla Firefox 19+ */
+			   color: #4A7192;
+			   text-shadow: none;
+			   letter-spacing: 0.01rem;
+			}
+			.cus_input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+			   color: #4A7192;
+			   text-shadow: none;
+			   letter-spacing: 0.01rem;
+			}
+			#login{
+				width: 100%;
+				height: 0.59rem;
+				line-height: 0.59rem;
+				text-align: center;
+				background-color: #1E90FF;
+				color: #FFFFFF;
+				letter-spacing: 0.05rem;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="login_header"></div>
+			<div class="login_content">
+				<div class="login_main">
+					<div style="font-size: 0.27rem; color: #FFFDFF; letter-spacing: 1px; line-height: 1; margin-bottom: 0.47rem;">欢迎登录</div>
+					<div style="font-size: 0.20rem; color: #FFFDFF; letter-spacing: 1px; line-height: 1; margin-bottom: 0.21rem;">用户名</div>
+					<div style="height: 0.5rem; background-color: #08284E; padding-left: 0.5rem; position: relative; margin-bottom: 0.39rem;">
+						<div class="login_user_icon"></div>
+						<input class="cus_input" type="text" v-model="username" autocomplete="off" placeholder="请输入用户名" />
+					</div>
+					<div style="font-size: 0.20rem; color: #FFFDFF; letter-spacing: 1px; line-height: 1; margin-bottom: 0.21rem;">密码</div>
+					<div style="height: 0.5rem; background-color: #08284E; padding-left: 0.5rem; position: relative; margin-bottom: 0.39rem;">
+						<div class="login_pwd_icon"></div>
+						<input class="cus_input" type="password" v-model="password" autocomplete="off" placeholder="请输入密码" />
+					</div>
+					<button type="button" id="login" @click="fnLoginIn()">登录</button>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="../scripts/vue/vue.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../layuiadmin/layui/layui.js"></script>
+	<script type="text/javascript" src="../common/commonUrl.js"></script>
+	<script src="../scripts/jquery/jquery-1.11.3.min.js"></script>
+	<script src="../scripts/jquery/jquery.cookie.js"></script>
+	<script type="text/javascript">
+		var layer;
+		var loginLoading;
+		layui.config({
+			base: '../layuiadmin/' //静态资源所在路径
+		}).extend({
+			index: 'lib/index' //主入口模块
+		}).use(['index', 'user'], function() {
+			layui.use(['layer'], function() {
+				layer = layui.layer;
+				vm.init();
+			});
+		});
+		
+		var vm = new Vue({
+		   el: '#app',
+		   data:{
+				username: '',
+				password: ''
+		   },
+		   methods: {
+		       init: function(){
+					// 键盘控制
+					$("body").keydown(function() {
+						if (event.keyCode == "13") { //回车登录
+							vm.fnLoginIn();
+						}
+					});
+		       },
+			   fnLoginIn: function(){
+				   if(vm.username==''||vm.password==''){
+					    layer.msg(
+							'请输入用户名和密码', {
+								icon: 0,
+								time: 2000,
+							}
+						);
+				    }else{
+						loginLoading = layer.load(1, {time: 20*1000});
+						$.ajax({
+							type: "post",
+							url: URL_login,
+							dataType: "json",
+							data: {
+								username: vm.username,
+								password: vm.password,
+								origin: 'web'
+							},
+							success: function(res) {
+								layer.close(loginLoading);
+								console.log(JSON.stringify(res));
+								if(res.code == 0){
+									$.cookie('login_sid_t_we', res.data.accessToken, {path: '/'});
+									window.localStorage.setItem("mc", res.data.mc);
+									//登入成功的提示与跳转
+									layer.msg('登入成功', {
+									  offset: '15px',
+									  icon: 1,
+									  time: 1000
+									}, function(){
+									  location.href = '../theme/theme_1/index.html'; //后台主页
+									});
+								}else{
+									layer.msg(
+										res.msg, {
+											icon: 0,
+											time: 2000
+										}
+									);
+								}
+							},
+							error: function(){
+								layer.close(loginLoading);
+								layer.msg(
+									'请求服务器失败', {
+										icon: 0,
+										time: 2000
+									}
+								);
+							}
+						});
+					}
+			   }
+		   }
+		});
+	</script>
+</html>

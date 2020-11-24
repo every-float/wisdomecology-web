@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<title>污染源企业</title>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+	</head>
+	<body>
+		<input type="hidden" id="baidu_lat" />
+		<input type="hidden" id="baidu_lng" />
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space15">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">所属区域</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="areaTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">企业信息</div>
+						<div class="layui-card-body">
+							<form class="layui-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">企业名称</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" id="search_title">
+										</div>
+									</div>
+									<div class="layui-inline">
+										<div class="layui-input-inline">
+											<button class="layui-btn" lay-submit lay-filter="formSearch">查询</button>
+											<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+										</div>
+									</div>
+								</div>
+							</form>
+							<script type="text/html" id="toolbar">
+								<button type="button" class="layui-btn layui-btn-primary" onclick="add()">新增</button>
+								<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+								<button type="button" class="layui-btn layui-btn-primary" onclick="makeJson()">一键生成json数据</button>
+							</script>
+							<table id="dataGrid" lay-filter="dataGrid"></table>
+							<script type="text/html" id="barOpt">
+								<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+								<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="../../common/baiduMap.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="js/companyInfo_list.js"></script>
+</html>

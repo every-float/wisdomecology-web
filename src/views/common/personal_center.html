@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<link href="../../scripts/cropper/css/cropper.css" rel="stylesheet" type="text/css">
+	<title>个人中心</title>
+	<style>
+		/* 用户信息 */
+		.user-info-head {
+			width: 110px;
+			height: 110px;
+			line-height: 110px;
+			position: relative;
+			display: inline-block;
+			border: 2px solid #eee;
+			border-radius: 50%;
+			overflow: hidden;
+			cursor: pointer;
+			margin: 0 auto;
+		}
+
+		.user-info-head:hover:after {
+			content: '\e681';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			color: #fff;
+			background-color: rgba(0, 0, 0, 0.3);
+			font-size: 28px;
+			padding-top: 2px;
+			font-style: normal;
+			font-family: layui-icon;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		.user-info-head img {
+			width: 110px;
+			height: 110px;
+		}
+
+		.user-info-list-item {
+			position: relative;
+			padding-bottom: 8px;
+		}
+
+		.user-info-list-item > .layui-icon {
+			position: absolute;
+		}
+
+		.user-info-list-item > p {
+			padding-left: 30px;
+		}
+
+		.layui-line-dash {
+			border-bottom: 1px dashed #ccc;
+			margin: 15px 0;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md3">
+				<div class="layui-card">
+					<div class="layui-card-body" pad15="">
+						<div class="text-center layui-text">
+							<div class="user-info-head" id="userInfoHead">
+								<img id="ui_userPhoto" src="../../images/head.jpg" alt=""/>
+							</div>
+							<h2 style="padding-top: 20px;" id="ui_realName"></h2>
+							<p style="padding-top: 8px;"></p>
+						</div>
+						<div class="layui-text" style="padding-top: 30px;">
+							<div class="user-info-list-item">
+								<i class="layui-icon layui-icon-username"></i>
+								<p id="ui_sex"></p>
+							</div>
+							<div class="user-info-list-item">
+								<i class="layui-icon layui-icon-release"></i>
+								<p id="ui_departName"></p>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-md8">
+				<div class="layui-card">
+					<div class="layui-card-body" pad15="">
+						<div class="layui-tab layui-tab-brief" lay-filter="tabBrief">
+							<ul class="layui-tab-title">
+								<li class="layui-this">个人资料</li>
+								<li>修改密码</li>
+
+							</ul>
+							<div class="layui-tab-content">
+								<div class="layui-tab-item layui-show">
+									<div class="layui-form" lay-filter="form1" id="form1">
+										<input type="hidden" id="userId" name="userId"/>
+										<div class="layui-form-item">
+											<label class="layui-form-label" for="">真实姓名</label>
+											<div class="layui-input-inline">
+												<span class="form-control-static" id="realName"></span>
+											</div>
+											<label class="layui-form-label" for="">用户名</label>
+											<div class="layui-input-inline">
+												<span class="form-control-static" id="userName"></span>
+											</div>
+										</div>
+										<div class="layui-form-item">
+											<label class="layui-form-label" for="">组织</label>
+											<div class="layui-input-inline">
+												<span class="form-control-static" id="orgName"></span>
+											</div>
+											<label class="layui-form-label" for="">所属部门</label>
+											<div class="layui-input-inline">
+												<span class="form-control-static" id="departName"></span>
+											</div>
+										</div>
+										<div class="layui-form-item">
+											<label class="layui-form-label" for="">性别</label>
+											<div class="layui-input-inline">
+												<span class="form-control-static" id="sex"></span>
+											</div>
+										</div>
+										<div class="layui-form-item">
+											<label class="layui-form-label" for="">手机</label>
+											<div class="layui-input-inline">
+												<input type="text" class="layui-input" id="phone" name="phone"/>
+											</div>
+											<label class="layui-form-label" for="">邮箱</label>
+											<div class="layui-input-inline">
+												<input type="email" class="layui-input" id="email" name="email"/>
+											</div>
+										</div>
+										<div class="layui-form-item">
+											<div class="layui-input-block">
+												<button class="layui-btn" lay-submit="" lay-filter="btnSave">确认修改</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-tab-item">
+									<div class="layui-form" lay-filter="form2" id="form2">
+										<div class="layui-form-item">
+											<label class="layui-form-label">当前密码</label>
+											<div class="layui-input-inline">
+												<input id="oldPassword" name="oldPassword"
+													   lay-verify="required" lay-vertype="tips" class="layui-input"
+													   type="password" placeholder="请输入密码">
+											</div>
+										</div>
+										<div class="layui-form-item">
+											<label class="layui-form-label">新密码</label>
+											<div class="layui-input-inline">
+												<input id="password" name="password" lay-verify="pass"
+													   lay-vertype="tips" autocomplete="off" id="LAY_password"
+													   class="layui-input" type="password" placeholder="请输入新密码">
+											</div>
+											<div class="layui-form-mid layui-word-aux">6到16个字符</div>
+										</div>
+										<div class="layui-form-item">
+											<label class="layui-form-label">确认新密码</label>
+											<div class="layui-input-inline">
+												<input id="repassword" name="repassword" lay-verify="repass"
+													   lay-vertype="tips" autocomplete="off" class="layui-input"
+													   type="password" placeholder="请再次输入新密码">
+											</div>
+										</div>
+										<div class="layui-form-item">
+											<div class="layui-input-block">
+												<button class="layui-btn" lay-submit="" lay-filter="setmypass">确认修改</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-tab-item">
+									<blockquote class="layui-elem-quote">修改完头像后，刷新页面或者重新登陆后生效</blockquote>
+									<div class="layui-form" lay-filter="form3" id="form3">
+										<div class="layui-form-item">
+											<div class="layui-input-inline">
+												<div class="layui-upload-list">
+
+												</div>
+												<button class="layui-btn" id="editimg">修改头像</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-tab-item">
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/pwd_edit.js"></script>
+	<script type="text/javascript" src="js/photo_edit.js"></script>
+	<script type="text/javascript" src="../../scripts/cropper/cropper.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			//初始化用户信息
+			var userInfo = layui.data('layuiAdmin')['userInfo'];
+			//左侧
+			$('#ui_realName').html(userInfo.realName);
+			$('#ui_sex').html(userInfo.sex);
+			$('#ui_departName').html(userInfo.orgName+' - '+userInfo.departName);
+			$('#ui_userPhoto').attr('src', userInfo.photo);
+
+			$('#userName').html(userInfo.userName);
+			$('#realName').html(userInfo.realName);
+			$('#orgName').html(userInfo.orgName);
+			$('#departName').html(userInfo.departName);
+			$('#sex').html(userInfo.sex);
+			$('#phone').val(userInfo.phone);
+			$('#email').val(userInfo.email);
+			layui.use(['form','element'], function() {
+				var form = layui.form;
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+		function save(){
+			$.ajax({
+				url : URL_index_updateUserInfo,
+				data : {
+					phone: $('#phone').val(),
+					email: $('#email').val()
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						layer.msg(res.msg);
+						//重新获取用户信息
+						top.vm.initUserInfo();
+					}else{
+						layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+	<script type="text/javascript">
+		//初始化
+		$('.layui-upload-list').html('<img src="'+layui.data('layuiAdmin')['userInfo'].photo+'" id="srcimgurl" class="layui-upload-img">');
+
+		layui.extend({
+			croppers: 'modules/croppers' //layui自定义layui组件目录
+		}).use(['form','croppers'], function () {
+			var $ = layui.jquery
+					,form = layui.form
+					,croppers = layui.croppers
+					,layer= layui.layer;
+
+			//创建一个头像上传组件
+			croppers.render({
+				elem: '#userInfoHead'
+				,saveW:150     //保存宽度
+				,saveH:150
+				,mark:1/1    //选取比例
+				,area:'900px'  //弹窗宽度
+				,url: baseUrl+"system/userInfo/updatePhoto"  //图片上传接口返回和（layui 的upload 模块）返回的JOSN一样
+				,done: function(res){ //上传完毕回调
+					//alert(JSON.stringify(res));
+					layer.msg('修改成功');
+					$("#ui_userPhoto").attr('src',res.data.filePath);
+					$.ajax({
+						url : baseUrl+"index/getUserInfo",
+						data : {},
+						type : "post",
+						dataType : "json",
+						beforeSend: function() {
+							// loading show
+						},
+						success : function(res1) {
+							if(res1.code==0){
+								layui.data('layuiAdmin', {key: 'userInfo' ,value: res1.data});
+							}
+						},
+						complete: function () {
+						}
+					});
+				}
+			});
+
+		});
+	</script>
+</body>
+</html>

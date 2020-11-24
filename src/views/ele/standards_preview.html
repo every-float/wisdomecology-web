@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>公告预览</title>
+</head>
+<div class="layui-fluid">
+	<div class="layui-card" style="width: 842px;margin: 0 auto">
+	<div class="layui-card-body">
+			<br>
+			<h1 id="title" style="line-height: 36px">标题</h1>
+			<br>
+			发布时间：<span id="publicityTimeCN">无</span>
+		<hr>
+		<div id="content"></div>
+		<div id="filesList" style="margin-top: 15px;display: none">
+		附件列表>>
+		<input type="hidden" name="files" id="files" class="uploadPanel">
+				
+		</div>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../common/fileupload.js"></script>
+	<script type="text/javascript">
+		var token = getUserToken();
+		//封面
+		var fu = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			objId: 'files',
+			isupload: 0
+		});
+		fu.init();
+	layui.use(['form'], function() {
+		$.ajax({
+			url : URL_standards_detailInfo,
+			data : {
+				standardsId: $.getUrlParam('standardsId')
+			},
+			type : "post",
+			dataType : "json",
+			beforeSend: function() {
+				// loading show
+				layer.load(2, {shade: 0.6});
+			},
+			success : function(res) {
+				//alert(JSON.stringify(res));
+				if(res.code==0){
+					$('#title').html(res.data.title);
+					//$('#noticeAbstract').html(res.data.noticeAbstract);
+					$('#editor').html(res.data.editor);
+					$('#publicityTimeCN').html(new Date(res.data.publicityTime).format("yyyy-MM-dd"));
+					$('#content').html(res.data.content);
+					//附件
+					var files = res.data.files;
+					if(files!=''){
+						$('#filesList').css('display', 'block');
+						fu.uploadPaneledCallBack('files', ObjectParse(files));
+					}
+				}else{
+					
+				}
+			},
+			complete: function () {
+				layer.closeAll('loading');
+			}
+		});
+	});
+	</script>
+</body>
+</html>

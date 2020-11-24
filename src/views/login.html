@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>智慧西青生态环境大数据指挥平台</title>
+		<style type="text/css">
+			html,
+			body {
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 100%;
+				width: 100%;
+				background: #141e6e;
+				background: radial-gradient(at center, #0075c3, #000b61);
+				margin: 0;
+			}
+			body{
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+
+			.apImgTitle {
+				position: fixed;
+				width: 42%;
+				left: 30%;
+				top: 30%
+			}
+
+			.apTitle {
+			    font-size: 36px;
+			    color: #fff;
+			    position: fixed;
+			    top: 32%;
+			    width: 100%;
+			    text-align: center;
+			    font-family: stsong;
+			    font-weight: bold;
+			    letter-spacing: -2px;
+			    text-shadow: 3px 3px 5px #000000;
+			}
+
+			.logcon {
+				position: fixed;
+				width: 100%;
+				top: 47%;
+				text-align: center
+			}
+
+			.logcon input {
+				padding: 10px 15px;
+				border-radius: 3px;
+				border: none;
+				margin-right: 10px;
+				width: 220px;
+				box-shadow: 5px 5px 5px -5px #000000;
+				font-size: 16px;
+				font-weight: bold;
+			}
+			.logcon input::placeholder{
+			    color: #55557f;
+				font-weight: normal;
+				font-size: 14px;
+			    letter-spacing: 1px;
+			}
+			.logcon input::-webkit-input-placeholder{
+				color: #55557f;
+				font-weight: normal;
+				font-size: 14px;
+				letter-spacing: 1px;
+			}
+			.logcon input::-ms-input-placeholder{
+				color: #55557f;
+				font-weight: normal;
+				font-size: 14px;
+				letter-spacing: 1px;
+			}
+			.logcon input:-moz-placeholder{
+				color: #55557f;
+				font-weight: normal;
+				font-size: 14px;
+				letter-spacing: 1px;
+			}
+
+			.logcon button {
+				padding: 7px 20px 10px;
+				border: none;
+				background: #fff;
+				border-radius: 3px;
+				box-shadow: 5px 5px 5px -5px #000000;
+			}
+
+			.logcon button:hover {
+				cursor: pointer
+			}
+
+			canvas {
+				display: block;
+				vertical-align: bottom
+			}
+
+			#particles-js {
+				width: 100%;
+				height: 100%;
+				background-size: cover;
+				background-position: 50% 50%;
+				background-repeat: no-repeat;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0
+			}
+			
+			.custom-control {
+			    position: relative;
+				display: block;
+				margin: 0 auto;
+				margin-top: 15px;
+				width: 552px;
+				text-align: left;
+			}
+			.custom-control-input {
+			    position: absolute;
+			    z-index: -1;
+			    opacity: 0;
+			}
+			.custom-control-label {
+				display: inline-block;
+			    position: relative;
+			    margin-bottom: 0;
+			    vertical-align: top;
+				text-shadow: 1px 1px 2px #000000;
+			}
+			.custom-checkbox .custom-control-label::before {
+			    border-radius: 2px;
+			}
+			.custom-control-label::before, .custom-file-label, .custom-select {
+			    transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+			}
+			.custom-control-label::before {
+			    position: absolute;
+				top: 5px;
+				left: -23px;
+				display: block;
+				width: 12px;
+				height: 12px;
+				pointer-events: none;
+				content: "";
+				background-color: #fff;
+				border: #adb5bd solid 1px;
+			}
+			.custom-control-label::after {
+			    position: absolute;
+				top: 5px;
+				left: -22px;
+				display: block;
+				width: 12px;
+				height: 12px;
+				content: "";
+				background-repeat: no-repeat;
+				background-position: center center;
+				background-size: 65% 65%;
+			}
+			.custom-control-input:checked~.custom-control-label::before {
+			    color: #fff;
+				border-color: #969bbc;
+				background-color: #000b61;
+			}
+			.custom-checkbox .custom-control-input:checked~.custom-control-label::after {
+			    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+			}
+			.cus_browser_tips{
+				width: 598px;
+				margin: 0 auto;
+				text-align: left;
+				color: #FFFFFF;
+				font-size: 16px;
+				margin-top: 60px;
+				text-shadow: 1px 1px 2px #000000;;
+			}
+			.cus_browser_tips>a{
+				color: #00ffe7;
+			}
+		</style>
+	</head>
+	<body>
+			
+		<div id="particles-js" style="display: flex;align-items: center;justify-content: center">
+			<canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;" width="472" height="625"></canvas>
+		</div>
+		<div class="apTitle">智慧西青生态环境大数据指挥平台</div>
+		<div class="logcon" id="app">
+			<input type="text" id="username" v-model="username" autocomplete="off" placeholder="账号">
+			<input type="password" id="password" v-model="password" autocomplete="off" placeholder="密码">
+			<button type="button" id="login" @click="fnLoginIn()" style="font-weight: bold; font-size: 16px;">登录</button>
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" v-model="rememberChecked" class="custom-control-input" id="check1">
+				<label class="custom-control-label" for="check1" style="color: #FFFFFF; cursor: pointer;">记住密码&nbsp;&nbsp;</label>
+			</div>
+			<div class="cus_browser_tips">
+				注：请使用谷歌浏览器访问，浏览器下载地址 <a href="https://www.google.cn/chrome/" target="_blank">点这里</a>
+			</div>
+		</div>
+		
+		<script src="../scripts/vue/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../layuiadmin/layui/layui.js"></script>
+		<script type="text/javascript" src="../common/commonUrl.js"></script>
+		<script src="../scripts/jquery/jquery-1.11.3.min.js"></script>
+		<script src="../scripts/jquery/jquery.cookie.js"></script>
+		<script src="script/login.js"></script>
+		<script src="script/loginApp.js"></script>
+		<script type="text/javascript">
+			var layer;
+			var loginLoading;
+			layui.config({
+				base: '../layuiadmin/' //静态资源所在路径
+			}).extend({
+				index: 'lib/index' //主入口模块
+			}).use(['index', 'user'], function() {
+				layui.use(['layer'], function() {
+					layer = layui.layer;
+					
+					vm.username = window.localStorage.getItem("account_name") ? window.localStorage.getItem("account_name") : '';
+					if($.cookie('LOGIN_INFO')){
+						vm.rememberChecked = true;
+						vm.password = JSON.parse($.cookie('LOGIN_INFO')).PD;
+					}else{
+						vm.rememberChecked = false;
+						vm.password = '';
+					}
+					
+					vm.init();
+				});
+			});
+			
+			var vm = new Vue({
+			   el: '#app',
+			   data:{
+					username: '',
+					password: '',
+					rememberChecked: false
+			   },
+			   watch: {
+				    rememberChecked: function(newVal, oldVal){
+						if(!newVal){
+							$.removeCookie('LOGIN_INFO', { path: '/' });
+						}
+					} 
+			   },
+			   methods: {
+			       init: function(){
+						// 键盘控制
+						$("body").keydown(function() {
+							if (event.keyCode == "13") { //回车登录
+								vm.fnLoginIn();
+							}
+						});
+			       },
+				   fnLoginIn: function(){
+					   if(vm.username==''){
+						    layer.msg(
+								'请输入用户名', {
+									time: 2000,
+								}
+							);
+							$("#username").focus();
+					    }else if(vm.password==''){
+							layer.msg(
+								'请输入密码', {
+									time: 2000,
+								}
+							);
+							$("#password").focus();
+						}else{
+							loginLoading = layer.load(1, {time: 20*1000});
+							$.ajax({
+								type: "post",
+								url: URL_login,
+								dataType: "json",
+								data: {
+									username: vm.username,
+									password: vm.password,
+									origin: 'web'
+								},
+								success: function(res) {
+									layer.close(loginLoading);
+									if(res.code == 0){
+										$.cookie('login_sid_t_we', res.data.accessToken, {path: '/'});
+										if(vm.rememberChecked){
+											$.cookie('LOGIN_INFO', JSON.stringify({
+												'UN': vm.username,
+												'PD': vm.password
+											}), {path: '/'});
+										}
+										window.localStorage.setItem("mc", res.data.mc);
+										window.localStorage.setItem("account_name", vm.username);
+										//登入成功的提示与跳转
+										layer.msg('登入成功', {
+										  offset: '15px',
+										  icon: 1,
+										  time: 1000
+										}, function(){
+										  location.href = '../theme/theme_2/index.html#/page1'; //后台主页
+										});
+									}else{
+										layer.msg(
+											res.msg, {
+												icon: 0,
+												time: 2000
+											}
+										);
+									}
+								},
+								error: function(){
+									layer.close(loginLoading);
+									layer.msg(
+										'请求服务器失败', {
+											icon: 0,
+											time: 2000
+										}
+									);
+								}
+							});
+						}
+				   }
+			   }
+			});
+		</script>
+	</body>
+</html>

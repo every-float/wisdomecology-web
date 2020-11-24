@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>高架视频</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+	<style>
+		/** 项目列表样式 */
+		.project-list-item {
+			background-color: #fff;
+			border: 1px solid #e8e8e8;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all .2s;
+		}
+
+		.project-list-item:hover {
+			box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+		}
+
+		.project-list-item .project-list-item-cover {
+			width: 100%;
+			height: 160px;
+			display: block;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+		}
+
+		.project-list-item-body {
+			padding: 10px;
+		}
+
+		.project-list-item .project-list-item-body > h2 {
+			font-size: 16px;
+			color: #333;
+			margin-bottom: 10px;
+		}
+
+		.project-list-item .project-list-item-text {
+			height: 44px;
+			overflow: hidden;
+			margin-bottom: 12px;
+		}
+
+		.project-list-item .project-list-item-desc {
+			position: relative;
+		}
+
+		.project-list-item .project-list-item-desc .time {
+			color: #999;
+			font-size: 12px;
+		}
+
+		.project-list-item .project-list-item-desc .ew-head-list {
+			position: absolute;
+			right: 0;
+			top: 0;
+		}
+
+		.ew-head-list .ew-head-list-item {
+			width: 22px;
+			height: 22px;
+			border-radius: 50%;
+			border: 1px solid #fff;
+			margin-left: -10px;
+		}
+
+		.ew-head-list .ew-head-list-item:first-child {
+			margin-left: 0;
+		}
+
+		/** // 项目列表样式结束 */
+		.project-list-item .application-list-item-tool {
+			font-size: 0;
+			background-color: #FAFAFA;
+			border-top: 1px solid #e8e8e8;
+			padding: 10px 0 5px 0;
+			border-bottom-left-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+
+		.project-list-item .application-list-item-tool .application-list-item-tool-item {
+			display: inline-block;
+			width: 25%;
+			font-size: 18px;
+			text-align: center;
+			color: #999;
+			border-right: 1px solid #e8e8e8;
+			box-sizing: border-box;
+			cursor: pointer;
+		}
+
+		.project-list-item .application-list-item-tool .application-list-item-tool-item:last-child {
+			border-right: none;
+		}
+
+		.cardonline{
+			color: #439057;
+			font-size: 18px;
+			position: absolute;
+			right: 24px;
+			bottom: 36px;
+		}
+	</style>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">所属区域</div>
+		<div class="layui-card-body">
+			<div class="well">
+			<ul id="areaTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+			</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+			<div class="layui-card-header">视频信息</div>
+			<div class="layui-card-body">
+<!--				<blockquote class="layui-elem-quote">注：视频方要求，需要【<a href="../../plugs/WebComponentsKit.exe" style="color: #0f54e1;text-decoration:underline">下载插件</a>】安装，并且需要使用IE10或者IE11浏览器查看</blockquote>-->
+				<blockquote class="layui-elem-quote" style="color: #FF5722;font-weight: bold">注：视频为高清视频，占用大量带宽，为保证系统和视频流畅访问，请不要单次打开多个视频</blockquote>
+				<div class="layui-row layui-col-space30" id="demoCardList1">
+
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<!-- 项目模板 -->
+<script type="text/html" id="demoCardItem1">
+	<div class="layui-col-md3">
+		<div class="project-list-item">
+			<img class="project-list-item-cover" src="{{d.preview_url}}"/>
+			<div class="project-list-item-body">
+				<h2>{{d.video_name}}</h2>
+			</div>
+			{{#if (configjson.GRANT.match('GJSP_02')) { }}
+			<div class="application-list-item-tool">
+				<span class="application-list-item-tool-item" lay-event="edit">
+                    <i class="layui-icon layui-icon-edit" lay-tips="编辑" lay-offset="0,-8px" onclick="editOV('{{d.video_id}}')"></i>
+                </span>
+			</div>
+			{{#  } else { }}
+			{{#  } }}
+		</div>
+	</div>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="userEditDialog">
+    <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
+        <input name="videoId" type="hidden"/>
+        <input name="type" value="1" type="hidden"/>
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">选择位置:</label>
+                    <div class="layui-input-block">
+                        <button id="dialogBtn9" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开地图</button><br>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        <div class="layui-row">
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">视频名称:</label>
+                    <div class="layui-input-block">
+                        <input name="videoName" placeholder="请输入" class="layui-input"
+                               lay-verType="tips" lay-verify="required" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">编码:</label>
+                    <div class="layui-input-block">
+                        <input name="areaId" placeholder="请输入" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+        </div>   
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">预览地址:</label>
+                    <div class="layui-input-block">
+                        <input id="previewUrl" name="previewUrl" placeholder="请输入预览地址" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">视频地址:</label>
+                    <div class="layui-input-block">
+                        <input id="videoUrl" name="videoUrl" placeholder="请输入视频地址" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+        </div>   
+        <div class="layui-row">
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">百度经度:</label>
+                    <div class="layui-input-block">
+                        <input id="baidu_lng" name="baiduLng" placeholder="请输入经度" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">百度纬度:</label>
+                    <div class="layui-input-block">
+                        <input id="baidu_lat" name="baiduLat" placeholder="请输入纬度" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+        </div>   
+        <div class="layui-row">
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">gps经度:</label>
+                    <div class="layui-input-block">
+                        <input id="gps_lng" name="gpsLng" placeholder="请输入经度" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">gps纬度:</label>
+                    <div class="layui-input-block">
+                        <input id="gps_lat" name="gpsLat" placeholder="请输入纬度" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否使用:</label>
+                    <div class="layui-input-block">
+                        <input name="isUse" type="radio" value="0" title="否" checked/>
+                        <input name="isUse" type="radio" value="1" title="是"/>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-form-item text-right">
+                    <button class="layui-btn" lay-filter="userEditSubmit" lay-submit>保存</button>
+                    <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/javascript" src="../../common/commonUrl.js"></script>
+<script type="text/javascript" src="../../common/commonJs.js"></script>
+<script type="text/javascript" src="../../common/baiduMap.js"></script>
+<script type="text/javascript" src="js/ajaxurl.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="js/overheadVideo_list.js"></script>
+</html>

@@ -1,0 +1,23 @@
+{
+  "id": "1942224",
+  "name": "嘉源汇川-web",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "7664202",
+      "name": "向上箭头",
+      "font_class": "shang",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "10719032",
+      "name": "37红色向上箭头",
+      "font_class": "down",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}

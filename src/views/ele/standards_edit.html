@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<link href="../../scripts/ueditor/themes/default/css/ueditor.min.css" rel="stylesheet" type="text/css" />
+	<title>法规标准管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">编辑法规标准</div>
+		<div class="layui-card-body">
+		<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="standardsId" name="standardsId" value="">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">标题<font color="red">*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="title" name="title" required lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">分类栏目<font color="red">*</font></label>
+				<div class="layui-input-block">
+					<input type="hidden" id="columnName" name="columnName">
+					<div id="columnCode" class="xm-select-demo"></div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">是否置顶</label>
+				<div class="layui-input-inline">
+					<input type="checkbox" name="isTop" lay-skin="switch" lay-text="是|否" value="1">
+				</div>
+				<label class="layui-form-label" for="">公示时间<font color="red">*</font></label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" id="publicityTime" name="publicityTime" required lay-verify="required">
+					<p>可以延迟到选定的时间发布</p>
+				</div>
+			</div>
+			<div id="contDiv">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">内容<font color="red">*</font></label>
+				<div class="layui-input-block">
+					<div id="ueditor" style="width: 794px; height: 200px; line-height: 20px;"></div>
+					<input type="hidden" class="form-control" id="content" name="content" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">附件</label>
+				<div class="layui-input-inline" style="width: 500px">
+					<input type="text" name="files" id="files" class="uploadPanel">
+					<span>提示：最多上传<strong style="color: red">10</strong>个附件</span>
+				</div>
+			</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<label class="layui-form-label" for=""></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../common/fileupload.js"></script>
+	<script>
+		var token = getUserToken();
+		//附件
+		var fu1 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 10,
+			server: baseUrl+'fileupload/uploadFile?useType=FGBZ&dataClass=2', //数据
+			objId: 'files'
+		});
+		fu1.init();
+	</script>
+	<!-- ue -->
+	<script type="text/javascript" src="../../scripts/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" src="../../scripts/ueditor/ueditor.all.js"></script>
+	<script type="text/javascript">
+		UE.Editor.prototype._bkGetActionUrl=UE.Editor.prototype.getActionUrl;
+		UE.Editor.prototype.getActionUrl=function(action){
+			//先传本地
+			if (action == 'uploadimage' ||action== 'uploadscrawl' || action == 'uploadfile') {
+				return baseUrl+"fileupload/uploadFileUE?useType=GG&accessToken="+token;
+			} else if(action =='uploadvideo') {
+				return baseUrl+"fileupload/uploadFileUE?useType=GG&accessToken="+token;
+			}else{
+				return this._bkGetActionUrl.call(this, action);
+			}
+		};
+		var ue = UE.getEditor('ueditor', {
+			zIndex: 1,
+			toolbars : [
+				[ 'fullscreen', 'source', '|', 'undo', 'redo', '|',
+					'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+					'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+					'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+					'directionalityltr', 'directionalityrtl', 'indent', '|',
+					'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+					'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+					'insertimage','map', 'pagebreak', 'template', '|',
+					'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+					'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+					'print', 'preview', 'searchreplace'
+				]
+			]
+		});
+		layui.use(['form','laydate'], function() {
+			var laydate = layui.laydate;
+			var form = layui.form;
+			laydate.render({ 
+			  elem: '#publicityDate',
+			  value: new Date()
+			});
+			
+			// 监听提交
+			form.on('submit(btnSave)', function(data) {
+				//layer.msg(JSON.stringify(data.field));
+				save();
+				return false;
+			});
+		});
+	</script>
+	<script type="text/javascript" src="js/standards_edit.js"></script>
+</body>
+</html>

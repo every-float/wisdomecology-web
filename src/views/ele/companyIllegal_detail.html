@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<link rel="stylesheet" href="../../scripts/ztree/bootstrapStyle/bootstrapStyle.css" type="text/css">
+	<title>企业违法信息管理</title>
+	<style>
+		.layui-form-label{
+			width: 95px;
+		}
+	</style>
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-header">违法信息</div>
+		<div class="layui-card-body">
+			<form id="form1" class="layui-form" lay-filter="form1">
+				<input type="hidden" id="illegalId" name="illegalId"/>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">单位名称</label>
+					<div class="layui-input-inline">
+						<select class="layui-input" id="companyId" name="companyId" lay-filter="companyId" lay-search>
+							<!-- <option value="">---请选择处罚单位---</option> -->
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">文号</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="docNo" name="docNo"/>
+					</div>
+					<label class="layui-form-label" for="">听证责改日期</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="hearChangeDate" name="hearChangeDate" />
+					</div>
+				</div>
+				<div class="layui-form-item">	
+					<label class="layui-form-label" for="">处罚决定日期</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="penaltyDecisionDate" name="penaltyDecisionDate" />
+					</div>
+					<label class="layui-form-label" for="">处罚金额</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="penaltyAmount" name="penaltyAmount" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">罚款缴纳日期</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="penaltyDate" name="penaltyDate" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">违反条款</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="breakTerms" name="breakTerms" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">处罚依据</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="punishmentBasis" name="punishmentBasis" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">执法人</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="enforcer" name="enforcer" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">所属大队</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="team" name="team" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">红黄牌</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="bookings" name="bookings" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">交钱日期</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="payDate" name="payDate" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">信用等级</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="creditRating" name="creditRating" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">结案日期</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="closeDate" name="closeDate" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">归档</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="placeFile" name="placeFile" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">备注</label>
+					<div class="layui-input-block" style="margin-left:125px;width:516px;">
+						<textarea class="layui-textarea" id="remark" name="remark"></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/companyIllegal_edit.js"></script>
+</body>
+</html>

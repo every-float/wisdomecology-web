@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html>
+ 
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+		<script type="text/javascript" src="../../common/baiduMap.js"></script>
+		<script type="text/javascript" src="json/area_120111001.js"></script>
+		<script type="text/javascript" src="json/area_120111002.js"></script>
+		<script type="text/javascript" src="json/area_120111003.js"></script>
+		<script type="text/javascript" src="json/area_120111004.js"></script>
+		<script type="text/javascript" src="json/area_120111005.js"></script>
+		<script type="text/javascript" src="json/area_120111006.js"></script>
+		<script type="text/javascript" src="json/area_120111007.js"></script>
+		<script type="text/javascript" src="json/area_120111008.js"></script>
+		<script type="text/javascript" src="json/area_120111009.js"></script>
+		<script type="text/javascript" src="json/area_120111.js"></script>
+		<script type="text/javascript" src="./js/timePlay.js"></script>
+		<link rel="stylesheet" href="./css/timePlay.css">
+		<style>
+			.contentBox .video_bg{
+				background-repeat: no-repeat;
+				background-position: center center;
+				background-size: 100% 100%;
+				height: 100px;
+				cursor: pointer;
+			}
+		</style>
+	    <style type="text/css">
+		    .tip {
+		        position: absolute;
+		        top: 5px;
+		        left: 5px;
+		        height: 25px;
+		        line-height: 25px;
+		        color: #333;
+		    }
+
+		    #pause {
+		        position: absolute;
+		        top: 60px;
+		        left: 5px;
+		        width: 200px;
+		        height: 40px;
+		        color: #333;
+		        text-align: center;
+		        line-height: 40px;
+		        font-size: 18px;
+		        border: none;
+		        background: lightcyan;
+		        border-radius: 5px;
+		        box-shadow: 1px 1px 5px rgba(153, 157, 159, 0.5);
+		        cursor: pointer;
+		    }
+
+		    #play {
+		        position: absolute;
+		        top: 110px;
+		        left: 5px;
+		        width: 200px;
+		        height: 40px;
+		        color: #333;
+		        text-align: center;
+		        line-height: 40px;
+		        font-size: 18px;
+		        border: none;
+		        background: lightcyan;
+		        border-radius: 5px;
+		        box-shadow: 1px 1px 5px rgba(153, 157, 159, 0.5);
+		        cursor: pointer;
+		    }
+			.timeInfo_changebtn {
+				background: url('../../images/tools/timeline-down.png') no-repeat center right;
+				background-size: 20px;
+				padding-right: 20px;
+				padding-left: 5px;
+		        position: absolute;
+		        left: 130px;
+		        bottom: 80px;
+		        border-radius: 6px;
+		        color: #fff;
+		        text-align: right;
+		    }
+		    .timeInfo_changebtn.down {
+				background: url('../../images/tools/timeline-down.png') no-repeat center right;
+				background-size: 20px;
+				padding-right: 20px;
+				padding-left: 5px;
+		    }
+		    .timeInfo_changebtn.up {
+				background: url('../../images/tools/timeline-up.png') no-repeat center right;
+				background-size: 20px;
+				padding-right: 20px;
+				padding-left: 5px;
+		    }
+		    .timeInfo {
+		        position: absolute;
+		        right: 0;
+		        bottom: 80px;
+		        padding:0px 10px;
+		        border-radius: 6px;
+		        color: #fff;
+		        /*background: rgba(0, 0, 0, 0.5);*/
+		        text-align: right;
+		    }
+
+		    #map {
+		        position: absolute;
+		        top: 0;
+		        left: 0;
+		        width: 100%;
+		        height: 100%;
+		    }
+
+		    .map-point {
+		        position: absolute;
+		        width: 50px;
+		        height: 28px;
+		        line-height: 28px;
+		        text-align: center;
+		        color: #fff;
+		        background: #666;
+		        border-radius: 10px;
+		    }
+
+		    .color-1 {
+		        background: #0eb621 !important;
+		    }
+
+		    .color-2 {
+		        background: #ffda2b !important;
+		    }
+
+		    .color-3 {
+		        background: #FF8A2B !important;
+		    }
+
+		    .color-4 {
+		        background: #fa2313 !important;
+		    }
+
+		    .color-5 {
+		        background: #b20dc5 !important;
+		    }
+
+		    .color-6 {
+		        background: #62072D !important;
+		    }
+	    </style>
+		<title>综合分析</title>
+	</head>
+ 
+	<body>
+		<div id="app" v-cloak class="layui-container">
+			<div id="allmap"></div>
+
+			<div title="timePlay">
+				<!-- <button id="pause">渲染未完成延迟动画</button> -->
+				<!-- <button id="play">渲染完成继续动画</button> -->
+				<div class="timeInfo_changebtn" :class="timeLineShow==false?'footer_bottom_10 up':'down'">时间轴</div>
+				<div class="timeInfo" v-show="timeLineShow==true">现在时间：<span></span></div>
+				<div id="timePlay"  v-show="timeLineShow==true" :class="timeLineShow==true?'footer_bottom_0':''"></div>
+			</div>
+
+			<div id="header_left">
+				<span 
+					:id="item.code"
+					v-for="(item, index) in header_left" :key="index"
+					@click="fnChangeSiteShow(item, index)" 
+					type="button" 
+					:lay-tips="item.name" 
+					lay-direction="3" 
+					class="header_left_btn" 
+					:class="item.selected?'selected':''">{{item.name}}</span>
+			</div>
+			<div id="header_right" class="layui-form">
+					<select lay-search="" lay-filter="siteFilter">
+			          <option value="">搜索</option>
+			          <option v-for="(item, index) in marker_list" :key="index" :value="item.pointName">{{item.pointName}}</option>
+			        </select>
+			</div>
+			<div id="center_left">
+					<span onclick="fnLabelStatus()" 
+							:style="{backgroundImage: (labelShow?'url(../../images/tools/icon_sitename.png)':'url(../../images/tools/icon_sitename.png)')}" 
+							type="button" 
+							lay-tips="显示/隐藏点位名称" 
+							lay-direction="3" 
+							:class="labelShow?'':'selected'"
+							class="header_left_btn">
+					</span>
+					<hr>
+				    <span onclick="fnZoomPlus()" 
+						    :style="{backgroundImage: 'url(../../images/tools/icon_fangda.png)'}" 
+						    type="button" 
+						    lay-tips="放大" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnZoomMinus()" 
+						    :style="{backgroundImage: 'url(../../images/tools/icon_suoxiao.png)'}" 
+						    type="button" 
+						    lay-tips="缩小" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr>
+				    <span onclick="fnSetMapType(1)"   
+						    :style="{backgroundImage: (mapType==1?'url(../../images/tools/icon_shiliangmap.png)':'url(../../images/tools/icon_shiliangmap.png)')}" 
+						    type="button" 
+						    lay-tips="切换为普通地图" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="mapType==1?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnSetMapType(2)" 
+					    	:style="{backgroundImage: (mapType==2?'url(../../images/tools/icon_weixingmap.png)':'url(../../images/tools/icon_weixingmap.png)')}" 
+						    type="button" 
+						    lay-tips="切换为卫星地图" 
+						    lay-direction="2" 
+					    	class="header_left_btn"
+					    	:class="mapType==2?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+					<span onclick="fnSetMapType(3)"   
+						    :style="{backgroundImage: (mapType==3?'url(../../images/tools/icon_putong.png)':'url(../../images/tools/icon_putong.png)')}" 
+						    type="button" 
+						    lay-tips="切换为矢量地图" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="mapType==3?'selected':''">
+					</span>
+					<hr>
+				    <span @click="fnChangeRankShowStatus()" 
+				    		:style="{backgroundImage: (rankShowStatus?'url(../../images/tools/icon_ranking.png)':'url(../../images/tools/icon_ranking.png)')}" 
+						    type="button" 
+						    lay-tips="显示/隐藏排名信息" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="rankShowStatus?'selected':''">
+					</span>
+					<hr>
+				    <span onclick="fnDrawingCircle()" 
+						    :style="{backgroundImage: (drawingCircle?'url(../../images/tools/icon_kuangxuan.png)':'url(../../images/tools/icon_kuangxuan.png)')}" 
+						    type="button" 
+						    lay-tips="框选点位" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="drawingCircle?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnDistanceTool_open()" 
+						    :style="{backgroundImage: (dis?'url(../../images/tools/icon_ceju.png)':'url(../../images/tools/icon_ceju.png)')}" 
+						    type="button" 
+						    lay-tips="测距" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="dis?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+					<span id="dialogBtn13" 
+				    		:style="{backgroundImage: (alert?'url(../../images/tools/icon_alert.gif)':'url(../../images/tools/icon_river.png)')}" 
+						    type="button" 
+						    lay-tips="警告管理" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+					<span @click="fnChangeXiangzhenShowStatus()"   
+							:style="{backgroundImage: (dis?'url(../../images/tools/icon_river.png)':'url(../../images/tools/icon_river.png)')}" 
+						    type="button" 
+						    lay-tips="显示/隐藏街镇边界" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="xiangzhenShow==true?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+					<span v-if="false"  style="background-image: url('../../images/tools/icon_wind.png')" 
+						    type="button" 
+						    lay-tips="显示/隐藏风场" 
+						    lay-direction="2" 
+						    class="header_left_btn changeStatus"
+						    :class="windFlag==true?'selected':''">
+					</span>
+			</div>
+			<div id="center_right" v-show="rankShowStatus">
+				<div class="layui-row layui-col-space15">
+				    <div class="layui-col-md12">
+				      <div class="layui-card">
+				        <div class="layui-card-header">污染排名</div>
+				        <div class="layui-card-body">
+				        	<table class="layui-hide" id="rankingTable" lay-filter="rankingTable"></table>
+				        </div>
+				      </div>
+				    </div>
+				</div>
+			</div>
+			<div id="footer_left" :class="timeLineShow==false?'footer_bottom_10':''">
+				<div class="dropdown-menu dropdown-hover">
+                    <button class="layui-btn layui-btn-primary icon-btn">
+                        当前：{{curItem}} <i class="layui-icon layui-icon-drop top"></i> 
+                    </button>
+                    <ul class="dropdown-menu-nav dropdown-top-left">
+                        <div class="dropdown-anchor"></div>
+                        <li @click="fnChangeMainShow(item, index)" 
+                            v-for="(item, index) in header_right" :key="index"
+                            >
+                            <a>{{item.name}}&nbsp;<i v-if="item.selected" style="color:red;" class="layui-icon layui-icon-ok"></i></a>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+			<div id="footer_right" :class="timeLineShow==false?'footer_bottom_0':''">
+				<img src="../../images/tools/icons_1_tip.png" alt="">
+				<div class="layui-btn-group">
+					<span type="button" class="layui-btn layui-btn-sm bg-level-0">离线</span>
+					<span type="button" class="layui-btn layui-btn-sm bg-level-1">优</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-2" style="color: black;">良</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-3">轻度污染</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-4">中度污染</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-5">重度污染</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-6">严重污染</span>
+				</div>
+			</div>
+		</div>
+		<script type="text/html" id="rankingTpl">
+		  {{#  if(d.curItem=='AQI'){ }}
+		    <span class="layui-badge" style="background: {{ d.aqi_more.bgcolor }};color: {{ d.aqi_more.color }};">{{ d.aqi }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='PM2.5'){ }}
+		    <span class="layui-badge" style="background: {{ d.pm2_5_more.bgcolor }};color: {{ d.pm2_5_more.color }};">{{ d.pm2_5 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='PM10'){ }}
+		    <span class="layui-badge" style="background: {{ d.pm10_more.bgcolor }};color: {{ d.pm10_more.color }};">{{ d.pm10 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='SO2'){ }}
+		    <span class="layui-badge" style="background: {{ d.so2_more.bgcolor }};color: {{ d.so2_more.color }};">{{ d.so2 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='NO2'){ }}
+		    <span class="layui-badge" style="background: {{ d.no2_more.bgcolor }};color: {{ d.no2_more.color }};">{{ d.no2 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='O3'){ }}
+		    <span class="layui-badge" style="background: {{ d.o3_more.bgcolor }};color: {{ d.o3_more.color }};">{{ d.o3 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='CO'){ }}
+		    <span class="layui-badge" style="background: {{ d.co_more.bgcolor }};color: {{ d.co_more.color }};">{{ d.co }}</span>
+		  {{#  } }}
+		</script>
+		<script type="text/html" id="alertTpl">
+		    <span class="">【{{ d.msgTitle }}】</span>
+		    <div>
+		        <span class="layui-badge layui-bg-orange">【{{ d.msgContent }}】</span>
+		    </div>
+		</script>
+	</body>
+</html>
+<script type="text/javascript">
+	var map;
+	var myDis;//测距
+	var drawingManager;//画圆
+ 	var markerArr=[];
+ 	var timeplay=null;
+
+	//初始化函数
+	$(function() {
+		if('timeplay'){
+			var _startDate_=getMonthStartAndEnd(-1)[0];
+			var _endDate_=dateFormat(new Date(),'yyyy-MM-dd');
+			timeplay = new TimePlay({
+			    speed: 6000, //播放速度
+			    startDate: new Date(_startDate_.split('-')[0], _startDate_.split('-')[1]-1, _startDate_.split('-')[2]), //开始日期
+			    endDate: new Date(_endDate_.split('-')[0], _endDate_.split('-')[1]-1, _endDate_.split('-')[2]), //结束日期
+			    currentData: new Date(), //初始化时间
+			    backToday: true, //是否显示返回今天按钮
+			    timeUnitControl: true, //是否显示时/天切换控件
+			    onClickChangeEnd: function(time) { //点击后回调
+			    	if(vm.old_header_left==null){
+		    			layui.use(['layer', 'admin'], function () {
+		    		        var $ = layui.jquery;
+		    		        var admin = layui.admin;
+
+				    		vm.old_header_left=admin.util.deepClone(vm.header_left);
+				    	});
+			    	}
+			   		console.log(timeplay,'onClickChangeEnd');
+			        vm.reloadMarkerData(time);
+			    },
+			    onAnimateEnd: function(time) { //时间轴动画每次结束回调
+			    	console.log(timeplay,'onAnimateEnd');
+			        vm.reloadMarkerData(time);
+
+			    	checkTime();
+			    }
+			});
+
+			$("#pause").click(function() {
+			    timeplay.delayAnimation(); //延迟动画
+			})
+
+			$("#play").click(function() {
+			    timeplay.continueAnimation(); //继续动画
+			})
+			
+			$(".timeInfo_changebtn").click(function() {
+			    vm.timeLineShow=!vm.timeLineShow;
+			})
+
+	        $(".timeInfo span").text(dateFormat(new Date(), 'yyyy-MM-dd HH'))
+
+			console.log(timePlay,9898);
+		}
+		
+		vm.init();
+	});
+
+	var vm = new Vue({
+      el:"#app",
+      data:{
+      	labelShow:true,
+      	xiangzhenShow:true,
+      	rankShowStatus:true,
+      	markerLabelShow:true,
+        list:[],
+        marker_list:[],
+        screen_marker_list:[],
+        screenCircle_marker_list:[],
+        mapType:3,
+        drawingCircle:false,
+        dis:false,
+        alert:false,
+        circleConfig:{
+			lng:'',
+			lat:'',
+			banjing:0
+		},
+		old_header_left:null,
+        header_left:[{
+        		code:'shizhan',
+				name: "市站",
+				selected: true,
+				list:[],
+			},{
+				code:'xiangzhen',
+				name: "街镇",
+				selected: true,
+				list:[],
+			},{
+				code:'weizhan',
+				name: "微站",
+				selected: true,
+				list:[],
+			},{
+				code:'keliwu',
+				name: "颗粒物",
+				selected: true,
+				list:[],
+			},{
+				code:'zhoubian',
+				name: "周边",
+				selected: true,
+				list:[],
+			},{
+				code:'wuranyuan',
+				name: "污染源",
+				selected: true,
+				list:[],
+			},{
+				code:'video',
+				name: "高架视频",
+				selected: true,
+				list:[],
+			}
+		],
+		header_right:[{
+				name: "AQI",
+				selected: true,
+				tips:'切换主显指标为AQI'
+			},{
+				name: "PM2.5",
+				selected: false,
+				tips:'切换主显指标为PM2.5'
+			},{
+				name: "PM10",
+				selected: false,
+				tips:'切换主显指标为PM10'
+			},{
+				name: "O3",
+				selected: false,
+				tips:'切换主显指标为O3'
+			},{
+				name: "SO2",
+				selected: false,
+				tips:'切换主显指标为SO2'
+			},{
+				name: "NO2",
+				selected: false,
+				tips:'切换主显指标为NO2'
+			},{
+				name: "CO",
+				selected: false,
+				tips:'切换主显指标为CO'
+			}
+		],
+		curItem:'AQI',
+		echart_search:{
+		    "id":"",
+		    "type":"",
+		    "startTime":"",
+		    "endTime":""
+		},
+		startTime1:'',
+		endTime1:'',
+		startTime2:'',
+		endTime2:'',
+		startTime3:'',
+		endTime3:'',
+		curMarker:{},
+		pointsTOpoints:[],
+		randomNum:0,
+		windFlag:false,
+		isFirstPlay:true,
+		timeLineShow:false,
+      },
+      methods:{
+        init:function(){
+        	vm.reloadAlertCount();
+        	setInterval(function(){
+        		vm.reloadAlertCount();
+        	},10000);
+
+        	//请求数据
+        	axios.all([
+	        		vm.ajax_marker_data('shizhan'),
+	        		vm.ajax_marker_data('zhoubian'),
+	        		vm.ajax_marker_data('weizhan'),
+	        		vm.ajax_marker_data('keliwu'),
+	        		vm.ajax_marker_data('xiangzhen'),
+	        		vm.ajax_marker_data('wuranyuan'),
+	        		vm.ajax_marker_data2('video')
+	        	])
+                .then(axios.spread(function(shizhan, zhoubian, weizhan, keliwu, xiangzhen,wuranyuan,video) {
+                	console.log('请求完成');
+                    if ( shizhan.data.code == 0 ) {
+                        vm.marker_data_handler(shizhan.data.data, 'shizhan');
+                    }
+                    if ( zhoubian.data.code == 0 ) {
+                        vm.marker_data_handler(zhoubian.data.data, 'zhoubian');
+                    }
+                    if ( weizhan.data.code == 0 ) {
+                        vm.marker_data_handler(weizhan.data.data, 'weizhan');
+                    }
+                    if ( keliwu.data.code == 0 ) {
+                        vm.marker_data_handler(keliwu.data.data, 'keliwu');
+                    }
+                    if ( xiangzhen.data.code == 0 ) {
+                        vm.marker_data_handler(xiangzhen.data.data, 'xiangzhen');
+                    }
+                    if ( wuranyuan.data.code == 0 ) {
+                        vm.marker_data_handler(wuranyuan.data.data, 'wuranyuan');
+                    }
+                    if ( video.data.code == 0 ) {
+                        var list=video.data.data;
+	        	      	for (var i = 0; i < list.length; i++) {
+	        	      		var item=list[i];
+	        	      		item.pointName=item.name;
+	        	      		item.aqi=null;
+	        	      		item.so2=null;
+	        	      		item.no2=null;
+	        	      		item.pm2_5=null;
+	        	      		item.pm10=null;
+	        	      		item.co=null;
+	        	      		item.o3=null;
+
+	        	      		item.code='video';
+	        	      		var icon_y=0;
+	      		        	switch ('video') {
+	  			      			case 'video':
+	  			      				icon_y=10;
+	  			      				break;
+	  			      		}
+	        	      		item.aqi_more=vm.fnMarkerMore('aqi',item.aqi,icon_y);
+	        	      		item.so2_more=vm.fnMarkerMore('so2',item.so2,icon_y);
+	        	      		item.no2_more=vm.fnMarkerMore('no2',item.no2,icon_y);
+	        	      		item.pm2_5_more=vm.fnMarkerMore('pm2_5',item.pm2_5,icon_y);
+	        	      		item.pm10_more=vm.fnMarkerMore('pm10',item.pm10,icon_y);
+	        	      		item.co_more=vm.fnMarkerMore('co',item.co,icon_y);
+	        	      		item.o3_more=vm.fnMarkerMore('o3',item.o3,icon_y);
+	        	      		if(item.aqi=='null'||item.aqi==null||item.aqi=='-'){
+	        	      			item.aqi='-';
+	        	      		}
+	        	      		if(item.so2=='null'||item.so2==null){
+	        	      			item.so2='-';
+	        	      		}
+	        	      		if(item.no2=='null'||item.no2==null){
+	        	      			item.no2='-';
+	        	      		}
+	        	      		if(item.pm2_5=='null'||item.pm2_5==null){
+	        	      			item.pm2_5='-';
+	        	      		}
+	        	      		if(item.pm10=='null'||item.pm10==null){
+	        	      			item.pm10='-';
+	        	      		}
+	        	      		if(item.co=='null'||item.co==null){
+	        	      			item.co='-';
+	        	      		}
+	        	      		if(item.o3=='null'||item.o3==null){
+	        	      			item.o3='-';
+	        	      		}
+	        	      	}
+	        	      	for (var i = 0; i < vm.header_left.length; i++) {
+	        	      		var item=vm.header_left[i];
+	        	      		if(item.code=='video'){
+								vm.header_left[i]['list']=list;
+	        	      		}
+	        	      	}
+                    }
+
+                    layui.use(['layer', 'admin'], function () {
+                        var $ = layui.jquery;
+                        var admin = layui.admin;
+
+                        vm.old_header_left=admin.util.deepClone(vm.header_left);
+                    });
+
+                    initBaiDuMap();
+                }));
+        },
+
+        reloadAlertCount:function(){
+        	$.ajax({
+              url:baseUrl + "dq/warn/getWarnMsgList",
+              type:"get",
+              data:{
+              	page: 1,
+              	limit: 10,
+              	status: -1,
+              	pointName: '',
+              },
+              dataType:"json",
+              success: function(res){
+                if(res.count>0){
+                	vm.alert=true;
+                }else{
+                	vm.alert=false;
+                }
+              }
+            })
+        },
+
+        reloadMarkerData:function(time){
+	        //获取点击的时间
+	        var hour = time.getHours(), //小时
+	            day = time.getDate(), //日
+	            mon = time.getMonth() + 1, //月
+	            year = time.getFullYear(); //年
+	        var str = year + "-" + pTime(mon) + "-" + pTime(day) + " " + pTime(hour);
+	        $(".timeInfo span").text(str)
+	        console.log('请求开始：'+str, timePlay);
+	        timeplay.delayAnimation(); //延迟动画
+	        axios.all([
+	        		vm.ajax_marker_data_of_timeline('shizhan', str),
+	        		vm.ajax_marker_data_of_timeline('zhoubian', str),
+	        		vm.ajax_marker_data_of_timeline('weizhan', str),
+	        		vm.ajax_marker_data_of_timeline('keliwu', str),
+	        		vm.ajax_marker_data_of_timeline('xiangzhen', str)
+	        	])
+                .then(axios.spread(function(shizhan, zhoubian, weizhan, keliwu, xiangzhen) {
+                	console.log('请求完成');
+                    if ( shizhan.data.code == 0 ) {
+                        vm.marker_data_handler(shizhan.data.data, 'shizhan');
+                    }
+                    if ( zhoubian.data.code == 0 ) {
+                        vm.marker_data_handler(zhoubian.data.data, 'zhoubian');
+                    }
+                    if ( weizhan.data.code == 0 ) {
+                        vm.marker_data_handler(weizhan.data.data, 'weizhan');
+                    }
+                    if ( keliwu.data.code == 0 ) {
+                        vm.marker_data_handler(keliwu.data.data, 'keliwu');
+                    }
+                    if ( xiangzhen.data.code == 0 ) {
+                        vm.marker_data_handler(xiangzhen.data.data, 'xiangzhen');
+                    }
+
+                    vm.fnAddMarker();
+                    timeplay.continueAnimation(); //继续动画
+                }));
+        },
+
+        ajax_marker_data:function(type){
+            return axios({
+                method: 'get',
+                url: profiles.jsonUrl+type+"/"+type+".json",
+                headers: {
+                    'Authorization': 'Bearer ' + getUserToken()
+                },
+            });
+        },
+
+        ajax_marker_data_of_timeline:function(type, time){
+        	let param = new URLSearchParams()
+            param.append('time', time);
+            param.append('pointType', type);
+            return axios({
+                method: 'post',
+                data: param,
+                url: baseUrl + "dq/screen/getHourTimeLineData",
+                headers: {
+                    'Authorization': 'Bearer ' + getUserToken()
+                },
+            });
+        },
+
+        marker_data_handler:function(list, type){
+	      	for (var i = 0; i < list.length; i++) {
+	      		var item=list[i];
+	      		item.code=type;
+	      		var icon_y=0;
+		        	switch (type) {
+		      			case 'shizhan':
+		      				icon_y=1;
+		      				break;
+		      			case 'xiangzhen':
+		      				icon_y=2;
+		      				break;
+		      			case 'weizhan':
+		      				icon_y=3;
+		      				break;
+		      			case 'keliwu':
+		      				icon_y=4;
+		      				break;
+		      			case 'zhoubian':
+		      				icon_y=5;
+		      				break;
+		      			case 'wuranyuan':
+		      				icon_y=6;
+		      				break;
+		      		}
+	      		item.aqi_more=vm.fnMarkerMore('aqi',item.aqi,icon_y);
+	      		item.so2_more=vm.fnMarkerMore('so2',item.so2,icon_y);
+	      		item.no2_more=vm.fnMarkerMore('no2',item.no2,icon_y);
+	      		item.pm2_5_more=vm.fnMarkerMore('pm2_5',item.pm2_5,icon_y);
+	      		item.pm10_more=vm.fnMarkerMore('pm10',item.pm10,icon_y);
+	      		item.co_more=vm.fnMarkerMore('co',item.co,icon_y);
+	      		item.o3_more=vm.fnMarkerMore('o3',item.o3,icon_y);
+	      		if(item.aqi=='null'||item.aqi==null||item.aqi=='-'){
+	      			item.aqi='-';
+	      		}
+	      		if(item.so2=='null'||item.so2==null){
+	      			item.so2='-';
+	      		}
+	      		if(item.no2=='null'||item.no2==null){
+	      			item.no2='-';
+	      		}
+	      		if(item.pm2_5=='null'||item.pm2_5==null){
+	      			item.pm2_5='-';
+	      		}
+	      		if(item.pm10=='null'||item.pm10==null){
+	      			item.pm10='-';
+	      		}
+	      		if(item.co=='null'||item.co==null){
+	      			item.co='-';
+	      		}
+	      		if(item.o3=='null'||item.o3==null){
+	      			item.o3='-';
+	      		}
+	      	}
+	      	for (var i = 0; i < vm.header_left.length; i++) {
+	      		var item=vm.header_left[i];
+	      		if(item.code==type){
+					vm.header_left[i]['list']=list;
+	      		}
+	      	}
+        },
+
+        ajax_marker_data2:function(type){
+        	return axios({
+                method: 'post',
+                url: baseUrl + "dq/ov/getOVList",
+                headers: {
+                    'Authorization': 'Bearer ' + getUserToken()
+                },
+            });
+        },
+
+        fnChangeRankShowStatus:function(){
+        	vm.rankShowStatus=!vm.rankShowStatus;
+        	renderRankingTable();
+        },
+
+        fnChangeSiteShow:function(item, index){
+        	try {
+        		layer.closeAll();
+        	} catch(e) {
+        		
+        	}
+        	
+        	//按钮样式
+        	for (var i = 0; i < vm.header_left.length; i++) {
+        		if(vm.header_left[i].code==item.code){
+        			vm.header_left[i].selected=!item.selected;
+        		}
+        	}
+        	vm.fnAddMarker();
+        },
+
+        // 切换curItem
+        fnChangeMainShow:function(item, index){
+        	vm.curItem=item.name;
+        	try {
+        		layer.closeAll();
+        	} catch(e) {
+        		
+        	}
+        	for (var i = 0; i < vm.header_right.length; i++) {
+        		vm.header_right[i].selected=false;
+        		if(vm.header_right[i].name==item.name){
+        			vm.header_right[i].selected=true;
+        		}
+        	}
+        	vm.$nextTick(function(){
+        		vm.fnAddMarker();
+        	});
+        },
+
+        //街镇
+        fnChangeXiangzhenShowStatus:function(){
+        	vm.xiangzhenShow=!vm.xiangzhenShow;
+        	if(vm.xiangzhenShow==false){
+				var allOverlay = map.getOverlays();
+				for (var i = 0; i < allOverlay.length; i++) {
+					if(allOverlay[i].name === 'xiangzhen_line') {
+					  map.removeOverlay(allOverlay[i])
+					}
+				}
+        	}else{
+	            ptInPolygon();
+        	}	
+        },
+
+        fnChangeWindStatus:function(){
+
+        },
+
+        fnMarkerMore:function(type,value,icon_y){
+        	var result={
+        		color:'',
+        		icon_x:1,
+        		icon_y:icon_y
+        	};
+        	switch (type) {
+        		case 'aqi':
+        			if(value<=50){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+						result.level='优';
+					}else if(50<value&&value<=100){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+						result.level='良';
+					}else if(100<value&&value<=150){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+						result.level='轻度污染';
+					}else if(150<value&&value<=200){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+						result.level='中度污染';
+					}else if(200<value&&value<=300){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+						result.level='重度污染';
+					}else if(300<value&&value<=500){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+						result.level='严重污染';
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+						result.level='优';
+					}
+        			break;
+        		case 'so2':
+        			if(value<=150){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(150<value&&value<=500){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(500<value&&value<=650){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(650<value&&value<=800){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'no2':
+        			if(value<=100){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(100<value&&value<=200){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(200<value&&value<=700){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(700<value&&value<=1200){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(1200<value&&value<=2340){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(2340<value&&value<=3840){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'pm2_5':
+        			if(value<=35){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(35<value&&value<=75){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(75<value&&value<=115){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(115<value&&value<=150){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(150<value&&value<=250){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(250<value&&value<=500){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'pm10':
+        			if(value<=50){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(50<value&&value<=150){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(150<value&&value<=250){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(250<value&&value<=350){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(350<value&&value<=420){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(420<value&&value<=600){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'co':
+        			if(value<=5){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(5<value&&value<=10){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(10<value&&value<=35){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(35<value&&value<=60){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(60<value&&value<=90){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(90<value&&value<=150){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'o3':
+        			if(value<=160){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(160<value&&value<=200){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(200<value&&value<=300){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(300<value&&value<=400){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(400<value&&value<=800){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(800<value&&value<=1200){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+
+        	}
+        	return result;
+        },
+
+        fnAddMarker:function(){
+        	layui.use(['form'], function () {
+    	        var $ = layui.jquery;
+    	        var form = layui.form;
+
+	        	if('代码区域'){
+		        	var iconSize=28;//图标大小
+		        	vm.marker_list=[];
+		        	for (var i = 0; i < vm.header_left.length; i++) {
+		        		var item=vm.header_left[i];
+		        		if(item.selected){
+		        			for (var j = 0; j < item.list.length; j++) {
+		        				vm.marker_list.push(item.list[j]);
+		        			}
+		        		}
+		        	}
+		    	        
+		        	if('清除所有marker覆盖物'){
+						var allOverlay = map.getOverlays();
+		            	for (var j = 0; j < allOverlay.length; j++) {
+	        				if(allOverlay[j].name === 'marker') {
+	        				  	map.removeOverlay(allOverlay[j])
+	        				}
+		            	}
+		    	    }
+		        	
+		        	vm.screen_marker_list=[];
+		        	vm.screenCircle_marker_list=[];
+		        	//预备markers
+		        	var markers=[];
+		        	for(var i=0;i<vm.marker_list.length;i++){
+		        		var json = vm.marker_list[i];
+						var point = new BMap.Point(json.lng, json.lat);
+						var imageOffset_x=0;
+						var imageOffset_y=0;
+						switch (vm.curItem.toLowerCase()) {
+							case 'aqi':
+								imageOffset_x=0-json.aqi_more.icon_x*iconSize;
+								imageOffset_y=0-json.aqi_more.icon_y*iconSize;
+								break;
+							case 'pm2.5':
+								imageOffset_x=0-json.pm2_5_more.icon_x*iconSize;
+								imageOffset_y=0-json.pm2_5_more.icon_y*iconSize;
+								break;
+							case 'pm10':
+								imageOffset_x=0-json.pm10_more.icon_x*iconSize;
+								imageOffset_y=0-json.pm10_more.icon_y*iconSize;
+								break;
+							case 'so2':
+								imageOffset_x=0-json.so2_more.icon_x*iconSize;
+								imageOffset_y=0-json.so2_more.icon_y*iconSize;
+								break;
+							case 'no2':
+								imageOffset_x=0-json.no2_more.icon_x*iconSize;
+								imageOffset_y=0-json.no2_more.icon_y*iconSize;
+								break;
+							case 'o3':
+								imageOffset_x=0-json.o3_more.icon_x*iconSize;
+								imageOffset_y=0-json.o3_more.icon_y*iconSize;
+								break;
+							case 'co':
+								imageOffset_x=0-json.co_more.icon_x*iconSize;
+								imageOffset_y=0-json.co_more.icon_y*iconSize;
+								break;
+						}
+						var iconImg = new BMap.Icon("../../images/tools/icons_2.png", 
+							new BMap.Size(iconSize, iconSize), {
+				                offset: new BMap.Size(0, 0),
+				                imageOffset: new BMap.Size(imageOffset_x, imageOffset_y)   
+				            }
+			            );
+						var marker = new BMap.Marker(point,{icon:iconImg});
+						var iw = createInfoWindow(i);
+						var label = new BMap.Label(json.pointName,{"offset":new BMap.Size(15, -15)});
+						label.setStyle({
+							borderColor:"#808080",
+							color:"#333",
+							cursor:"pointer",
+							display:"none"
+						});
+						marker.setLabel(label);
+						markers.push(marker);
+		        	}
+
+		        	//重新添加marker
+		        	for(var i=0;i<markers.length;i++){
+		    	        //是否在视野范围内
+		    	        if(BMapLib.GeoUtils.isPointInRect(markers[i].point, map.getBounds()) == true){
+		    	        	vm.marker_list[i].curItem=vm.curItem;
+		    	        	vm.marker_list[i].sort=vm.marker_list[i].aqi=='-'?0:vm.marker_list[i].aqi;
+		    	        	vm.screen_marker_list.push(vm.marker_list[i]);
+		    		        if(vm.circleConfig.banjing>0){
+		    		        	var circle_o = new BMap.Point(vm.circleConfig.lng, vm.circleConfig.lat); //圆心
+			    	            var circle_ok = new BMap.Circle(circle_o, vm.circleConfig.banjing);//圆
+			    	            var circle_result = BMapLib.GeoUtils.isPointInCircle(markers[i].point, circle_ok);
+			    	            if(circle_result == true){
+			    	                vm.screenCircle_marker_list.push(vm.marker_list[i]);
+			    	            }
+		    		        }
+		    	        	
+		    	        	markers[i].name='marker';
+		    	        	map.addOverlay(markers[i]);
+		    	        	(function(){
+		    	        		var marker=markers[i];
+		    	        		var index = i;
+		    	        		var _iw = createInfoWindow(index);
+		    	        		var _marker = marker;
+		    	        		_marker.addEventListener("click",function(){
+		    	        			if(vm.curIndex!=index){
+		    	        				layer.closeAll();
+		    	        			}
+		    	        			vm.curIndex=index;
+
+		    	        			// if(vm.marker_list[index].code == 'wuranyuan'){
+		    	        			//     console.log('我是污染源')
+		    	        			// }else{
+		    	        				this.openInfoWindow(_iw);
+			    	        			setTimeout(function(){
+			    	        				openRightPopup(index);
+			    	        			},200);
+		    	        			// 	console.log('我不是污染源')
+		    	        			// }
+		    	        		});
+		    	        		_marker.addEventListener("mouseover",function(){
+		    	        			this.openInfoWindow(_iw);
+		    	        			// if(vm.marker_list[index].code == 'wuranyuan'){
+		    	        			//     console.log('我是污染源')
+		    	        			// }else{
+		    	        			// 	this.openInfoWindow(_iw);
+		    	        			// 	console.log('我不是污染源')
+		    	        			// }
+		    	        		});
+		    	        		_iw.addEventListener("open",function(){
+		    	        			// _marker.getLabel().hide();
+		    	        		})
+		    	        		_iw.addEventListener("close",function(){
+		    	        			// _marker.getLabel().show();
+		    	        		})
+		    	        		label.addEventListener("click",function(){
+		    	        			_marker.openInfoWindow(_iw);
+		    	        		})
+		    	        	})()
+		    	        }else{
+		    	        	map.removeOverlay(markers[i]);
+		    	        }
+		    	    }
+
+		    	    vm.screen_marker_list.sort(function (a, b) {
+		    	    	if (Number(a.sort) > Number(b.sort)) {
+		    	    		return -1;
+		    	    	} else if (Number(a.sort) == Number(b.sort)) {
+		    	    		return 0;
+		    	    	} else {
+		    	    		return 1;
+		    	    	}
+		    	    });
+		    	    vm.screenCircle_marker_list.sort(function (a, b) {
+		    	    	if (Number(a.sort) > Number(b.sort)) {
+		    	    		return -1;
+		    	    	} else if (Number(a.sort) == Number(b.sort)) {
+		    	    		return 0;
+		    	    	} else {
+		    	    		return 1;
+		    	    	}
+		    	    });
+		    	    if(!vm.labelShow){
+    					$('#allmap .BMap_Marker label').show();
+    				}else{
+    					$('#allmap .BMap_Marker label').hide();
+    				}
+			    	renderRankingTable();
+	        	}
+
+
+		    	form.on('select(siteFilter)', function(data){
+		    	    for (var i = 0; i < vm.marker_list.length; i++) {
+		    	    	var pointItem = vm.marker_list[i];
+		    	    	if(pointItem.pointName==data.value){
+		    	    		map.setCenter(new BMap.Point(pointItem.lng, pointItem.lat))
+		    	    		var point = new BMap.Point(pointItem.lng, pointItem.lat);
+	    	    			var marker = new BMap.Marker(point);  // 创建标注
+	    	    			map.addOverlay(marker);               // 将标注添加到地图中
+	    	    			marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+		    	    	}
+		    	    }
+		    	})
+		    	vm.$nextTick(function(){
+		    		setTimeout(function(){
+		    			form.render();
+		    		},500);
+		    	});
+    	    });
+        },
+      }
+    });
+
+
+	function renderRankingTable(){
+		var dataList=[];
+		if(vm.drawingCircle){
+			var dataList=vm.screenCircle_marker_list;
+		}else{
+			var dataList=vm.screen_marker_list;
+		}
+
+		var newDataList=[];
+		dataList.forEach( function(item, index) {
+			if(!in_array(item.code, ['wuranyuan','video'])){
+				newDataList.push(item);
+			}
+		});
+
+    	layui.use(['layer', 'table', 'admin'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var admin = layui.admin;
+    		var table = layui.table;
+
+    	    //展示已知数据
+    	    var rankingTable=table.render({
+    	        elem: '#rankingTable'
+    	        ,cols: [[ 
+    	          {field: 'index', title: '排名', width: 50, type:"numbers"}
+    	          ,{field: 'pointName', title: '点位名称'}
+    	          ,{field: 'aqi', title: '监测值', width: 100, templet: '#rankingTpl', align:'center', sort:true}
+    	        ]]
+    	        ,data: newDataList
+    	        ,skin: 'line'
+    	        ,even: true
+    	        ,page: false
+    	        ,width:300
+    	        ,height: window.screen.height-250-90
+    	        ,limit: 100
+    	    });
+
+    	    //监听行单击事件（双击事件为：rowDouble）
+    	    table.on('row(rankingTable)', function(obj){
+    	        var item = obj.data;
+    	        vm.screen_marker_list.forEach(function(value, index) {
+    	        	if (value.lng ==item.lng && value.lat==item.lat ) {
+    	        	    for (var i = 0; i < vm.marker_list.length; i++) {
+    	        	    	if (vm.marker_list[i].lng ==item.lng && vm.marker_list[i].lat==item.lat ) {
+    	        	    		var infoWindow=createInfoWindow(i); 
+		    	        	    var point = new BMap.Point(item.lng, item.lat);
+		    	        	    map.openInfoWindow(infoWindow, point);
+    	        	    	}
+    	        	    }
+    	        	}
+    	        });
+    	        //标注选中样式
+    	        obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+    	    });
+	    });
+	}
+
+	//初始化百度地图
+	function initBaiDuMap() {
+		if('风场代码'&&false){
+			// https://github.com/Esri/wind-js/blob/master/windy.js#L41
+			var createWindBuilder = function(uComp, vComp) {
+			    var uData = uComp.data,
+			        vData = vComp.data;
+			    return {
+			        header: uComp.header,
+			        //recipe: recipeFor("wind-" + uComp.header.surface1Value),
+			        data: function(i) {
+			            return [uData[i], vData[i]];
+			        }
+			    }
+			};
+
+			var createBuilder = function(data) {
+			    var uComp = null,
+			        vComp = null,
+			        scalar = null;
+
+			    data.forEach(function(record) {
+			        switch (record.header.parameterCategory + "," + record.header.parameterNumber) {
+			            case "2,2":
+			                uComp = record;
+			                break;
+			            case "2,3":
+			                vComp = record;
+			                break;
+			            default:
+			                scalar = record;
+			        }
+			    });
+
+			    return createWindBuilder(uComp, vComp);
+			};
+
+			var buildGrid = function(data, callback) {
+			    var builder = createBuilder(data);
+
+			    var header = builder.header;
+			    var λ0 = header.lo1,
+			        φ0 = header.la1; // the grid's origin (e.g., 0.0E, 90.0N)
+			    var Δλ = header.dx,
+			        Δφ = header.dy; // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
+			    var ni = header.nx,
+			        nj = header.ny; // number of grid points W-E and N-S (e.g., 144 x 73)
+			    var date = new Date(header.refTime);
+			    date.setHours(date.getHours() + header.forecastTime);
+
+			    // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
+			    // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
+			    var grid = [],
+			        p = 0;
+			    var isContinuous = Math.floor(ni * Δλ) >= 360;
+			    for (var j = 0; j < nj; j++) {
+			        var row = [];
+			        for (var i = 0; i < ni; i++, p++) {
+			            row[i] = builder.data(p);
+			        }
+			        if (isContinuous) {
+			            // For wrapped grids, duplicate first column as last column to simplify interpolation logic
+			            row.push(row[0]);
+			        }
+			        grid[j] = row;
+			    }
+			    callback(header, grid);
+			};
+
+
+		    var dom = document.getElementById("allmap");
+		    var myChart = echarts.init(dom);
+		    var app = {};
+		    option = null;
+		    var data = [];
+		    var maxMag = 0;
+		    var minMag = Infinity;
+		    $.getJSON('json/wind.json', function(windData) {
+		        buildGrid(windData, function(header, grid) {
+		            var p = 0;
+		            for (var j = 0; j < header.ny; j++) { //ny=181
+		                for (var i = 0; i < header.nx; i++) { //nx=360
+		                    var vx = grid[j][i][0];
+		                    var vy = grid[j][i][1];
+		                    var mag = Math.sqrt(vx * vx + vy * vy);
+		                    var lng = i / header.nx * 360;
+		                    if (lng >= 180) {
+		                        lng = 180 - lng;
+		                    }
+		                    // 数据是一个一维数组
+		                    // [ [经度, 维度，向量经度方向的值，向量维度方向的值] ]
+		                    data.push([
+		                        lng,
+		                        90 - j / header.ny * 180,
+		                        vx,
+		                        vy,
+		                        mag
+		                    ]);
+		                    maxMag = Math.max(mag, maxMag);
+		                    minMag = Math.min(mag, minMag);
+		                }
+		            }
+		        }); //buildGrid结束
+
+				// ** 4、这里是风场开关，分别向series里添加风场数据和null数据控制风场的显隐，正常到这一步风场部分完成**
+				//风场开关
+				var flag = 0; //风场展示标志
+				$(".changeStatus").click(function() {
+				    console.log($(this).html());
+				    if (flag == 0) {
+				        myChart.setOption({
+				            series: [{
+				                data: data,
+				            }]
+				        });
+				        flag = 1;
+				        vm.windFlag=true;
+				    } else {
+				        myChart.setOption({
+				            series: [{
+				                data: null,
+				            }]
+				        });
+				        flag = 0;
+				        vm.windFlag=false;
+				    }
+				})
+		    });
+
+		    // ** 2、给echarts添加设置，正常情况下有1、2、两步就可以显示地图了**
+		    myChart.setOption({
+		        visualMap: {
+		            left: 'right',
+		            dimension: 4,
+		            inRange: {
+		                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+		            },
+		            realtime: false,
+		            calculable: true,
+		            textStyle: {
+		                color: '#fff'
+		            },
+		        },
+		        bmap: {
+		            center: [114.511323, 37.077704],
+		            zoom: 10,
+		            roam: true
+		            // **通常在这里设置地图样式，但是本文设置了自定义样式，所以在别处**           
+		        },
+		        series: [{
+	                type: 'flowGL',
+	                coordinateSystem: 'bmap',
+	                // **风场数据在这里添加，但是加了开关，所以放在别处**
+	                // data: data,
+	                supersampling: 4, //采样更平滑，但是耗能大
+	                particleType: 'line',
+	                particleDensity: 30, //粒子密度，越大越密，实际粒子数为该值的平方
+	                particleSpeed: 5,//粒子的速度
+	                particleTrail:1,//粒子的轨迹长度，数值越大轨迹越长。
+	                particleSize:1,
+	                itemStyle: {
+	                    opacity: 1, //透明度              
+	                },
+	            }]
+		    });
+
+		    if (option && typeof option === "object") {
+		        myChart.setOption(option, true);
+		    }
+		}
+
+		// console.log(myChart,"--------------");
+		map = new BMap.Map("allmap"); // 创建Map实例
+		// map = myChart.getModel().getComponent('bmap').getBMap();
+		// **在这里添加的自定义地图样式，mj是本地的一个json数组**
+		// map.setMapStyleV2({styleJson: mj});
+		// **给地图的标注设置了点击弹窗，但是被风场的层给遮住了，虽然能显示标注但是点击不到，所以将风场的层级降到比label标注的低，label标注的层级可查看控制台**
+		//将风场层的显示优先级降到比BMapLabel的低 以不遮挡label的点击
+		$(".BMap_mask").next().children().eq(3).find("div").css("z-index", "-8000000");
+
+
+		map.centerAndZoom(new BMap.Point(117.008826,39.141152), 12);
+		map.enableScrollWheelZoom();//开启滚动缩放
+    	map.enableContinuousZoom();//开启缩放平滑
+		map.setMapStyleV2({styleJson:styleJsonYour});
+
+		vm.fnChangeRankShowStatus();
+		vm.fnChangeXiangzhenShowStatus();
+
+	    if('行政区域轮廓'){
+    	    var bdary = new BMap.Boundary();
+    	    bdary.get("西青区", function(rs){       //获取行政区域
+    	        var count = rs.boundaries.length; //行政区域的点有多少个
+    	        if (count === 0) {
+    	            alert('未能获取当前输入行政区域');
+    	            return ;
+    	        }
+    	        var pointArray = [];
+    	        for (var i = 0; i < count; i++) {
+    	            var ply = new BMap.Polygon(
+    		            rs.boundaries[i], 
+    		            {
+    		            	strokeColor:"#35eaff", 
+    		            	fillColor:"none", 
+    		            	fillColorOpacity:"0.9",  
+    		            	strokeWeight:BmapConfig.strokeWeight, 
+    		            	strokeOpacity:0.8
+    		            }
+    	            ); //建立多边形覆盖物
+    	            ply.disableMassClear();
+    	            map.addOverlay(ply);  //添加覆盖物
+    	            pointArray = pointArray.concat(ply.getPath());
+    	        }    
+    	        map.setViewport(pointArray);    //调整视野  
+    	        // addlabel();               
+    	    });   
+	    }
+
+		if('测距'){
+			myDis = new BMapLib.DistanceTool(map);//测距
+			myDis.addEventListener("drawend", function(e) {  
+				vm.dis=false;
+			});
+		}
+		
+		setTimeout(function(){
+			// vm.header_left[3]['selected']=true;
+			vm.fnAddMarker();
+
+			// map.addEventListener("tilesloaded", function(){
+			// 	console.log('tilesloaded>>>')
+			// 	vm.fnAddMarker()
+			// });
+			map.addEventListener("zoomend", function(){
+				// if(!vm.drawingCircle){
+					console.log('zoomend>>>')
+					vm.fnAddMarker()
+				// }
+			});
+			map.addEventListener("moveend", function(){
+				// if(!vm.drawingCircle){
+					// console.log('moveend>>>')
+					vm.fnAddMarker()
+				// }
+			});
+
+			
+		}, 500)
+	}
+
+	
+	function fnInitWind(){
+		
+	}
+
+	function ptInPolygon(){
+	    // drawAreaLine(area_120111001_baidu);
+	    // drawAreaLine(area_120111002_baidu);
+	    // drawAreaLine(area_120111003_baidu);
+	    // drawAreaLine(area_120111004_baidu);
+	    // drawAreaLine(area_120111005_1_baidu);
+	    // drawAreaLine(area_120111005_2_baidu);
+	    // drawAreaLine(area_120111006_baidu);
+	    // drawAreaLine(area_120111007_baidu);
+	    // drawAreaLine(area_120111008_baidu);
+	    // drawAreaLine(area_120111009_baidu);
+	    drawAreaLine(area_120111_baidu);
+	}
+
+	function drawAreaLine(pointsArr){
+		var new_pointsArr=[];
+		for (var i = 0; i < pointsArr.length; i++) {
+            new_pointsArr.push(new BMap.Point(pointsArr[i]['lng'], pointsArr[i]['lat']));
+        }
+
+        setTimeout(function(){
+        	 var styleOptions = {
+            	strokeColor:"#35eaff", 
+            	fillColor:"none", 
+            	fillColorOpacity:"0.9",  
+            	strokeWeight:BmapConfig.strokeWeight, 
+            	strokeOpacity:0.2
+             };
+             var ply = new BMap.Polygon(new_pointsArr, styleOptions);
+             ply.name='xiangzhen_line';
+             // ply.enableEditing();
+             map.addOverlay(ply);
+        }, 1000);
+	}
+</script>
+<script type="text/javascript" src="./js/daqi_zonghefenxi.js"></script>
+<script>
+layui.use(['index'], function(){
+    var $ = layui.$
+    ,admin = layui.admin
+    ,element = layui.element
+    ,router = layui.router();
+
+    element.render();
+    
+    var active = {
+      popupRight: function(){
+        top.layui.admin.popupRight({
+          id: 'LAY_adminPopupLayerTest',
+          shadeClose:false,
+          closeBtn:true,
+          shade: 0,
+          success: function(){
+            $('#'+ this.id).html('<div style="padding: 20px;">放入内容</div>');
+            // layui.view(this.id).render('system/about')
+          }
+        });
+      }
+    };
+    
+    $('.layui-btn').on('click', function(){
+      var type = $(this).data('type');
+      active[type] && active[type].call(this);
+    });
+  });
+</script>
+<script>
+	layui.use(['layer', 'table', 'admin', 'form', 'laydate', 'fileChoose', 'dropdown', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var admin = layui.admin;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var fileChoose = layui.fileChoose;
+        var xmSelect = layui.xmSelect;
+		var table = layui.table;
+
+        // 站点管理
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.popupRight({
+                title: '警告管理',
+                url: 'site_alert_list.html',
+                area: '600px',
+                data: { pointName: '' },     // 传递数据到表单页面
+                end: function () {
+                    if (admin.getLayerData(layIndex, 'formOk')) {  // 判断表单操作成功标识
+                        // insTb.reload();  // 成功刷新表格
+                        vm.reloadAlertCount();
+                    } 
+                },
+                success: function (layero, dIndex) {
+                    // 弹窗超出范围不出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+        });
+
+        // 警告历史
+        $("body").on("click", "#historyTbSearch", function(){
+            admin.open({
+                type: 1,
+                title: '警告历史列表',
+                area: '800px',
+                content: $('#historyDialog').html(),
+                success: function (layero, dIndex) {
+                    console.log(1)
+                    /* 渲染表格 */
+                    var insTb1 = table.render({
+                        elem: '#historyTable',
+                        url: baseUrl + "dq/warn/getWarnMsgList",
+                        page: true,
+                        cellMinWidth: 100,
+                        where:{
+                            status:1,
+                            pointName:'',
+                        },
+                        height:300,
+                        cols: [[
+                            {type: 'numbers'},
+                            {field: 'content', title: '站点名称', templet: '#contentTpl' },
+                            {field: 'warnProcContent', title: '处理意见'},
+                            {field: 'warnProcPerson', title: '处理人', width:100},
+                            {field: 'warnProcTime', title: '处理时间', width:170},
+                        ]]
+                    });
+                    
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                },
+                cancel: function () {
+                    console.log(3)
+                    layer.close(historyDialog);
+                }
+            });
+        });
+
+    });
+</script>

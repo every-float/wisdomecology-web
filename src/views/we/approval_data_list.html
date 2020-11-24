@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>断面预审数据</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">断面信息</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="sectionList" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">预审数据</div>
+						<div class="layui-card-body">
+							<form id="search-form" class="layui-form" lay-filter="search-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">监测日期</label>
+										<div class="layui-input-inline">
+											<input type="text" id="monitorTime" class="layui-input" placeholder="请选择监测日期" readonly="readonly" />
+										</div>
+										<div class="layui-input-inline">
+											<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+											<button type="reset" class="layui-btn layui-btn-primary" onclick="toReset()">重置</button>
+										</div>
+									</div>
+								</div>
+							</form>
+							<table id="dataList" lay-filter="dataList" class="layui-table"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var sectionList, dataList, tableHeight;
+		var dataInfo = [], pointId = "";
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs9").height($("body").height()-30);
+			$(".well").height($(".layui-col-xs3").height()-103);
+			tableHeight = $(".layui-col-xs3").height()-131;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs9").height($("body").height()-30);
+				$(".well").height($(".layui-col-xs3").height()-103);
+				tableHeight = $(".layui-col-xs3").height()-131;
+				renderDataList();
+			}
+            layui.use(['table', 'form', 'layer', 'laydate'], function(){
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				
+				layui.laydate.render({
+					elem:'#monitorTime',
+					trigger:'click',
+					range:"~",
+                    done:function(value, date, endDate){
+						$("#monitorTime").val(value);
+                    }
+                })
+                
+                initTree();
+				
+				// 保存监听
+				form.on('submit(toSearch)', function(){
+					getDataList();
+					return false;
+				})
+            })
+		});
+
+		// 区县及断面列表
+		function initTree(){
+			$.ajax({
+				type:"get",
+				url:URL_cross_section_list,
+				dataType:"json",
+				success:function(ret){
+					if(ret.code == 0){
+						var treeNodes = ret.data;
+						var setting = {
+							check : {
+								enable: false,
+								chkStyle: "checkbox"
+							},
+							data : {
+								simpleData : {
+									enable : true,
+									idKey : 'id',
+									pIdKey : 'parentId'
+								},
+								key : {
+									name : 'name',
+									title : 'name'
+								}
+							},
+							callback: {
+								onClick: treeOnClick
+							}
+						};
+						sectionList = $.fn.zTree.init($('#sectionList'), setting, treeNodes);
+						pointId = treeNodes.id;
+						getDataList();
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，未能获取到信息！");
+				}
+			})
+		}
+
+		function treeOnClick(event, treeId, treeNode){
+			pointId = treeNode.id;
+			getDataList();
+		}
+		
+		// 预审数据列表
+		function getDataList(){
+			var index = layer.load(2,{shade:0.6});
+			$.ajax({
+				type:"get",
+				url:URL_approval_data_list,
+				data:{
+					pointId:pointId,
+					startDate:$("#monitorTime").val()?($("#monitorTime").val().split("~")[0].replace(" ", "")):"",
+					endDate:$("#monitorTime").val()?($("#monitorTime").val().split("~")[1].replace(" ", "")):"",
+					page:1,
+					limit:9999
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						dataList = table.render({
+							elem: '#dataList',
+							data: ret.data,
+							page: true,
+							height:tableHeight,
+							toolbar: false,
+							defaultToolbar: false,
+							cols: [[
+								{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+									return d.LAY_TABLE_INDEX+1;
+								}},
+								{field: 'monitordate', title: '监测日期', minWidth:150, align: 'center', fixed:"left"},
+								{field: 'monitortime', title: '监测时间', minWidth:150, align: 'center', fixed:"left"},
+								{field: 'buildunit', title: '建设单位', minWidth:200, align: 'center', fixed:"left"},
+								{field: 'areacheckname1', title: '考核区县', minWidth:200, align: 'center'},
+								{field: 'waterbody', title: '所在水系', minWidth:200, align: 'center'},
+								{field: 'riversystem', title: '所在河流', minWidth:220, align: 'center'},
+								{title: '水温', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_swen){
+										return d.item_swen;
+									}else{
+										return "-";
+									}
+								}},
+								{title: 'pH值', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_ph){
+										return d.item_ph;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '电导率', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_ddl){
+										return d.item_ddl;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '氯化物', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_lvhuawu){
+										return d.item_lvhuawu;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '溶解氧', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_rjy){
+										return d.item_rjy;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '浊度', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zdu){
+										return d.item_zdu;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '高锰酸盐指数', minWidth:140, align: 'center', templet:function(d){
+									if(d.item_gmsyzs){
+										return d.item_gmsyzs;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '化学需氧量', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_hxxyl){
+										return d.item_hxxyl;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '氨氮', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_ad){
+										return d.item_ad;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '硝酸盐氮', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_xsyd){
+										return d.item_xsyd;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '总氮', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zdan){
+										return d.item_zdan;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '总磷', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zonglin){
+										return d.item_zonglin;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '挥发酚', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_hff){
+										return d.item_hff;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '氰化物', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zqhw){
+										return d.item_zqhw;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '砷', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zshen){
+										return d.item_zshen;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '汞', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zgong){
+										return d.item_zgong;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '氟化物', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_fhw){
+										return d.item_fhw;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '镉', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zge){
+										return d.item_zge;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '铅', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zqian){
+										return d.item_zqian;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '锌', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zxin){
+										return d.item_zxin;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '铜', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_ztong){
+										return d.item_ztong;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '总有机碳', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zyjt){
+										return d.item_zyjt;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '叶绿素a', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_yelvsu){
+										return d.item_yelvsu;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '粪大肠菌群', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_fdc){
+										return d.item_fdc;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '三氯甲烷', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_sljw){
+										return d.item_sljw;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '三氯乙烯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_sanlyx){
+										return d.item_sanlyx;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '四氯乙烯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_silyx){
+										return d.item_silyx;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_ben){
+										return d.item_ben;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '苯乙烯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_benyixi){
+										return d.item_benyixi;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '对、间二甲苯', minWidth:140, align: 'center', templet:function(d){
+									if(d.item_djejb){
+										return d.item_djejb;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '二氯甲烷', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_eljw){
+										return d.item_eljw;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '1,2-二氯乙烷', minWidth:140, align: 'center', templet:function(d){
+									if(d.item_elyw){
+										return d.item_elyw;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '1,2-二氯苯', minWidth:140, align: 'center', templet:function(d){
+									if(d.item_erelv){
+										return d.item_erelv;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '甲苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_jiaben){
+										return d.item_jiaben;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '邻-二甲苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_lejb){
+										return d.item_lejb;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '蓝绿藻', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_llz){
+										return d.item_llz;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '氯苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_lvben){
+										return d.item_lvben;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '1,4-二氯苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_silvb){
+										return d.item_silvb;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '生物毒性', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_swdx){
+										return d.item_swdx;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '毒性抑制率', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_tox){
+										return d.item_tox;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '1,2-二氯丙烷', minWidth:140, align: 'center', templet:function(d){
+									if(d.item_yeelbw){
+										return d.item_yeelbw;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '1,2-二氯乙烯', minWidth:140, align: 'center', templet:function(d){
+									if(d.item_yeelyx){
+										return d.item_yeelyx;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '乙苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_yiben){
+										return d.item_yiben;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '异丙苯', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_yibingben){
+										return d.item_yibingben;
+									}else{
+										return "-";
+									}
+								}},
+								{title: '藻密度', minWidth:100, align: 'center', templet:function(d){
+									if(d.item_zmd){
+										return d.item_zmd;
+									}else{
+										return "-";
+									}
+								}},
+							]],
+							done:function(ret){
+								layer.close(index);
+							}
+						})
+					}else{
+						layer.close(index);
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.close(index);
+					layer.msg("获取数据失败！");
+				}
+			})
+		};
+
+		// 搜索
+		function renderDataList(){
+			var index = layer.load(2,{shade:0.6});
+			dataList.reload({
+				height:tableHeight,
+				done:function(ret){
+					layer.close(index);
+				},
+				page: {curr: 1}
+			});
+		}
+
+		// 重置
+		function toReset(){
+			$("#monitorTime").val("");
+		}
+	</script>
+</html>

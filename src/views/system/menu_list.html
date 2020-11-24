@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>菜单设置</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">菜单结构</div>
+		<div class="layui-card-body">
+			<form class="layui-form">
+			<input type="hidden" id="moduleCode">
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<select id="moduleList" name="moduleList" lay-filter="moduleList" lay-verify="required">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			</form>
+			<div class="well">
+			<ul id="menuTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+			</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+		<div class="layui-card-header">菜单信息</div>
+		<div class="layui-card-body">
+				<form id="form1" class="layui-form">
+					<input type="hidden" id="menuId" name="menuId">
+					<input type="hidden" id="moduleId" name="moduleId">
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">菜单名称<font color="red">*</font></label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input" id="menuName" name="menuName" required lay-verify="required">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">上级菜单</label>
+						<div class="layui-input-block">
+							<input type="hidden" class="layui-input" id="parentId" name="parentId">
+							<input type="text" class="layui-input" id="parentName" name="parentName" readonly="readonly" onclick="showList(); return false;">
+							<div id="parentList" style="margin-top:-1px;background:#fff;border:1px solid #c9c9c9;display: none; position: absolute;z-index: 999"> 
+								<ul id="menuTreeList" class="ztree" style="width:300px;max-height: 380px;overflow: auto"></ul> 
+							</div>
+							<p class="layui-input-static">【<a href="javascript:;" onclick="setRoot()">没有上级菜单</a>】</p>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">类型<font color="red">*</font></label>
+						<div class="layui-input-block">
+							<select name="menuType" id="menuType" lay-verify="required">
+							<option value=""></option>
+								<option value="1">系统内链接</option>
+								<option value="2">系统内重定向</option>
+								<option value="3">新窗口</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">图标</label>
+						<div class="layui-input-block">
+							<input type="hidden" class="layui-input" id="menuIcon" name="menuIcon">
+							<input type="text" id="iconPicker" lay-filter="iconPicker" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">是否默认</label>
+						<div class="layui-input-block">
+							<input type="radio" name="isDefault" value="0" title="否" checked>
+							<input type="radio" name="isDefault" value="1" title="是">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">排序</label>
+						<div class="layui-input-block">
+							<input type="number" class="layui-input" id="sortNum" name="sortNum" placeholder="请输入数字" lay-verify="number">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for=""></label>
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn layui-btn-primary" onclick="add()" id="btn_add">新增</button>
+							<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btn_save">保存</button>
+							<button type="button" class="layui-btn layui-btn-primary" onclick="del()" id="btn_del">删除</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			</div>
+			<div class="layui-card">
+		<div class="layui-card-header">菜单按钮</div>
+		<div class="layui-card-body">
+				<script type="text/html" id="toolbar">
+					<button type="button" class="layui-btn layui-btn-primary" onclick="addPrivilege()">新增权限</button>
+				</script>
+				<table id="dataGridPrivilege" lay-filter="dataGridPrivilege" class="layui-hide"></table>
+				<script type="text/html" id="menuTpl">
+					{{# if(d.is_menu == 1){ }}
+						<span class="layui-badge layui-bg-green">是</span>
+					{{# } else { }}
+						<span class="layui-badge layui-bg-gray">否</span> 
+					{{# } }}
+				</script>
+				<script type="text/html" id="useTpl">
+					<input type="checkbox" name="isUse" value="{{d.privilege_id}}" lay-skin="switch" lay-text="是|否" lay-filter="useTpl" {{ d.is_use == 1 ? 'checked' : '' }}>
+				</script>
+				<script type="text/html" id="barOpt">
+					<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+				</script>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="js/menu_list.js"></script>
+<script type="text/javascript" src="js/menuPrivilege_list.js"></script>
+</body>
+</html>

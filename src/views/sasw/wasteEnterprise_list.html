@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>重点产废企业监控</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+	<style>
+		/** 项目列表样式 */
+		.project-list-item {
+			background-color: #fff;
+			border: 1px solid #e8e8e8;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all .2s;
+		}
+
+		.project-list-item:hover {
+			box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+		}
+
+		.project-list-item .project-list-item-cover {
+			width: 100%;
+			height: 160px;
+			display: block;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+		}
+
+		.project-list-item-body {
+			padding: 10px;
+		}
+
+		.project-list-item .project-list-item-body > h2 {
+			font-size: 16px;
+			color: #333;
+			margin-bottom: 10px;
+		}
+
+		.project-list-item .project-list-item-text {
+			height: 44px;
+			overflow: hidden;
+			margin-bottom: 12px;
+		}
+
+		.project-list-item .project-list-item-desc {
+			position: relative;
+		}
+
+		.project-list-item .project-list-item-desc .time {
+			color: #999;
+			font-size: 12px;
+		}
+
+		.project-list-item .project-list-item-desc .ew-head-list {
+			position: absolute;
+			right: 0;
+			top: 0;
+		}
+
+		.ew-head-list .ew-head-list-item {
+			width: 22px;
+			height: 22px;
+			border-radius: 50%;
+			border: 1px solid #fff;
+			margin-left: -10px;
+		}
+
+		.ew-head-list .ew-head-list-item:first-child {
+			margin-left: 0;
+		}
+
+		/** // 项目列表样式结束 */
+	</style>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">所属区域</div>
+		<div class="layui-card-body">
+			<div class="well">
+			<ul id="areaTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+			</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+			<div class="layui-card-header">视频信息</div>
+			<div class="layui-card-body">
+				<div class="layui-row layui-col-space30" id="demoCardList1">
+
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<!-- 项目模板 -->
+<script type="text/html" id="demoCardItem1">
+	<div class="layui-col-md3">
+		<div class="project-list-item">
+			<img class="project-list-item-cover" src="{{d.cover}}"/>
+			<div class="project-list-item-body">
+				<h2>{{d.title}}</h2>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript" src="../../common/commonUrl.js"></script>
+<script type="text/javascript" src="../../common/commonJs.js"></script>
+<script type="text/javascript" src="js/ajaxurl.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="js/wasteEnterprise_list.js"></script>
+</html>

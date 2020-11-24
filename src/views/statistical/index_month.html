@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+        <style>
+            .layui-table-link{
+                width: 100%;
+                height: 100%;
+                display: block;
+                text-align: center;
+            }
+        </style>
+		<title>统计</title>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="layui-fluid">
+			    <div class="layui-card">
+			        <div class="layui-card-body">
+			            <!-- 表格工具栏 -->
+			            <form class="layui-form toolbar">
+			                <div class="layui-form-item">
+			                    <div class="layui-inline">
+			                        <div class="layui-input-inline">
+			                            <input name="time" class="layui-input icon-date" placeholder="选择时间"/>
+			                        </div>
+			                    </div>
+			                    <div class="layui-inline" style="width:100px;">
+			                        <div class="layui-input-inline" style="width:100%;">
+			                            <select name="index" lay-filter="index">
+		                                    <option v-for="(item, index) in index_list" :key="index" :value="item.value">{{item.key}}</option>
+		                                </select>
+			                        </div>
+			                    </div>
+								<div class="layui-inline">
+			                        <div class="layui-input-inline">
+			                            <span id="dialogBtn13" class="layui-btn layui-btn-primary icon-btn">
+		                                    &nbsp;站点 <i class="layui-icon layui-icon-drop"></i>
+		                                </span>
+			                        </div>
+			                    </div>
+			                    <div class="layui-inline">&emsp;
+			                        <a class="layui-btn icon-btn" lay-filter="loginRecordTbSearch" lay-submit>
+			                            <i class="layui-icon">&#xe615;</i>搜索
+			                        </a>
+			                    </div>
+			                </div>
+			            </form>
+
+			            <!-- 数据表格 -->
+			            <table id="loginRecordTable" lay-filter="loginRecordTable"></table>
+			        </div>
+			    </div>
+			</div>
+		</div>
+
+        
+        <script type="text/html" id="day_01_Tpl">
+            <div style="background: {{d['01_more'].bgcolor}};color: {{d['01_more'].color}};" class="layui-table-link">
+                {{d['01']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_02_Tpl">
+            <div style="background: {{d['02_more'].bgcolor}};color: {{d['02_more'].color}};" class="layui-table-link">
+                {{d['02']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_03_Tpl">
+            <div style="background: {{d['03_more'].bgcolor}};color: {{d['03_more'].color}};" class="layui-table-link">
+                {{d['03']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_04_Tpl">
+            <div style="background: {{d['04_more'].bgcolor}};color: {{d['04_more'].color}};" class="layui-table-link">
+                {{d['04']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_05_Tpl">
+            <div style="background: {{d['05_more'].bgcolor}};color: {{d['05_more'].color}};" class="layui-table-link">
+                {{d['05']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_06_Tpl">
+            <div style="background: {{d['06_more'].bgcolor}};color: {{d['06_more'].color}};" class="layui-table-link">
+                {{d['06']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_07_Tpl">
+            <div style="background: {{d['07_more'].bgcolor}};color: {{d['07_more'].color}};" class="layui-table-link">
+                {{d['07']}}
+            </div>
+        </script><script type="text/html" id="day_08_Tpl">
+            <div style="background: {{d['08_more'].bgcolor}};color: {{d['08_more'].color}};" class="layui-table-link">
+                {{d['08']}}
+            </div>
+        </script>
+
+        <script type="text/html" id="day_09_Tpl">
+            <div style="background: {{d['09_more'].bgcolor}};color: {{d['09_more'].color}};" class="layui-table-link">
+                {{d['09']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_10_Tpl">
+            <div style="background: {{d['10_more'].bgcolor}};color: {{d['10_more'].color}};" class="layui-table-link">
+                {{d['10']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_11_Tpl">
+            <div style="background: {{d['11_more'].bgcolor}};color: {{d['11_more'].color}};" class="layui-table-link">
+                {{d['11']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_12_Tpl">
+            <div style="background: {{d['12_more'].bgcolor}};color: {{d['12_more'].color}};" class="layui-table-link">
+                {{d['12']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_13_Tpl">
+            <div style="background: {{d['13_more'].bgcolor}};color: {{d['13_more'].color}};" class="layui-table-link">
+                {{d['13']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_14_Tpl">
+            <div style="background: {{d['14_more'].bgcolor}};color: {{d['14_more'].color}};" class="layui-table-link">
+                {{d['14']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_15_Tpl">
+            <div style="background: {{d['15_more'].bgcolor}};color: {{d['15_more'].color}};" class="layui-table-link">
+                {{d['15']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_16_Tpl">
+            <div style="background: {{d['16_more'].bgcolor}};color: {{d['16_more'].color}};" class="layui-table-link">
+                {{d['16']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_17_Tpl">
+            <div style="background: {{d['17_more'].bgcolor}};color: {{d['17_more'].color}};" class="layui-table-link">
+                {{d['17']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_18_Tpl">
+            <div style="background: {{d['18_more'].bgcolor}};color: {{d['18_more'].color}};" class="layui-table-link">
+                {{d['18']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_19_Tpl">
+            <div style="background: {{d['19_more'].bgcolor}};color: {{d['19_more'].color}};" class="layui-table-link">
+                {{d['19']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_20_Tpl">
+            <div style="background: {{d['20_more'].bgcolor}};color: {{d['20_more'].color}};" class="layui-table-link">
+                {{d['20']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_21_Tpl">
+            <div style="background: {{d['21_more'].bgcolor}};color: {{d['21_more'].color}};" class="layui-table-link">
+                {{d['21']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_22_Tpl">
+            <div style="background: {{d['22_more'].bgcolor}};color: {{d['22_more'].color}};" class="layui-table-link">
+                {{d['22']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_23_Tpl">
+            <div style="background: {{d['23_more'].bgcolor}};color: {{d['23_more'].color}};" class="layui-table-link">
+                {{d['23']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_24_Tpl">
+            <div style="background: {{d['24_more'].bgcolor}};color: {{d['24_more'].color}};" class="layui-table-link">
+                {{d['24']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_25_Tpl">
+            <div style="background: {{d['25_more'].bgcolor}};color: {{d['25_more'].color}};" class="layui-table-link">
+                {{d['25']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_26_Tpl">
+            <div style="background: {{d['26_more'].bgcolor}};color: {{d['26_more'].color}};" class="layui-table-link">
+                {{d['26']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_27_Tpl">
+            <div style="background: {{d['27_more'].bgcolor}};color: {{d['27_more'].color}};" class="layui-table-link">
+                {{d['27']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_28_Tpl">
+            <div style="background: {{d['28_more'].bgcolor}};color: {{d['28_more'].color}};" class="layui-table-link">
+                {{d['28']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_29_Tpl">
+            <div style="background: {{d['29_more'].bgcolor}};color: {{d['29_more'].color}};" class="layui-table-link">
+                {{d['29']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_30_Tpl">
+            <div style="background: {{d['30_more'].bgcolor}};color: {{d['30_more'].color}};" class="layui-table-link">
+                {{d['30']}}
+            </div>
+        </script>
+        <script type="text/html" id="day_31_Tpl">
+            <div style="background: {{d['31_more'].bgcolor}};color: {{d['31_more'].color}};" class="layui-table-link">
+                {{d['31']}}
+            </div>
+        </script>
+	</body>
+</html>
+<script>
+    if('vue'){
+    	var vm = new Vue({
+	      el:"#app",
+	      data:{
+			list:[],
+			index_list:[],
+            currentIndex:'AQI',
+            time:'',
+            daysCount:0,
+	      },
+          methods:{
+            fnDataMore:function(day, value){
+                 var result={
+                     bgcolor:'',
+                     color:'',
+                     level:''
+                 };
+                 switch (vm.currentIndex.toLowerCase()) {
+                     case 'aqi':
+                         if(value!=''){
+                            if(value<=50){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(50<value&&value<=100){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(100<value&&value<=150){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(150<value&&value<=200){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(200<value&&value<=300){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(300<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                     case 'so2':
+                         if(value!=''){
+                            if(value<=150){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(150<value&&value<=500){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(500<value&&value<=650){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(650<value&&value<=800){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else{
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='重度';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                     case 'no2':
+                         if(value!=''){
+                            if(value<=100){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(100<value&&value<=200){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(200<value&&value<=700){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(700<value&&value<=1200){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(1200<value&&value<=2340){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(2340<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                     case 'pm25':
+                         if(value!=''){
+                            if(value<=35){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(35<value&&value<=75){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(75<value&&value<=115){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(115<value&&value<=150){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(150<value&&value<=250){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(250<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                     case 'pm10':
+                         if(value!=''){
+                            if(value<=50){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(50<value&&value<=150){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(150<value&&value<=250){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(250<value&&value<=350){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(350<value&&value<=420){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(420<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                     case 'co':
+                         if(value!=''){
+                            if(value<=5){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(5<value&&value<=10){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(10<value&&value<=35){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(35<value&&value<=60){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(60<value&&value<=90){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(90<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         
+                         break;
+                     case 'o3':
+                         if(value!=''){
+                            if(value<=160){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(160<value&&value<=200){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(200<value&&value<=300){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(300<value&&value<=400){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(400<value&&value<=800){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(800<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                     case 'o38h':
+                         if(value!=''){
+                            if(value<=160){
+                                result.bgcolor='rgb(0,228,0)';
+                                result.color='white';
+                                result.level='优';
+                            }else if(160<value&&value<=200){
+                                result.bgcolor='rgb(255,255,0)';
+                                result.color='black';
+                                result.level='良';
+                            }else if(200<value&&value<=300){
+                                result.bgcolor='rgb(255,126,0)';
+                                result.color='white';
+                                result.level='轻度';
+                            }else if(300<value&&value<=400){
+                                result.bgcolor='rgb(255,0,0)';
+                                result.color='white';
+                                result.level='中度';
+                            }else if(400<value&&value<=800){
+                                result.bgcolor='rgb(153,0,76)';
+                                result.color='white';
+                                result.level='重度';
+                            }else if(800<value){
+                                result.bgcolor='rgb(126,0,35)';
+                                result.color='white';
+                                result.level='严重';
+                            }
+                         }else{
+                            result.bgcolor='';
+                            result.color='';
+                            result.level='';
+                         }
+                         break;
+                 }
+                return result;
+            },
+          }
+	    });
+    }
+	var insTb=null;
+    layui.use(['layer', 'form', 'admin',  'table', 'util', 'dropdown', 'laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+
+        vm.time=dateFormat(new Date(), 'yyyy-MM');
+        vm.daysCount=mGetDate();
+
+        laydate.render({
+            elem: 'input[name="time"]',
+            type: 'month',
+            value: new Date(),
+            trigger: 'click',
+            done: function(value, date, endDate){
+                vm.time=value;
+                var d = new Date(value.split('-')[0], value.split('-')[1], 0);
+                vm.daysCount= d.getDate();
+            }
+        });
+
+        console.log(mGetDate(),"+++++++++++++++++++++")
+        form.on('select(index)', function(data){
+             vm.currentIndex=data.value;
+        })
+
+        axios.all([fnGetSiteList(), fnGetIndexList()])
+            .then(axios.spread(function(res1, res2) {
+            	if(res1.status==200){
+            		vm.index_list=res1.data;
+            	}
+            	if(res2.status==200){
+            		var site_list=res2.data;
+            		for (var i = 0; i < site_list.length; i++) {
+	        	        if(site_list[i].pid==0){
+	        	            vm.list.push(site_list[i]);
+	        	        }
+	        	    }
+	        	    for (var i = 0; i < vm.list.length; i++) {
+	        	        var children=[];
+	        	        for (var j = 0; j < site_list.length; j++) {
+	        	            if(vm.list[i].sid==site_list[j].pid){
+	        	                var item=site_list[j];
+	        	                if(i==0){
+	        	                	item.LAY_CHECKED=true;
+	        	                }else{
+	        	                	item.LAY_CHECKED=false;
+	        	                }
+	        	                children.push(item);
+	        	            }
+	        	        }
+	        	        vm.list[i]['children']=children;
+	        	    }
+            	}
+	            vm.$nextTick(function(){
+	            	form.render();
+	               	fn_getData();
+	            });
+            })
+        );
+
+        function fnGetSiteList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getIndex',
+            });
+        }
+
+        function fnGetIndexList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getPointTree',
+            });
+        }
+
+        function fn_getData(){
+            if('准备查询参数'){
+                var ids=[];
+                for (var i = 0; i < vm.list.length; i++) {
+                    var itemI=vm.list[i];
+                    for (var j = 0; j < itemI['children'].length; j++) {
+                        var itemJ=itemI['children'][j];
+                        if(itemJ.LAY_CHECKED){
+                            ids.push(itemJ.sid);
+                        }
+                    }
+                }
+            }
+            let param = new URLSearchParams()
+            param.append('ids', ids.join(','));
+            param.append('time', vm.time);
+            param.append('index', vm.currentIndex);
+            axios({
+                method: 'post',
+                url: baseUrl + 'dq/statistic/getDataByMonth',
+                headers: {
+                    'Authorization': 'Bearer ' + $.cookie('login_sid_t_we'),
+                },
+                data: param
+            }).then(function(res) {
+                if ( res.data.code == 0 ) {
+                    fn_initTable(res.data.data);
+                }
+            });
+        }
+
+        /* 渲染表格 */
+        function fn_initTable(list){
+            $.each(list, function(index, item){
+                 for (var i = 1; i <= vm.daysCount; i++) {
+                     var day=formatZero(i,2)+'';
+                     item[day+'_more']=vm.fnDataMore(day, item[day]);
+                 }
+            });
+
+            var colsArr=[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'name', title: '名称', width:200, fixed: 'left'}
+            ];
+            for (var i = 1; i <= vm.daysCount; i++) {
+                var day=formatZero(i,2)+'';
+                colsArr.push({field: day, title: day, align: 'center',  templet: '#day_'+day+'_Tpl'},);
+            }
+        	insTb = table.render({
+        	    elem: '#loginRecordTable',
+        	    data: list,
+        	    limit:99999,
+        	    cellMinWidth: 80,
+                height: 'full-100',
+        	    cols: [colsArr]
+        	});
+        }
+
+        
+
+        /* 表格搜索 */
+        form.on('submit(loginRecordTbSearch)', function (data) {
+    		fn_getData();
+            return false;
+        });
+
+        // iframe形式弹窗传值
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.open({
+                type: 2,
+                title: '站点选择',
+                content: 'site_select.html',
+                area: ['800px', '90%'],
+                fixed: true,
+                offset: 'auto',
+                data: {
+                    list:vm.list,
+                    type:'checkbox'
+                },
+                end: function () {  // 监听弹窗关闭
+                    if(admin.getLayerData(layIndex, 'optionType')=='sure'){
+                        if (admin.getLayerData(layIndex, 'list')) {  // 判断表单操作成功标识
+                            vm.list=admin.getLayerData(layIndex, 'list');
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>

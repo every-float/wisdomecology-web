@@ -1,0 +1,129 @@
+﻿/*
+ * song
+ * 2019-02-21
+ */
+
+ /*左侧选中样式*/
+ .layadmin-pagetabs .layui-tab-title li.layui-this:after{background-color: #359D86!important;}
+ #app{
+ 	background-color: #359D86;
+ }
+ /*table样式*/
+ .layui-table thead th{
+ 	background: #EFFFD8;
+	color: #1E7D66;
+	font-weight: bold;
+	text-align: center;
+	border: 1px solid #EFFFD8;
+ }
+ /*标题样式*/
+ .headerTitle{
+ 	background-color: #359D86;
+	border: none;
+ }
+ .titleName{
+	width: 200px;
+	height: 40px;
+	margin: 0 auto;
+	text-align: center;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+ }
+ .titleName1{
+	background-image: url('../../../images/titleName1.png');
+ }
+ .titleName2{
+	background-image: url('../../../images/titleName2.png');
+	display: inline-block;
+   	position: absolute;
+    	z-index: 100;
+    	left: 0;
+    	right: 0;
+ }
+ hr{
+	color: #9ACCBA!important;
+	margin: 0px;
+ }
+ /*tab切换*/
+ #userType, #isClear{
+ 	background: #359D86;
+	border-color: #4DA994;
+ }
+ #userType li, #isClear li{
+	color: #359D86;
+	font-weight: bold;
+	margin-left: 0px!important;
+ 	margin-right: 8px;
+ 	border-radius: 5px 5px 0px 0px;
+ 	background: #4DA994;
+	border: 1px solid #9ACCBA;
+	z-index: 10;
+ }
+ #userType li.layui-this, #isClear li.layui-this{
+ 	background: #0F6B56;
+	color: #FFF;
+ }
+ .layui-tab-title .layui-this:after{border:none!important;}
+ .flex-item1 .layui-card-body, .flex-item2 .layui-card-body{
+	background: #359D86;
+ }
+ .flex-item1, .flex-item2, .flex-item3{
+	border-top: 5px solid #359D86!important;
+ }
+ .flex-item2 .layui-tab, .flex-item3 .layui-tab{
+	border: none!important;
+ }
+ .flex-item2 .layui-row .layui-tab .layui-card{
+	background: #359D86;
+ }
+ .flex-item2 .layui-row .layui-card-body{
+	padding: 10px 0px!important;
+ }
+ .flex-item3, .flex-item4{
+	color: #FFF;
+ }
+ .flex-item3 input, .flex-item4 input{
+ 	background: transparent;
+	color: #FFF;
+	border: 1px solid #FFF;
+ }
+ .flex-item3 .layui-form, .flex-item3 .layui-form-item{
+ 	background: #4DA994;
+	color: #FFF;
+	border-color: #4DA994;
+ }
+ .flex-item4 .layui-form, .flex-item4 .layui-form-item{
+	background: #4DA994;
+	color: #FFF;
+	border-color: #4DA994;
+ }
+ /*按钮样式*/
+ .readCard{
+	background-color: #359D86;
+ 	color: #FFF; 	
+ }
+ .payBtn, .search, .export{
+ 	background-color: transparent !important;
+  	background:#FFB44F; /* 一些不支持背景渐变的浏览器 */
+  	background:-moz-linear-gradient(top, #FCCD6B, #FDA43F);
+  	background:-webkit-linear-gradient(top, #FCCD6B, #FDA43F);
+ 	color: #94590A;
+ 	border-radius: 38px;
+ 	border: 1px solid #9DD596;
+ }
+ .export{
+	position: absolute;
+    	z-index: 100;
+    	right: 10px;
+ }
+ /*input placeholder样式*/
+ .layui-input::-webkit-input-placeholder{color:#FFF;}    /* 使用webkit内核的浏览器 */
+ .layui-input:-moz-placeholder{color:#FFF;}                  /* Firefox版本4-18 */
+ .layui-input::-moz-placeholder{color:#FFF;}                  /* Firefox版本19+ */
+ .layui-input:-ms-input-placeholder{color:#FFF;}           /* IE浏览器 */
+ 
+ /*input placeholder样式*/
+ .layui-input::-webkit-input-placeholder{color:#FFF;}    /* 使用webkit内核的浏览器 */
+ .layui-input:-moz-placeholder{color:#FFF;}                  /* Firefox版本4-18 */
+ .layui-input::-moz-placeholder{color:#FFF;}                  /* Firefox版本19+ */
+ .layui-input:-ms-input-placeholder{color:#FFF;}           /* IE浏览器 */

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+        <style>
+            body,html{
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+            }
+            .icon {
+              width: 1em;
+              height: 1em;
+              vertical-align: -0.15em;
+              fill: currentColor;
+              overflow: hidden;
+            }
+            .layui-form-label{
+                width: auto;
+            }
+        </style>
+		<title>统计</title>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="layui-fluid">
+			    <div class="layui-card">
+			        <div class="layui-card-body">
+			            <!-- 表格工具栏 -->
+			            <form id="search" class="layui-form toolbar">
+			                <div class="layui-form-item">
+                                <div class="layui-inline" style="width:100px;">
+                                    <div class="layui-input-inline" style="width:100%;">
+                                        <select name="dateType" lay-filter="dateType">
+                                            <option value="hour">时</option>
+                                            <option value="day">日</option>
+                                        </select>
+                                    </div>
+                                </div>
+			                    <div class="layui-inline">
+			                        <label class="layui-form-label">时间:</label>
+			                        <div class="layui-input-inline" style="width:263px;">
+                                        <input v-show="dateType=='hour'" name="time_hour" class="layui-input icon-date" placeholder="选择时间"/>
+			                            <input v-show="dateType=='day'" name="time_day" class="layui-input icon-date" placeholder="选择时间"/>
+			                        </div>
+			                    </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">污染指标:</label>
+                                    <div class="layui-input-inline" style="width:100px;">
+                                        <select name="index" lay-filter="index">
+                                            <option v-for="(item, index) in index_list" :key="index" :value="item.value">{{item.key}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+								<div class="layui-inline">
+			                        <div class="layui-input-inline">
+			                            <span id="dialogBtn13" class="layui-btn layui-btn-primary icon-btn">
+		                                    &nbsp;站点 <i class="layui-icon layui-icon-drop"></i>
+		                                </span>
+			                        </div>
+			                    </div>
+			                    <div class="layui-inline">&emsp;
+			                        <a class="layui-btn icon-btn" lay-filter="loginRecordTbSearch" lay-submit>
+			                            <i class="layui-icon">&#xe615;</i>搜索
+			                        </a>
+                                    <a class="layui-btn icon-btn" lay-filter="loginRecordTbSearch" lay-submit>
+                                        <i class="layui-icon">&#xe615;</i>导出
+                                    </a>
+			                    </div>
+			                </div>
+			            </form>
+
+			            <!-- 数据表格 -->
+			            <div id="main" style="width:100%;"></div>
+			        </div>
+			    </div>
+			</div>
+		</div>
+
+        <script type="text/html" id="compositeIndexTpl">
+            {{# if(d.compositeIndex*1 && d.preCompositeIndex*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preCompositeIndex}}" class="layui-table-link">
+                        {{d.js_compositeIndex?d.js_compositeIndex+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_compositeIndex_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="pm10Tpl">
+            {{# if(d.pm10*1 && d.prePm10*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.prePm10}}" class="layui-table-link">
+                        {{d.js_pm10?d.js_pm10+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_pm10_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="pm25Tpl">
+            {{# if(d.pm25*1 && d.prePm25*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.prePm25}}" class="layui-table-link">
+                        {{d.js_pm25?d.js_pm25+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_pm25_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="so2Tpl">
+            {{# if(d.so2*1 && d.preSo2*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preSo2}}" class="layui-table-link">
+                        {{d.js_so2?d.js_so2+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_so2_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="no2Tpl">
+            {{# if(d.no2*1 && d.preNo2*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preNo2}}" class="layui-table-link">
+                        {{d.js_no2?d.js_no2+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_no2_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="coTpl">
+            {{# if(d.co*1 && d.preCo*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preCo}}" class="layui-table-link">
+                        {{d.js_co?d.js_co+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_co_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="o3Tpl">
+            {{# if(d.o3*1 && d.preO3*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preO3}}" class="layui-table-link">
+                        {{d.js_o3?d.js_o3+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_o3_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="o38hTpl">
+            {{# if(d.o38h*1 && d.preO38h*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preO38h}}" class="layui-table-link">
+                        {{d.js_o38h?d.js_o38h+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_o38h_class}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+	</body>
+</html>
+<script type="text/javascript" src="https://cdn.bootcss.com/echarts/3.7.1/echarts.min.js"></script>
+<script type="text/javascript" src="../../scripts/echarts/theme/macarons.js"></script>
+<script>
+    if('vue'){
+    	var vm = new Vue({
+	      el:"#app",
+	      data:{
+			list:[],
+			index_list:[],
+
+            time_day:'',
+            time_hour:'',
+            dateType:'hour',
+            time:'',
+            index:'AQI',
+	      },
+	    });
+    }
+	var insTb=null;
+    layui.use(['layer', 'form', 'admin',  'table', 'util', 'dropdown', 'laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+
+        $('#main').css({
+            height:($('body').height()-$('#search').height()-50)
+        });
+
+        vm.time_hour= dateFormat(new Date(), 'yyyy-MM-dd') +' 00' + ' ~ ' + dateFormat(new Date(), 'yyyy-MM-dd HH');
+        vm.time_day= dateFormat(new Date(), 'yyyy-MM-dd') + ' ~ ' + dateFormat(new Date(), 'yyyy-MM-dd');
+        laydate.render({
+            elem: 'input[name="time_hour"]',
+            type: 'datetime',
+            value: dateFormat(new Date(), 'yyyy-MM-dd') +' 00' + ' ~ ' + dateFormat(new Date(), 'yyyy-MM-dd HH'),
+            range: '~',
+            format: 'yyyy-MM-dd HH',
+            done: function(value, date, endDate){
+                vm.time_hour=value;
+            }
+        });
+        laydate.render({
+            elem: 'input[name="time_day"]',
+            type: 'date',
+            value: dateFormat(new Date(), 'yyyy-MM-dd') + ' ~ ' + dateFormat(new Date(), 'yyyy-MM-dd'),
+            range: '~',
+            format: 'yyyy-MM-dd',
+            done: function(value, date, endDate){
+                vm.time_day=value;
+            }
+        });
+        
+        form.on('select(index)', function(data){
+             vm.index=data.value;
+        })
+
+        form.on('select(dateType)', function(data){
+             vm.dateType=data.value;
+        })
+
+        axios.all([fnGetSiteList(), fnGetIndexList()])
+            .then(axios.spread(function(res1, res2) {
+            	if(res1.status==200){
+            		vm.index_list=res1.data;
+            	}
+            	if(res2.status==200){
+            		var site_list=res2.data;
+            		for (var i = 0; i < site_list.length; i++) {
+	        	        if(site_list[i].pid==0){
+	        	            vm.list.push(site_list[i]);
+	        	        }
+	        	    }
+	        	    for (var i = 0; i < vm.list.length; i++) {
+	        	        var children=[];
+	        	        for (var j = 0; j < site_list.length; j++) {
+	        	            if(vm.list[i].sid==site_list[j].pid){
+	        	                var item=site_list[j];
+	        	                if(i==0){
+	        	                	item.LAY_CHECKED=true;
+	        	                }else{
+	        	                	item.LAY_CHECKED=false;
+	        	                }
+	        	                children.push(item);
+	        	            }
+	        	        }
+	        	        vm.list[i]['children']=children;
+	        	    }
+            	}
+	            vm.$nextTick(function(){
+	            	form.render();
+	               	fn_getData();
+	            });
+            })
+        );
+
+        function fn_getData(){
+            if('准备查询参数'){
+                var ids=[];
+                for (var i = 0; i < vm.list.length; i++) {
+                    var itemI=vm.list[i];
+                    for (var j = 0; j < itemI['children'].length; j++) {
+                        var itemJ=itemI['children'][j];
+                        if(itemJ.LAY_CHECKED){
+                            if(ids.length<20){
+                                ids.push(itemJ.sid);
+                            }
+                        }
+                    }
+                }
+            }
+            switch (vm.dateType) {
+                case 'hour':
+                    vm.time=vm.time_hour;
+                    break;
+                case 'day':
+                    vm.time=vm.time_day;
+                    break;
+            }
+            console.log(vm.time, vm.time.split(' ~ '))
+            let param = new URLSearchParams()
+            param.append('ids', ids.join(','));
+            param.append('dateType', vm.dateType);
+            param.append('startTime', vm.time.split(' ~ ')[0]);
+            param.append('endTime', vm.time.split(' ~ ')[1]);
+            param.append('index', vm.index);
+            axios({
+                method: 'post',
+                url: baseUrl + 'dq/statistic/historyTrend',
+                headers: {
+                    'Authorization': 'Bearer ' + $.cookie('login_sid_t_we'),
+                },
+                data: param
+            }).then(function(res) {
+                if ( res.data.code == 0 ) {
+                    fn_initEchart(res.data.data);
+                }
+            });
+        }
+
+        function fnGetSiteList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getIndex',
+            });
+        }
+
+        function fnGetIndexList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getPointTree',
+            });
+        }
+
+        /* 渲染表格 */
+        function fn_initEchart(list){
+            // $.each(list,function(index,value){
+            //      if(value.compositeIndex*1 && value.preCompositeIndex*1){
+            //         list[index].js_compositeIndex=(((value.compositeIndex*1-value.preCompositeIndex*1)/value.preCompositeIndex*1)*100).toFixed(2);
+            //         if(list[index].js_compositeIndex>0){
+            //             list[index].js_compositeIndex_icon='shang';
+            //         }
+            //         if(list[index].js_compositeIndex==0){
+            //             list[index].js_compositeIndex_icon='shang';
+            //         }
+            //         if(list[index].js_compositeIndex<0){
+            //             list[index].js_compositeIndex_icon='down';
+            //         }
+            //      }
+            //      if(value.pm10*1 && value.prePm10*1){
+            //         list[index].js_pm10=((value.pm10*1-value.prePm10*1)/value.prePm10*1)*100;
+            //         if(list[index].js_pm10>0){
+            //             list[index].js_pm10_icon='shang';
+            //         }
+            //         if(list[index].js_pm10==0){
+            //             list[index].js_pm10_icon='shang';
+            //         }
+            //         if(list[index].js_pm10<0){
+            //             list[index].js_pm10_icon='down';
+            //         }
+            //      }
+            //      if(value.pm25*1 && value.prePm25*1){
+            //         list[index].js_pm25=((value.pm25*1-value.prePm25*1)/value.prePm25*1)*100;
+            //         if(list[index].js_pm25>0){
+            //             list[index].js_pm25_icon='shang';
+            //         }
+            //         if(list[index].js_pm25==0){
+            //             list[index].js_pm25_icon='shang';
+            //         }
+            //         if(list[index].js_pm25<0){
+            //             list[index].js_pm25_icon='down';
+            //         }
+            //      }
+            //      if(value.so2*1 && value.preSo2*1){
+            //         list[index].js_so2=((value.so2*1-value.preSo2*1)/value.preSo2*1)*100;
+            //         if(list[index].js_so2>0){
+            //             list[index].js_so2_icon='shang';
+            //         }
+            //         if(list[index].js_so2==0){
+            //             list[index].js_so2_icon='shang';
+            //         }
+            //         if(list[index].js_so2<0){
+            //             list[index].js_so2_icon='down';
+            //         }
+            //      }
+            //      if(value.no2*1 && value.preNo2*1){
+            //         list[index].js_no2=((value.no2*1-value.preNo2*1)/value.preNo2*1)*100;
+            //         if(list[index].js_no2>0){
+            //             list[index].js_no2_icon='shang';
+            //         }
+            //         if(list[index].js_no2==0){
+            //             list[index].js_no2_icon='shang';
+            //         }
+            //         if(list[index].js_no2<0){
+            //             list[index].js_no2_icon='down';
+            //         }
+            //      }
+            //      if(value.co*1 && value.preCo*1){
+            //         list[index].js_co=((value.co*1-value.preCo*1)/value.preCo*1)*100;
+            //         if(list[index].js_co>0){
+            //             list[index].js_co_icon='shang';
+            //         }
+            //         if(list[index].js_co==0){
+            //             list[index].js_co_icon='shang';
+            //         }
+            //         if(list[index].js_co<0){
+            //             list[index].js_co_icon='down';
+            //         }
+            //      }
+            //      if(value.o3*1 && value.preO3*1){
+            //         list[index].js_o3=((value.o3*1-value.preO3*1)/value.preO3*1)*100;
+            //         if(list[index].js_o3>0){
+            //             list[index].js_o3_icon='shang';
+            //         }
+            //         if(list[index].js_o3==0){
+            //             list[index].js_o3_icon='shang';
+            //         }
+            //         if(list[index].js_o3<0){
+            //             list[index].js_o3_icon='down';
+            //         }
+            //      }
+            //      if(value.o38h*1 && value.preO38h*1){
+            //         list[index].js_o38h=((value.o38h*1-value.preO38h*1)/value.preO38h*1)*100;
+            //         if(list[index].js_o38h>0){
+            //             list[index].js_o38h_icon='shang';
+            //         }
+            //         if(list[index].js_o38h==0){
+            //             list[index].js_o38h_icon='shang';
+            //         }
+            //         if(list[index].js_o38h<0){
+            //             list[index].js_o38h_icon='down';
+            //         }
+            //      }
+            // });
+
+            console.log(list,999)
+
+        	var echartJson=list;
+            for (var i = 0; i < echartJson.series.length; i++) {
+                echartJson.series[i].type='line';
+            }
+            var myChart = echarts.init(document.getElementById('main'), 'macarons');
+            myChart.clear();
+            var option={
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: echartJson.legend,
+                    bottom:'bottom'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '30%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: echartJson.xaxis
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: echartJson.series
+            };
+
+            myChart.setOption(option);
+        }
+
+        
+
+        /* 表格搜索 */
+        form.on('submit(loginRecordTbSearch)', function (data) {
+            fn_getData();
+            return false;
+        });
+
+        // iframe形式弹窗传值
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.open({
+                type: 2,
+                title: '站点选择',
+                content: 'site_select.html',
+                area: ['800px', '90%'],
+                fixed: true,
+                offset: 'auto',
+                data: {
+                    list:vm.list,
+                    type:'checkbox',
+                    page:'index_trend'
+                },
+                end: function () {  // 监听弹窗关闭
+                    if(admin.getLayerData(layIndex, 'optionType')=='sure'){
+                        if (admin.getLayerData(layIndex, 'list')) {  // 判断表单操作成功标识
+                            vm.list=admin.getLayerData(layIndex, 'list');
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>

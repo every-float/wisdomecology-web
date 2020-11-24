@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>西青区智慧生态环境大数据分析及指挥调度平台控制台</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/materialize.min.css">
+		<link rel="stylesheet" type="text/css" href="css/common.css" />
+		<link rel="stylesheet" type="text/css" href="css/swiper.5.4.1.min.css">
+		<link rel="stylesheet" type="text/css" href="css/ecology.css" />
+		<script type="text/javascript">
+			(function() {
+				// 适配
+				var baseWidth = 1920;
+				var baseHeight = 1080;
+				var baseHtmlFontSize = 100;
+
+				setHtmlFontSize();
+				window.addEventListener('resize', function() {
+					setHtmlFontSize();
+				});
+
+				function setHtmlFontSize() {
+					var heightScale = Math.min(baseHeight, window.innerHeight) / baseHeight;
+					var fontSize = heightScale * baseHtmlFontSize;
+					document.documentElement.style.fontSize = fontSize + 'px';
+				}
+			})();
+		</script>
+		<style>
+			.video-placeholder{
+				/* width:300px!important;
+				height:300px!important;
+				border: 2px solid yellow; */
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			
+			<div id="main" v-cloak>
+				<div class="bmap-con">
+					<div id="bmap"></div>
+				</div>
+				<div class="header">
+					<!-- <div class="cus_header_time">
+						<span>{{ currRealDate }}</span>
+						<span>{{ currWeek }}</span>
+						<span>{{ currRealTime }}</span>
+					</div> -->
+					<div class="permission-btn-a cus_header_screentype"
+						:style="{backgroundImage: isWideScreenForSwitch ? 'url(./images/widescreenicon.png)' : 'url(./images/normalscreenicon.png)', width: '0.3rem', height: '0.3rem'}"
+						@click="switchScreenWideOrNarrow($event)"
+						@mouseover="openMyTip($event, isWideScreenForSwitch ? '切换为窄屏' : '切换为宽屏')"
+						@mousemove="moveMyTip($event)" 
+						@mouseout="closeMyTip($event)"
+					></div>
+					<a style="width: 0.3rem; height: 0.3rem;"
+						:class="[permissionButtons.filter(function(v){return v.btnName==='设置'})[0].menuId ? 'permission-btn-a' : 'permission-btn-b', 'cus_header_setting', 'btn_outer']"
+						:href="permissionButtons.filter(function(v){return v.btnName==='设置'})[0].menuId ? (pageUrl+'views/index2.html?menuId='+permissionButtons.filter(function(v){return v.btnName==='设置'})[0].menuId+'&menuName='+permissionButtons.filter(function(v){return v.btnName==='设置'})[0].menuName) : 'javascript:void(0);'"
+						target="_self"
+						@mouseover="openMyTip($event, '设置')" 
+						@mousemove="moveMyTip($event)" 
+						@mouseout="closeMyTip($event)"
+					></a>
+				</div>
+				<div class="btn_basic_style btn_outer" 
+					 v-for="(vo, index) in permissionButtons.filter(function(v){return v.btnName!=='设置'})" 
+					 :style="{backgroundImage: 'url('+vo.btnBg+')', left: (vo.left || ''), right: (vo.right || '')}"
+				>
+					<permission-button
+						:omenu="vo"
+						v-on:btn-mouseover="openMyTip"
+						v-on:btn-mousemove="moveMyTip"
+						v-on:btn-mouseout="closeMyTip"
+					>
+						{{ vo.btnName }}
+					</permission-button>
+				</div>
+				
+				<div class="cus_block left_2" style="padding-top: 0.4rem;">
+					<div class="left_2_container">
+						<img class="left_2_headimg" src="images/user.png" >
+						<div class="left_2_userinfo">
+							<span>
+								<img src="images/username.png" style="vertical-align: middle;height: 0.25rem;">
+								<span style="vertical-align: middle;">{{ userInfo.realName }}</span>
+							</span>
+							<span style="margin-left: 0.95rem;">
+								<img src="images/position.png" style="vertical-align: middle;height:0.22rem;">
+								<span style="vertical-align: middle;">天津市西青区</span>
+							</span>
+						</div>
+						<div v-if="!airQualityData.aqi"></div>
+						<div class="left_2_main" v-else>
+							<div class="left_2_main_weather">
+								<div class="left_2_main_weather_temp">{{ weatherData.degree }}°</div>
+								<div style="font-size: 0.15rem;">
+									<p style="overflow: visible; height: 0.3rem; line-height: 0.3rem;">
+										<span class="left_2_main_weather_dot" style="background-color: #00FFED; color: #00FFED;"></span>
+										<img :src=" '//mat1.gtimg.com/pingjs/ext2020/weather/pc/icon/currentweather/day/'+ weatherData.weather_code +'.png' " style="height: 0.2rem;" alt="">
+										<span>{{ weatherData.weather }}</span>
+									</p>
+									<p style="overflow: visible;">
+										<span class="left_2_main_weather_dot" style="background-color: #D1FE05; color: #D1FE05;"></span>
+										<img src="./images/fengxiang.png" style="height: 0.16rem;" alt="">
+										<span>{{ weatherData.wind_direction }}</span>
+										<span class="left_2_main_weather_dot" style="background-color: #00FFED; color: #00FFED;"></span>
+										<img src="./images/shidu.png" style="height: 0.16rem;" alt="">
+										<span>湿度{{ weatherData.humidity }}%</span>
+									</p>
+								</div>
+								<div>
+									<p style="font-size: 0.22rem;">{{ currRealTime }}</p>
+									<p style="overflow: visible; font-size: 0.13rem;">
+										<span class="left_2_main_weather_dot" style="background-color: #D1FE05; color: #D1FE05;"></span>
+										<span>{{ currRealDate }}</span>
+										<span>{{ currWeek }}</span>
+									</p>
+								</div>
+							</div>
+							<div class="left_2_main_air">
+								<div class="left_2_main_aqi">
+									<p style="color: #57E9FF; font-weight: bold; font-size: 0.2rem; margin-bottom: 0.08rem;">AQI</p>
+									<p :style="{fontWeight: 'bold', fontSize: '0.16rem', color: airQualityData.aqi.bgcolor}">
+										{{ airQualityData.aqi.value }}
+										<span style="font-size: 0.14rem;">{{ airQualityData.aqi.level || '-' }}</span>
+									</p>
+								</div>
+								<div class="left_2_main_other" style="left: 0.41rem; bottom: 1.15rem;">
+									<div class="left_2_main_other_kv">
+										<span style="color: #00FFEF; font-size: 0.2rem;">{{ airQualityData.pm2_5.value }}</span>
+										<span style="font-size: 0.12rem; font-weight: 100;">PM2.5</span>
+									</div>
+									<span 
+										:style="{padding: '0 0.01rem', fontWeight: '100', textAlign: 'center', height: '0.2rem', backgroundColor: airQualityData.pm2_5.bgcolor, color: airQualityData.pm2_5.color}">
+										{{ airQualityData.pm2_5.level || '-' }}
+									</span>
+								</div>
+								<div class="left_2_main_other" style="left: 0.41rem; bottom: 0.6rem;">
+									<div class="left_2_main_other_kv">
+										<span style="color: #00FFEF; font-size: 0.2rem;">{{ airQualityData.pm10.value }}</span>
+										<span style="font-size: 0.12rem; font-weight: 100;">PM10</span>
+									</div>
+									<span 
+										:style="{padding: '0 0.01rem', fontWeight: '100', textAlign: 'center', height: '0.2rem', backgroundColor: airQualityData.pm10.bgcolor, color: airQualityData.pm10.color}">
+										{{ airQualityData.pm10.level || '-' }}
+									</span>
+								</div>
+								<div class="left_2_main_other" style="left: 0.41rem; bottom: 0.1rem;">
+									<div class="left_2_main_other_kv">
+										<span style="color: #00FFEF; font-size: 0.2rem;">{{ airQualityData.so2.value }}</span>
+										<span style="font-size: 0.12rem; font-weight: 100;">SO<sub>2</sub></span>
+									</div>
+									<span 
+										:style="{padding: '0 0.01rem', fontWeight: '100', textAlign: 'center', height: '0.2rem', backgroundColor: airQualityData.so2.bgcolor, color: airQualityData.so2.color}">
+										{{ airQualityData.so2.level || '-' }}
+									</span>
+								</div>
+								<div class="left_2_main_other" style="right: 0.41rem; bottom: 1.15rem;">
+									<span
+										:style="{padding: '0 0.01rem', fontWeight: '100', textAlign: 'center', height: '0.2rem', backgroundColor: airQualityData.no2.bgcolor, color: airQualityData.no2.color}">
+										{{ airQualityData.no2.level || '-' }}
+									</span>
+									<div class="left_2_main_other_kv">
+										<span style="color: #00FFEF; font-size: 0.2rem;">{{ airQualityData.no2.value }}</span>
+										<span style="font-size: 0.12rem; font-weight: 100; text-align: right;">NO<sub>2</sub></span>
+									</div>
+								</div>
+								<div class="left_2_main_other" style="right: 0.41rem; bottom: 0.6rem;">
+									<span
+										:style="{padding: '0 0.01rem', fontWeight: '100', textAlign: 'center', height: '0.2rem', backgroundColor: airQualityData.co.bgcolor, color: airQualityData.co.color}">
+										{{ airQualityData.co.level || '-' }}
+									</span>
+									<div class="left_2_main_other_kv">
+										<span style="color: #00FFEF; font-size: 0.2rem;">{{ airQualityData.co.value }}</span>
+										<span style="font-size: 0.12rem; font-weight: 100; text-align: right;">CO</span>
+									</div>
+								</div>
+								<div class="left_2_main_other" style="right: 0.41rem; bottom: 0.1rem;">
+									<span
+										:style="{padding: '0 0.01rem', fontWeight: '100', textAlign: 'center', height: '0.2rem', backgroundColor: airQualityData.o3.bgcolor, color: airQualityData.o3.color}">
+										{{ airQualityData.o3.level || '-' }}
+									</span>
+									<div class="left_2_main_other_kv">
+										<span style="color: #00FFEF; font-size: 0.2rem;">{{ airQualityData.o3.value }}</span>
+										<span style="font-size: 0.12rem; font-weight: 100; text-align: right;">O<sub>3</sub></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="cus_block left_4">
+					<div class="biginwindow_btn" @click="enlarge_2($event)" title="放大"></div>
+					<div class="title">固废态综合动态管理</div>
+					<div class="content swiper-container">
+						<!-- <div id="left_4_1" style="height: 30.3%; border-bottom: 0px solid #FFF1F0;"></div>
+						<div id="left_4_2" style="height: 30.3%; border-bottom: 0px solid #FFF1F0;"></div>
+						<div id="left_4_3" style="height: 39.4%; border-bottom: 0px solid #FFF1F0;"></div> -->
+						<div class="swiper-wrapper">
+						  <div class="swiper-slide">
+								<div id="left_4_1" style="height: 100%;"></div>
+						  </div>
+						  <div class="swiper-slide">
+								<div id="left_4_2" style="height: 100%;"></div>
+						  </div>
+						  <div class="swiper-slide">
+						  		<div id="left_4_3" style="height: 100%;"></div>
+						  </div>
+						</div>
+						<div class="swiper-pagination"></div>
+					</div>
+				</div>
+				<div class="cus_block left_3">
+					<div class="biginwindow_btn" @click="enlarge_1($event)" title="放大"></div>
+					<div class="title">断面考核数据</div>
+					<div class="content" style="display: flex; display: -webkit-flex; flex-direction: column;">
+						<div style="height: 0.7rem; display: flex; display: -webkit-flex; flex-wrap: wrap; align-items: center; justify-content: center;">
+							<span :class=" vo.code === currTarget ? 'cus_dmkh_tabitem cus_dmkh_tabitem_active' : 'cus_dmkh_tabitem' "
+									v-for="(vo, index) in dmkhsjColumnchart.legendObj" 
+									@click="changeTarget(vo.code, index)">
+								{{ vo.text }}
+							</span>
+						</div>
+						<div id="left_3_1" style="flex: 1;"></div>
+					</div>
+				</div>
+				<div class="cus_block right_2">
+					<div class="biginwindow_btn" @click="enlarge_3($event)" title="放大"></div>
+					<div class="title">区域考核排名统计</div>
+					<div class="content" style="padding: 0.1rem;" @mouseover="stopSwitch()" @mouseout="rightU2AutoSwitch()">
+						<div style="position: relative; height: 100%; padding-top: 0.35rem;">
+							<div class="right_2_tab" style="position: absolute; width: 100%; height: 0.35rem; top: 0; left: 0;">
+								<div :class=" vo.code === pollutant ? 'right_2_tab_item right_2_tab_item_active' : 'right_2_tab_item' "
+									v-for="(vo, index) in airIndexs"
+									@click="changePollutant(vo.code, index)"
+									v-html="vo.text">
+								</div>
+							</div>
+							<div style="height: 100%;">
+								<div style="height: 33.333%; position: relative;">
+									<div class="cus_tab_order right_2_1">
+										<div :class="orderType1 ? 'cus_tab_order_item' : 'cus_tab_order_item cus_tab_order_active'" @click="changeOrderType($event, 0)">正序</div>
+										<div :class="orderType1 ? 'cus_tab_order_item cus_tab_order_active' : 'cus_tab_order_item'" @click="changeOrderType($event, 1)">倒序</div>
+									</div>
+									<div id="right_2_1" style="height: 100%;"></div>
+								</div>
+								<div style="height: 33.333%; position: relative;">
+									<div class="cus_tab_order right_2_2">
+										<div :class="orderType2 ? 'cus_tab_order_item' : 'cus_tab_order_item cus_tab_order_active'" @click="changeOrderType($event, 0)">正序</div>
+										<div :class="orderType2 ? 'cus_tab_order_item cus_tab_order_active' : 'cus_tab_order_item'" @click="changeOrderType($event, 1)">倒序</div>
+									</div>
+									<div id="right_2_2" style="height: 100%;"></div>
+								</div>
+								<div style="height: 33.333%; position: relative;">
+									<div class="cus_tab_order right_2_3">
+										<div :class="orderType3 ? 'cus_tab_order_item' : 'cus_tab_order_item cus_tab_order_active'" @click="changeOrderType($event, 0)">正序</div>
+										<div :class="orderType3 ? 'cus_tab_order_item cus_tab_order_active' : 'cus_tab_order_item'" @click="changeOrderType($event, 1)">倒序</div>
+									</div>
+									<div id="right_2_3" style="height: 100%;"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="cus_block right_3">
+					<div class="biginwindow_btn" @click="enlarge_4($event)" title="放大"></div>
+					<div class="title">重点企业污染源管理</div>
+					<a class="cus_btn_more" style="right: 2.25rem;" href="../../views/index2.html?menuId=26a6c508b37d465f910800d4e73f93d8#views/sop/companyInfo_list.html" target="_blank">更多</a>
+					<div class="content" style="padding: 0.1rem;">
+						<div style="height: 100%; padding-top: 0.24rem; position: relative; font-size: 0.12rem; color: #FFFFFF;">
+							<div class="cus_table_head">
+								<div class="cus_table_th" style="width: 60%;">企业名称</div>
+								<div class="cus_table_th" style="width: 60%;">行业类别</div>
+								<div class="cus_table_th" style="width: 60%;">机构代码</div>
+							</div>
+							<div class="cus_table_body roll-wrap roll_col" style="height: 100%; overflow: hidden; position: relative;" id="g">
+								<ul class="roll__list" style="position: absolute; width: 100%; left: 0; top: 0;">
+									<li :class=" 'cus_table_tr li-' + index " v-for="(vo,index) in zdqywryglTable">
+										<div class="cus_table_td" style="width: 65%;">{{ vo.co_name }}</div>
+										<div class="cus_table_td" style="width: 65%;">{{ vo.industry_name }}</div>
+										<div class="cus_table_td" style="width: 65%;">{{ vo.co_code }}</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="cus_block_2 center_1">
+					<div class="title">互动值访</div>
+					<div class="content" style="position: relative; padding-left: 0.8rem;">
+						<form id="infoForm" class="layui-form" style="display: none;">
+							<div class="layui-form-item">
+								<label class="layui-form-label">CAMERA</label>
+								<div class="layui-input-inline">
+									<select name="cameraId" id="cameraId"></select>
+								</div>
+								<label class="layui-form-label">MICROPHONE</label>
+								<div class="layui-input-inline">
+									<select name="microphoneId" id="microphoneId"></select>
+								</div>
+							</div>
+						</form>
+						<div class="cus_interact_operate">
+							<div class="cus_interact_operate_items" onclick="contactListPage()">
+								<img class="cus_interact_operate_img" src="images/contact.png" />
+								<div class="cus_interact_operate_text">联系人</div>
+							</div>
+							<div class="cus_interact_operate_items" onclick="leaveChannel()">
+								<img class="cus_interact_operate_img" src="images/hangUp.png" />
+								<div class="cus_interact_operate_text">挂断</div>
+							</div>
+							<div class="cus_interact_operate_items" onclick="changeType()">
+								<img class="cus_interact_operate_img" src="images/typeChange.png" />
+								<div class="cus_interact_operate_text">音视频切换</div>
+							</div>
+						</div>
+						<div class="cus_interact_live content_5">
+							<div class="video-grid" id="video" style="width: 100%; height: 100%; position: relative;">
+								<div class="video-view" style="position: absolute; width: 20%; height: 20%; bottom: 0; right: 0; z-index: 299;">
+									<div id="local_stream" class="video-placeholder"></div>
+									<div id="local_video_info" class="video-profile hide"></div>
+									<div id="video_autoplay_local" class="autoplay-fallback hide"></div>
+								</div>
+							</div>
+							<!-- <div class="cus_interact_audio"></div> -->
+							<div id="cus_interact_zoom" @click="enlarge_5($event)"></div>
+						</div>
+					</div>
+				</div>
+				<div class="cus_block_2 center_2">
+					<div class="title">高架视频</div>
+					<a class="cus_btn_more" href="../../views/index2.html?menuId=c616b74328504b6085ac923c1e117755#views/dq/overheadVideo_list.html" target="_blank">更多</a>
+					<div class="content" style="padding: 5px">
+						<img src="../../views/dq/images/channel_1.jpg" width="100%" height="100%"/>
+					</div>
+				</div>
+				<!-- <div class="cus_block_2 center_3" v-else>
+					<div class="title">互动值访/高架视频</div>
+					<div class="content"></div>
+				</div> -->
+				
+				<span class="permission-btn-tip" ref="btnTip" v-show="tipIsShow">{{ hoverPermissionButtonName }}</span>
+				
+				<!-- 放大层 -->
+				<div class="content_1" style="display: flex; display: -webkit-flex; flex-direction: column;">
+					<div style="height: 0.7rem; display: flex; display: -webkit-flex; flex-wrap: wrap; align-items: center; justify-content: center;">
+						<span :class=" vo.code === currTarget ? 'cus_dmkh_tabitem cus_dmkh_tabitem_active' : 'cus_dmkh_tabitem' "
+								v-for="(vo, index) in dmkhsjColumnchart.legendObj" 
+								@click="changeTarget(vo.code)">
+							{{ vo.text }}
+						</span>
+					</div>
+					<div id="left_3_1_layer" style="flex: 1;"></div>
+				</div>
+				<div class="content_2">
+					<div id="left_4_1_layer" style="height: 30.3%; border-bottom: 0px solid #FFF1F0;"></div>
+					<div id="left_4_2_layer" style="height: 30.3%; border-bottom: 0px solid #FFF1F0;"></div>
+					<div id="left_4_3_layer" style="height: 39.4%; border-bottom: 0px solid #FFF1F0;"></div>
+				</div>
+				<div class="content_3" style="padding: 0.1rem;" @mouseover="stopSwitch()" @mouseout="rightU2AutoSwitch()">
+					<div style="position: relative; height: 100%; padding-top: 0.45rem;">
+						<div class="right_2_tab" style="position: absolute; width: 100%; height: 0.45rem; top: 0; left: 0;">
+							<div :class=" vo.code === pollutant ? 'right_2_tab_item right_2_tab_item_active' : 'right_2_tab_item' "
+								v-for="(vo, index) in airIndexs"
+								@click="changePollutant(vo.code)"
+								v-html="vo.text">
+							</div>
+						</div>
+						<div style="height: 100%;">
+							<div style="height: 33.333%; position: relative;">
+								<div class="cus_tab_order right_2_1_layer">
+									<div :class="orderType1 ? 'cus_tab_order_item' : 'cus_tab_order_item cus_tab_order_active'" @click="changeOrderType($event, 0)">正序</div>
+									<div :class="orderType1 ? 'cus_tab_order_item cus_tab_order_active' : 'cus_tab_order_item'" @click="changeOrderType($event, 1)">倒序</div>
+								</div>
+								<div id="right_2_1_layer" style="height: 100%;"></div>
+							</div>
+							<div style="height: 33.333%; position: relative;">
+								<div class="cus_tab_order right_2_2_layer">
+									<div :class="orderType2 ? 'cus_tab_order_item' : 'cus_tab_order_item cus_tab_order_active'" @click="changeOrderType($event, 0)">正序</div>
+									<div :class="orderType2 ? 'cus_tab_order_item cus_tab_order_active' : 'cus_tab_order_item'" @click="changeOrderType($event, 1)">倒序</div>
+								</div>
+								<div id="right_2_2_layer" style="height: 100%;"></div>
+							</div>
+							<div style="height: 33.333%; position: relative;">
+								<div class="cus_tab_order right_2_3_layer">
+									<div :class="orderType3 ? 'cus_tab_order_item' : 'cus_tab_order_item cus_tab_order_active'" @click="changeOrderType($event, 0)">正序</div>
+									<div :class="orderType3 ? 'cus_tab_order_item cus_tab_order_active' : 'cus_tab_order_item'" @click="changeOrderType($event, 1)">倒序</div>
+								</div>
+								<div id="right_2_3_layer" style="height: 100%;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="content_4" style="padding: 0.1rem;">
+					<div style="height: 100%; padding-top: 0.42rem; position: relative; font-size: 0.18rem; color: #FFFFFF;">
+						<div class="cus_table_head">
+							<div class="cus_table_th" style="width: 60%;">企业名称</div>
+							<div class="cus_table_th" style="width: 60%;">行业类别</div>
+							<div class="cus_table_th" style="width: 60%;">机构代码</div>
+						</div>
+						<div class="cus_table_body" style="height: 100%; overflow: hidden; position: relative;">
+							<ul style="position: absolute; width: 100%; left: 0; top: 0;">
+								<li class="cus_table_tr" v-for="(vo,index) in zdqywryglTable">
+									<div class="cus_table_td" style="width: 65%;">{{ vo.co_name }}</div>
+									<div class="cus_table_td" style="width: 65%;">{{ vo.industry_name }}</div>
+									<div class="cus_table_td" style="width: 65%;">{{ vo.co_code }}</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+						
+		</div>
+		
+		
+	</body>
+<!--	<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=mE0GRctNh8W2180rEH5g95FXsEwmhhlp"></script>-->
+	<script src="../../common/baiduMap.js" type="text/javascript"></script>
+	<script src="js/swiper.5.4.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../common/commonUrl.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../common/commonJs.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var layer;
+		var table;
+		// 注入layui
+		layui.use(['layer', 'table'], function() {
+			layer = layui.layer;
+			table = layui.table;
+			loadScript("js/ecology-define.js", function(){
+				loadScript("js/rollslide.js");
+				loadScript("js/ecology-babel.js");
+			});
+		});
+		
+		// 暂时解绑document上的事件(暂时不用)
+		// $(document).unbind("ajaxSend").unbind("ajaxComplete");
+		
+		// 获取联系人
+		function contactListPage(){
+			window.open("./contactList.html", "视频通话窗口", "location=no,menubar=no,status=no,titlebar=no,toolbar=no,width=1000,height=540,left=200,top=100,screenLeft=200,screenTop=150");
+			// layui.use('layer',function(){
+			// 	var layer = layui.layer;
+			// 	layer.open({
+			// 	type:2,
+			// 	title:"视频通话",
+			// 	area:["994px", "540px"],
+			// 	content:"contactList.html"
+			// 	})
+			// })
+		}
+	</script>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<title>异常信息</title>
+	</head>
+	<body>
+		<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-header">异常列表</div>
+			<div class="layui-card-body">
+				<form class="layui-form">
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">开始时间</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="search_kssj">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for=""></label>
+						<div class="layui-input-inline">
+							<button type="button" class="layui-btn" onclick="search()">查询</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+				<table id="dataGrid" lay-filter="dataGrid" class="layui-table"></table>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/exception_list.js"></script>
+</html>

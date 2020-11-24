@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../layuiadmin/style/formSelects-v4.css" />
+		<title>污染源企业管理</title>
+		<style>
+			[v-cloak]{
+				display: none!important;
+			}
+			.layui-form-label{width: 120px;}
+			.layui-input-block{margin-left:150px;}
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-card">
+				<div class="layui-card-header">编辑污染源企业</div>
+				<div class="layui-card-body">
+					<form id="form1" class="layui-form" lay-filter="form1">
+						<input type="hidden" name="coId" v-model="coId" />
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>企业基本信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">企业名称<span style="color:red">*</span></label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coName" lay-verify="required" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">企业编码</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coCode" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">名录类别<span style="color:red">*</span></label>
+										<div class="layui-input-block" style="width:555px;">
+											<select name="conDatatype" xm-select="conDatatype" lay-verify="required">
+												<option value="water">水环境</option>
+												<option value="earth">土壤环境</option>
+												<option value="air">大气环境</option>
+												<option value="others">其他环境</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">所属乡镇<span style="color:red">*</span></label>
+										<div class="layui-input-inline">
+											<select name="coTownship" lay-filter="coTownship" lay-verify="required">
+												<option value="">--请选择--</option>
+												<option :value="vo.id" v-for="(vo, index) in townList">{{ vo.name }}</option>
+											</select>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">注册类型</label>
+										<div class="layui-input-inline">
+											<select name="coRetype" lay-filter="coRetype">
+												<option value="">--请选择--</option>
+												<option value="1">国有企业</option>
+												<option value="2">集体企业</option>
+												<option value="3">股份合作企业</option>
+												<option value="4">联营企业</option>
+												<option value="5">有限责任公司</option>
+												<option value="6">股份有限公司</option>
+												<option value="7">私营企业</option>
+												<option value="8">港/澳/台商投资企业</option>
+												<option value="9">外资投资企业</option>
+												<option value="10">个体经营</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">单位类别</label>
+										<div class="layui-input-inline">
+											<select name="coCotype" lay-filter="coCotype">
+												<option value="">--请选择--</option>
+												<option value="1">县以上工业企业</option>
+												<option value="2">县以上非工业企业</option>
+												<option value="3">事业单位</option>
+												<option value="4">乡镇街道工业企业</option>
+												<option value="5">乡镇街道非工业企业</option>
+												<option value="6">部队</option>
+												<option value="7">其他</option>
+												<option value="8">私营企业</option>
+											</select>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">企业规模</label>
+										<div class="layui-input-inline">
+											<select name="coScale" lay-filter="coScale">
+												<option value="">--请选择--</option>
+												<option value="1">特大型</option>
+												<option value="2">大型一档</option>
+												<option value="3">大型二挡</option>
+												<option value="4">中一型</option>
+												<option value="5">中二型</option>
+												<option value="6">小型</option>
+												<option value="7">其他</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">隶属关系</label>
+										<div class="layui-input-inline">
+											<select name="coParent" lay-filter="coParent">
+												<option value="">--请选择--</option>
+												<option value="1">中央</option>
+												<option value="2">省</option>
+												<option value="3">市、地区</option>
+												<option value="4">县</option>
+												<option value="5">街道、镇、乡</option>
+												<option value="6">街道</option>
+												<option value="7">镇</option>
+												<option value="8">乡</option>
+												<option value="9">居民、村民委员会</option>
+												<option value="10">居民委员会</option>
+												<option value="11">村民居委会</option>
+												<option value="12">其他</option>
+											</select>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">行业类别</label>
+										<div class="layui-input-inline">
+											<select name="coIndtype" lay-filter="coIndtype">
+												<option value="">--请选择--</option>
+												<option :value="vo.id" v-for="(vo, index) in companyType">{{ vo.title }}</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">流域编码</label>
+										<div class="layui-input-inline">
+											<select name="coRiver" lay-filter="coRiver">
+												<option value="">--请选择--</option>
+												<option value="1">子牙河</option>
+												<option value="2">中亭河</option>
+												<option value="3">南运河</option>
+												<option value="4">大沽排水河</option>
+												<option value="5">外环河</option>
+											</select>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">关注程度</label>
+										<div class="layui-input-inline">
+											<select name="coAttention" lay-filter="coAttention">
+												<option value="">--请选择--</option>
+												<option value="1">国控</option>
+												<option value="2">省控</option>
+												<option value="3">市控</option>
+												<option value="4">非重点污染源</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">占地总面积</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coArea" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">投产日期</label>
+										<div class="layui-input-inline">
+											<input id="coWorkdate" type="text" class="layui-input" readonly="readonly" placeholder="请选择投产日期" name="coWorkdate" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label">选择位置:</label>
+									<div class="layui-input-block">
+										<button type="button" class="layui-btn layui-btn-sm" @click="getLocation()"><i class="layui-icon"></i>打开地图</button><br>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">中心经度</label>
+										<div class="layui-input-inline">
+											<input id="baiduLng" type="text" class="layui-input" readonly="readonly" name="coLongitude" placeholder="请选择地理位置" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">中心纬度</label>
+										<div class="layui-input-inline">
+											<input id="baiduLat" type="text" class="layui-input" readonly="readonly" name="coLatitude" style="cursor: no-drop;" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>环保部门信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">环保部门名称</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coEpDepart" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">负责人</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coEpPerson" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">联系电话</label>
+										<div class="layui-input-inline">
+											<input type="number" class="layui-input" name="coEpPhone" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">环保部门人数</label>
+										<div class="layui-input-inline">
+											<input type="number" class="layui-input" name="coEpNums" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>工商登记信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">统一社会信用代码</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coBuSocietycode" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">法定代表人</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coBuPerson" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">开户银行</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coBuBank" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">银行账号</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coBuAccount" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label">注册地址</label>
+									<div class="layui-input-block" style="width:555px;">
+										<input type="text" class="layui-input" name="coBuAddress" />
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>企业联系方式</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">办公电话</label>
+										<div class="layui-input-inline">
+											<input type="number" class="layui-input" name="coTexphone" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">传真</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="conSend" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">移动电话</label>
+										<div class="layui-input-inline">
+											<input type="number" class="layui-input" name="coMobilephone" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">电子邮件</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="coEmail" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">邮政编码</label>
+										<div class="layui-input-inline">
+											<input type="number" class="layui-input" name="conPostcode" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">企业网址</label>
+										<div class="layui-input-inline">
+											<input type="text" class="layui-input" name="conWebsite" />
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label">通讯地址</label>
+									<div class="layui-input-block" style="width:555px;">
+										<input type="text" class="layui-input" name="coConaddress" />
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>工艺流程</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<textarea class="layui-textarea" name="conGylc" id="conGylc"></textarea>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>主要原辅料</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<textarea class="layui-textarea" name="conZyyfl" id="conZyyfl"></textarea>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>环评审批</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesHpsp" id="filesHpsp" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>验收文档</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesYswd" id="filesYswd" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>监测报告</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesJcbg" id="filesJcbg" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>检查情况</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesJcqk" id="filesJcqk" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>处罚情况</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesCfqk" id="filesCfqk" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>企业行业信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesHyxx" id="filesHyxx" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>应急预案</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<textarea class="layui-textarea" name="conYjya" id="conYjya"></textarea>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesYjya" id="filesYjya" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>变更记录</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesBgjl" id="filesBgjl" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>产污节点</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesCwjd" id="filesCwjd" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>实际产量</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesSjcl" id="filesSjcl" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>危废管理</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<textarea class="layui-textarea" name="conWfgl" id="conWfgl"></textarea>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesWfgl" id="filesWfgl" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>危废转移情况</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<textarea class="layui-textarea" name="conZyqk" id="conZyqk"></textarea>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesZyqk" id="filesZyqk" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>排污口</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<input type="text" name="filesPwk" id="filesPwk" class="uploadPanel">
+										<span>提示：最多上传<strong style="color: red">20</strong>个附件</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<div class="layui-form-item" style="display: none">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../common/fileupload.js"></script>
+	<script>
+		var token = getUserToken();
+		//环评审批
+		var fu = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=1', //数据
+			objId: 'filesHpsp'
+		});
+		fu.init();
+		//验收文档
+		var fu2 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=2', //数据
+			objId: 'filesYswd'
+		});
+		fu2.init();
+		//监测报告
+		var fu3 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=3', //数据
+			objId: 'filesJcbg'
+		});
+		fu3.init();
+		//检查情况
+		var fu4 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=4', //数据
+			objId: 'filesJcqk'
+		});
+		fu4.init();
+		//处罚情况
+		var fu5 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=5', //数据
+			objId: 'filesCfqk'
+		});
+		fu5.init();
+		//企业行业信息
+		var fu6 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=6', //数据
+			objId: 'filesHyxx'
+		});
+		fu6.init();
+		//应急预案
+		var fu7 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=7', //数据
+			objId: 'filesYjya'
+		});
+		fu7.init();
+		//变更记录
+		var fu8 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=8', //数据
+			objId: 'filesBgjl'
+		});
+		fu8.init();
+		//产污节点
+		var fu9 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=9', //数据
+			objId: 'filesCwjd'
+		});
+		fu9.init();
+		//实际产量
+		var fu10 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=10', //数据
+			objId: 'filesSjcl'
+		});
+		fu10.init();
+		//危废管理
+		var fu11 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=11', //数据
+			objId: 'filesWfgl'
+		});
+		fu11.init();
+		//危废转移情况
+		var fu12 = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=12', //数据
+			objId: 'filesZyqk'
+		});
+		fu12.init();
+		//处罚情况
+		var fu13 = $(document).fileupload({
+			token: token,
+			fileType: 'images',
+			fileNumLimit: 20,
+			server: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass=13', //数据
+			objId: 'filesPwk'
+		});
+		fu13.init();
+	</script>
+	<script type="text/javascript" src="js/companyInfo_edit.js"></script>
+</html>

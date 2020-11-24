@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+ 
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+		<script type="text/javascript" src="../../common/baiduMap.js"></script>
+		<title>VOC</title>
+	</head>
+ 
+	<body>
+		<div id="app" v-cloak class="layui-container">
+			<div id="allmap"></div>
+			<div id="center_left">
+					<span onclick="fnLabelStatus()" 
+							:style="{backgroundImage: (labelShow?'url(../../images/tools/icon_sitename.png)':'url(../../images/tools/icon_sitename.png)')}" 
+							type="button" 
+							lay-tips="显示/隐藏点位名称" 
+							lay-direction="3" 
+							:class="labelShow?'':'selected'"
+							class="header_left_btn">
+					</span>
+					<hr>
+				    <span onclick="fnZoomPlus()" 
+						    :style="{backgroundImage: 'url(../../images/tools/icon_fangda.png)'}" 
+						    type="button" 
+						    lay-tips="放大" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnZoomMinus()" 
+						    :style="{backgroundImage: 'url(../../images/tools/icon_suoxiao.png)'}" 
+						    type="button" 
+						    lay-tips="缩小" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr>
+				    <span onclick="fnSetMapType(1)"   
+						    :style="{backgroundImage: (mapType==1?'url(../../images/tools/icon_shiliangmap.png)':'url(../../images/tools/icon_shiliangmap.png)')}" 
+						    type="button" 
+						    lay-tips="切换为普通地图" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="mapType==1?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnSetMapType(2)" 
+					    	:style="{backgroundImage: (mapType==2?'url(../../images/tools/icon_weixingmap.png)':'url(../../images/tools/icon_weixingmap.png)')}" 
+						    type="button" 
+						    lay-tips="切换为卫星地图" 
+						    lay-direction="2" 
+					    	class="header_left_btn"
+					    	:class="mapType==2?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+					<span onclick="fnSetMapType(3)"   
+						    :style="{backgroundImage: (mapType==3?'url(../../images/tools/icon_putong.png)':'url(../../images/tools/icon_putong.png)')}" 
+						    type="button" 
+						    lay-tips="切换为矢量地图" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="mapType==3?'selected':''">
+					</span>
+					<!-- <hr>
+				    <span @click="fnChangeRankShowStatus()" 
+				    		:style="{backgroundImage: (rankShowStatus?'url(../../images/tools/icon_ranking.png)':'url(../../images/tools/icon_ranking.png)')}" 
+						    type="button" 
+						    lay-tips="显示/隐藏排名信息" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="rankShowStatus?'selected':''">
+					</span> -->
+					<hr>
+				    <!-- <span onclick="fnDrawingCircle()" style="display: none;" 
+						    :style="{backgroundImage: (drawingCircle?'url(../../images/tools/icon_kuangxuan.png)':'url(../../images/tools/icon_kuangxuan.png)')}" 
+						    type="button" 
+						    lay-tips="框选点位" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="drawingCircle?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;"> -->
+				    <span onclick="fnDistanceTool_open()" 
+						    :style="{backgroundImage: (dis?'url(../../images/tools/icon_ceju.png)':'url(../../images/tools/icon_ceju.png)')}" 
+						    type="button" 
+						    lay-tips="测距" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="dis?'selected':''">
+					</span>
+					<hr>
+				    <span id="dialogBtn13" 
+				    		:style="{backgroundImage: 'url(../../images/tools/icon_sitemanage.png)'}" 
+						    type="button" 
+						    lay-tips="管理站点" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr>
+			</div>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	var map;
+	var myDis;//测距
+	var drawingManager;//画圆
+ 	var markerArr=[];
+
+	//初始化函数
+	$(function() {
+		vm.init();
+	});
+
+
+	var vm = new Vue({
+      el:"#app",
+      data:{
+      	labelShow:true,
+      	rankShowStatus:true,
+      	markerLabelShow:true,
+        list:[],
+        marker_list:[],
+        screen_marker_list:[],
+        screenCircle_marker_list:[],
+        mapType:3,
+        drawingCircle:false,
+        dis:false,
+        circleConfig:{
+			lng:'',
+			lat:'',
+			banjing:0
+		},
+		curItem:'AQI',
+		echart_search:{
+		    "id":"",
+		    "type":"",
+		    "startTime":"",
+		    "endTime":""
+		},
+		header_left:[{
+        		code:'voc',
+				name: "voc",
+				selected: true,
+				list:[],
+			}
+		],
+		startTime1:'',
+		endTime1:'',
+		startTime2:'',
+		endTime2:'',
+		curMarker:{}
+      },
+      methods:{
+        init:function(){
+        	//请求数据
+        	vm.ajax_marker_data('voc');
+        },
+
+        ajax_marker_data:function(type){
+        	$.ajax({
+        	  url : baseUrl + "dq/voc/query",
+        	  type : "get",
+        	  data:{
+        	  	page:1,
+        	  	limit:99999
+        	  },
+        	  dataType : "json",
+        	  success : function(res) {
+        	    if(res.code==0){
+        	      	var list=res.data;
+        	      	for (var i = 0; i < list.length; i++) {
+        	      		var item=list[i];
+        	      		item.code=type;
+        	      		item.lat=item.baiduLat;
+        	      		item.lng=item.baiduLng;
+        	      	}
+        	      	for (var i = 0; i < vm.header_left.length; i++) {
+        	      		var item=vm.header_left[i];
+        	      		if(item.code==type){
+							vm.header_left[i]['list']=list;
+        	      		}
+        	      	}
+        	      	initBaiDuMap();
+        	    }
+        	  }
+        	});
+        },
+
+        fnAddMarker:function(){
+        	if('代码区域'){
+	        	var iconSize=28;//图标大小
+	        	vm.marker_list=[];
+	        	for (var i = 0; i < vm.header_left.length; i++) {
+	        		var item=vm.header_left[i];
+	        		if(item.selected){
+	        			for (var j = 0; j < item.list.length; j++) {
+	        				vm.marker_list.push(item.list[j]);
+	        			}
+	        		}
+	        	}
+
+	        	if('清除所有marker覆盖物'){
+					var allOverlay = map.getOverlays();
+					for (var i = 0; i < vm.screen_marker_list.length; i++){
+		            	for (var j = 0; j < allOverlay.length; j++) {
+	    					var json = vm.screen_marker_list[i];
+		            		try{
+		                        if (allOverlay[j].getPosition().lng ==json.lng && allOverlay[j].getPosition().lat==json.lat ) {
+		            			    map.removeOverlay(allOverlay[j]);
+		            			}
+		                    }catch(error){
+
+		                    }
+		            	}
+	    	        }
+	    	    }
+	        	
+	        	vm.screen_marker_list=[];
+
+	        	//预备markers
+	        	var markers=[];
+	        	for(var i=0;i<vm.marker_list.length;i++){
+	        		var json = vm.marker_list[i];
+					var point = new BMap.Point(json.lng, json.lat);
+					var imageOffset_x=-28;
+					var imageOffset_y=-28;
+					var iconImg = new BMap.Icon("../../images/tools/icons_1.png", 
+						new BMap.Size(iconSize, iconSize), {
+			                offset: new BMap.Size(0, 0),
+			                imageOffset: new BMap.Size(imageOffset_x, imageOffset_y)   
+			            }
+		            );
+					var marker = new BMap.Marker(point,{icon:iconImg});
+					var iw = createInfoWindow(i);
+					var label = new BMap.Label(json.vocName,{"offset":new BMap.Size(15, -15)});
+					label.setStyle({
+						borderColor:"#808080",
+						color:"#333",
+						cursor:"pointer",
+						display:"none"
+					});
+					marker.setLabel(label);
+					markers.push(marker);
+	        	}
+
+
+	        	//重新添加marker
+	        	for(var i=0;i<markers.length;i++){
+	    	        var result = BMapLib.GeoUtils.isPointInRect(markers[i].point, map.getBounds());//是否在视野范围内
+	    	        if(result == true){
+	    	        	vm.screen_marker_list.push(vm.marker_list[i]);
+	    	        	map.addOverlay(markers[i]);
+	    	        	(function(){
+	    	        		var marker=markers[i];
+	    	        		var index = i;
+	    	        		var _iw = createInfoWindow(index);
+	    	        		var _marker = marker;
+	    	        		_marker.addEventListener("click",function(){
+	    	        			if(vm.curIndex!=index){
+	    	        				layer.closeAll();
+	    	        			}
+	    	        			vm.curIndex=index;
+	    	        			// this.openInfoWindow(_iw);
+	    	        			setTimeout(function(){
+	    	        				openRightPopup(index);
+	    	        			},200);
+	    	        		});
+	    	        		_marker.addEventListener("mouseover",function(){
+	    	        			// this.openInfoWindow(_iw);
+	    	        		});
+	    	        		_iw.addEventListener("open",function(){
+	    	        			// _marker.getLabel().hide();
+	    	        		})
+	    	        		_iw.addEventListener("close",function(){
+	    	        			// _marker.getLabel().show();
+	    	        		})
+	    	        		label.addEventListener("click",function(){
+	    	        			_marker.openInfoWindow(_iw);
+	    	        		})
+	    	        	})()
+	    	        }else{
+	    	        	map.removeOverlay(markers[i]);
+	    	        }
+	    	    }
+
+	    	    if(!vm.labelShow){
+					$('#allmap .BMap_Marker label').show();
+				}else{
+					$('#allmap .BMap_Marker label').hide();
+				}
+        	}
+        },
+      }
+    });
+
+	//初始化百度地图
+	function initBaiDuMap() {
+		map = new BMap.Map("allmap"); // 创建Map实例
+		map.centerAndZoom(new BMap.Point(117.008826,39.141152), 12);
+		map.enableScrollWheelZoom();//开启滚动缩放
+    	map.enableContinuousZoom();//开启缩放平滑
+		map.setMapStyleV2({styleJson:styleJsonYour});
+
+
+	    if('行政区域轮廓'){
+    	    var bdary = new BMap.Boundary();
+    	    bdary.get("西青区", function(rs){       //获取行政区域
+    	        var count = rs.boundaries.length; //行政区域的点有多少个
+    	        if (count === 0) {
+    	            alert('未能获取当前输入行政区域');
+    	            return ;
+    	        }
+    	        var pointArray = [];
+    	        for (var i = 0; i < count; i++) {
+    	            var ply = new BMap.Polygon(
+    		            rs.boundaries[i], 
+    		            {
+    		            	strokeColor:"#35eaff", 
+    		            	fillColor:"none", 
+    		            	fillColorOpacity:"0.9",  
+    		            	strokeWeight:BmapConfig.strokeWeight, 
+    		            	strokeOpacity:0.8
+    		            }
+    	            ); //建立多边形覆盖物
+    	            ply.disableMassClear();
+    	            map.addOverlay(ply);  //添加覆盖物
+    	            pointArray = pointArray.concat(ply.getPath());
+    	        }    
+    	        map.setViewport(pointArray);    //调整视野  
+    	        // addlabel();               
+    	    });   
+	    }
+
+
+		if('测距'){
+			myDis = new BMapLib.DistanceTool(map);//测距
+			myDis.addEventListener("drawend", function(e) {  
+				vm.dis=false;
+			});
+		}
+		
+		setTimeout(function(){
+			vm.fnAddMarker();
+			map.addEventListener("zoomend", function(){
+				vm.fnAddMarker()
+			});
+			map.addEventListener("moveend", function(){
+				vm.fnAddMarker()
+			});
+		}, 500)
+	}
+</script>
+<script type="text/javascript" src="./js/daqi_voc.js"></script>
+<script>
+	layui.use(['layer', 'table', 'admin', 'form', 'laydate', 'fileChoose', 'dropdown', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var admin = layui.admin;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var fileChoose = layui.fileChoose;
+        var xmSelect = layui.xmSelect;
+		var table = layui.table;
+
+        // 站点管理
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.popupRight({
+                title: 'VOC站点列表',
+                url: 'site_voc_list.html',
+                area: '600px',
+                data: { user: 1 },     // 传递数据到表单页面
+                end: function () {
+                    if (admin.getLayerData(layIndex, 'formOk')) {  // 判断表单操作成功标识
+                        // insTb.reload();  // 成功刷新表格
+                    } 
+                },
+                success: function (layero, dIndex) {
+                    // 弹窗超出范围不出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+        });
+
+    });
+</script>

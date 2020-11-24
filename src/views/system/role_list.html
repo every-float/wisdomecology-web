@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>角色管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">角色列表</div>
+		<div class="layui-card-body">
+				<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					<label class="layui-form-label" for="">角色名称</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_roleName">
+					</div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for=""></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="formSearch">查询</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+				</form>
+			<script type="text/html" id="toolbar">
+				{{#if (configjson.GRANT.match('JSGL_02')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="add()">新增</button>
+				{{# } }}
+				{{#if (configjson.GRANT.match('JSGL_04')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+				{{# } }}
+				{{#if (configjson.GRANT.match('JSGL_05')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="purview()">功能授权</button>
+				{{# } }}
+				{{#if (configjson.GRANT.match('JSGL_06')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="purview2()">子系统授权</button>
+				{{# } }}
+<!--				<button type="button" class="layui-btn layui-btn-primary" onclick="purview3()">APP功能授权</button>-->
+			</script>
+			<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+			<script type="text/html" id="barOpt">
+			{{#if (configjson.GRANT.match('JSGL_03')) { }}
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			{{# } }}
+				<a class="layui-btn layui-btn-xs" lay-event="users">用户管理</a>
+			</script>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/role_list.js"></script>
+</body>
+</html>

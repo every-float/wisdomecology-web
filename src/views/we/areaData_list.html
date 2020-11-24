@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>区域监测数据</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">区域信息
+							<div class="layui-btn-group" style="margin-bottom: 10px;float: right">
+								<button type="button" class="layui-btn layui-btn-sm" onclick="addArea()">新增</button>
+								<button type="button" class="layui-btn layui-btn-sm" onclick="editArea()">修改</button>
+								<button type="button" class="layui-btn layui-btn-sm" onclick="deleteArea()">删除</button>
+							</div>
+						</div>
+						<div class="layui-card-body">
+							<table id="areaList" class="layui-table" lay-filter="areaList"></table>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">区域站点</div>
+						<div class="layui-card-body">
+							<script type="text/html" id="toolbar">
+								<button type="button" class="layui-btn layui-btn-primary" lay-event="addAreaSite">新增</button>
+								<button type="button" class="layui-btn layui-btn-primary" lay-event="deleteAreaSite">删除</button>
+							</script>
+							<table id="areaSiteList" lay-filter="areaSiteList" class="layui-table"></table>
+							<script type="text/html" id="operation">
+								<a class="layui-btn layui-btn-xs" lay-event="editAreaSite">编辑</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="editPage" style="display: none;">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<form id="dataForm" class="layui-form" lay-filter="dataForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">区域名称<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.areaName" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">区域地址<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.areaAddress" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">选择位置:</label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn layui-btn-sm" @click="getLocation()"><i class="layui-icon"></i>打开地图</button><br>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS经度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLng" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS纬度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLat" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度经度</label>
+							<div class="layui-input-inline">
+								<input id="baidu_lng" type="text" class="layui-input" v-model="addition.baiduLng" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度纬度</label>
+							<div class="layui-input-inline">
+								<input id="baidu_lat" type="text" class="layui-input" v-model="addition.baiduLat" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item" style="display: none">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="../../common/baiduMap.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var areaList, areaSiteList, tableHeight;
+		var areaId = "", dataId = "";
+		var arr = [];
+		var isSearch = true;
+		var pageIndex;
+		var selectLocationDialog=null;
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-40);
+			$(".layui-col-xs9").height($("body").height()-40);
+			tableHeight = $(".layui-col-xs3").height()-63;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-40);
+				$(".layui-col-xs9").height($("body").height()-40);
+				tableHeight = $(".layui-col-xs3").height()-63;
+				renderAreaList();
+				renderAreaSiteList();
+			}
+            layui.use(['table', 'form', 'layer'], function(){
+				table = layui.table,
+				form = layui.form,
+                layer = layui.layer;
+                
+                initData();
+
+                table.on("toolbar(areaSiteList)", function(obj){
+					var checkStatus = table.checkStatus(obj.config.id);
+					var data = checkStatus.data;
+                    if(obj.event == "addAreaSite"){
+                        layer.open({
+							type: 2,
+							title: '新增区域站点信息',
+							shade: 0.6,
+							maxmin: true,
+							area: ['800px', '490px'],
+							content: pageUrl+'views/we/areaSiteInfo_edit.html?areaId='+areaId+"&dataId=",
+							btn: ['确定', '关闭'],
+							yes: function(index, layero){
+								var iframeWin = window[layero.find('iframe')[0]['name']];
+								iframeWin.vm.toSave();
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						});
+                    }else if(obj.event == "deleteAreaSite"){
+                        if(data.length){
+                            layer.confirm('确定要删除已选中的信息么？！', {
+								btn: ['删除', '取消']
+							}, function() {
+								var arr = [];
+								for (var i = 0; i < data.length; i++) {
+									arr.push(data[i].data_id);
+								}
+								deleteAreaSite(arr.join(","));
+							}, function(){});
+                        }else{
+                            layer.alert('您还未选择要删除的信息！', {icon : 2});
+							return false;
+                        }
+                    }
+				})
+
+                table.on("tool(areaSiteList)", function(obj){
+                    var data = obj.data;
+					dataId = data.data_id;
+					if(obj.event == "editAreaSite"){
+                        layer.open({
+							type: 2,
+							title: '修改区域站点信息',
+							shade: 0.6,
+							maxmin: true,
+							area: ['800px', '490px'],
+							content: pageUrl+'views/we/areaSiteInfo_edit.html?areaId='+areaId+"&dataId="+dataId,
+							btn: ['确定', '关闭'],
+							yes: function(index, layero){
+								var iframeWin = window[layero.find('iframe')[0]['name']];
+								iframeWin.vm.toSave();
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						});
+                    }
+				});
+				
+				// 保存监听
+				form.on('submit(btnSave)', function(){
+					vm.saveInfo();
+					return false;
+				})
+            })
+		});
+		
+		function initData(){
+			layer.load(2,{shade:0.6});
+			getAreaList();
+		};
+		
+		function getAreaList(){
+			areaList = table.render({
+				elem : '#areaList',
+				url : URL_area_list,
+				page: true,
+				height:tableHeight,
+				toolbar: false,
+				defaultToolbar: false,
+				cols: [[
+					{type: 'checkbox', fixed: 'left'},
+					{title: '序号', align: 'center', width:60, templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{field: 'area_name', title: '区域名称', minWidth:220, align: 'center'}
+				]],
+				done:function(ret){
+					areaId = ret.data[0].area_id;
+					getAreaSiteList(areaId);
+					$(".layui-col-xs3 table tr:eq(1)").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+					$(".layui-col-xs3 table tr").find("td[data-field=1]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						areaId = ret.data[$(this).parent("tr")[0].dataset.index].area_id;
+						getAreaSiteList(ret.data[$(this).parent("tr")[0].dataset.index].area_id);
+					})
+					$(".layui-col-xs3 table tr").find("td[data-field=area_name]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						areaId = ret.data[$(this).parent("tr")[0].dataset.index].area_id;						
+						getAreaSiteList(ret.data[$(this).parent("tr")[0].dataset.index].area_id);
+					})
+				}
+			})
+		};
+		function renderAreaList(){
+			areaList.reload({
+				height:tableHeight,
+				done:function(ret){
+					areaId = ret.data[0].area_id;
+					getAreaSiteList(areaId);
+					$(".layui-col-xs3 table tr:eq(1)").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+					$(".layui-col-xs3 table tr").find("td[data-field=1]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						areaId = ret.data[$(this).parent("tr")[0].dataset.index].area_id;						
+						getAreaSiteList(ret.data[$(this).parent("tr")[0].dataset.index].area_id);
+					})
+					$(".layui-col-xs3 table tr").find("td[data-field=area_name]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						areaId = ret.data[$(this).parent("tr")[0].dataset.index].area_id;						
+						getAreaSiteList(ret.data[$(this).parent("tr")[0].dataset.index].area_id);
+					})
+				},
+				page: {curr: 1}
+			});
+		}
+
+		function getAreaSiteList(areaId){
+			areaSiteList = table.render({
+				elem : '#areaSiteList',
+				url : URL_area_site_list,
+				page: true,
+				toolbar: '#toolbar',
+				defaultToolbar: false,
+				height:tableHeight,
+				where:{
+					areaId:areaId
+				},
+				cols: [[
+					{type: 'checkbox', fixed: 'left'},
+					{title: '监测时间', width:180, align: 'center', templet:function(d){
+						if(d.monitor_time){
+							return gettingTimeYYYMMddhhmmss(d.monitor_time);
+						}else{
+							return "暂无相关数据";
+						}
+					}},
+					{field: 'cod', title: '化学需氧量COD', minWidth:135, align: 'center'},
+					{field: 'andan', title: '氨氮(mg/L)', width:120, align: 'center'},
+					{field: 'zonglin', title: '总磷(mg/L)', width:120, align: 'center'},
+					{field: 'zongdan', title: '总氮(mg/L)', width:120, align: 'center'},
+					{field: 'gaomengsuanyan', title: '高锰酸盐指数(mg/L)', width:160, align: 'center'},
+					{field: 'shuiwen', title: '水温(℃)', minWidth:120, align: 'center'},
+					{field: 'ph', title: 'PH(无量纲)', width:120, align: 'center'},
+					{field: 'rongjieyang', title: '溶解氧(mg/L)', width:120, align: 'center'},
+					{field: 'zhuodu', title: '浊度(NTU)', width:120, align: 'center'},
+					{field: 'diandaolv', title: '电导率(μS/cm)', width:130, align: 'center'},
+					{title: '操作', toolbar : '#operation', width:100, align:'center', fixed:'right'}
+				]],
+				done:function(){
+					layer.closeAll("loading");
+				}
+			})
+		};
+		function renderAreaSiteList(){
+			areaSiteList.reload({
+				height:tableHeight,
+				where:{
+					areaId:areaId
+				},
+				done:function(ret){
+					layer.closeAll("loading");
+				},
+				page: {curr: 1}
+			});
+		}
+
+		// 新增区域
+		function addArea(){
+			vm.type = "add";
+			vm.addition = {
+				baiduLng:"",
+				baiduLat:""
+			};
+			pageIndex = layer.open({
+				type: 1,
+				title: '新增区域信息',
+				shade: 0.6,
+				maxmin: true,
+				area: ['450px', '500px'],
+				content: $("#editPage"),
+				btn: ['确定', '关闭'],
+				yes: function(index, layero){
+					vm.toSave();
+				},
+				btn2: function(index, layero){
+					layer.close(index);
+				}
+			});
+		};
+
+		// 修改区域
+		function editArea(){
+			vm.type = "edit";
+			var checkData = table.checkStatus("areaList").data;
+			if(checkData.length){
+				if(checkData.length > 1){
+					layer.msg("请选择一条信息进行修改操作！");
+					return false;
+				}else{
+					areaId = checkData[0].area_id;
+				}
+			}else{
+				layer.msg("您还未选择要修改的区域信息！");
+				return false;
+			}
+			pageIndex = layer.open({
+				type: 1,
+				title: '修改区域信息',
+				shade: 0.6,
+				maxmin: true,
+				area: ['450px', '500px'],
+				content: $("#editPage"),
+				btn: ['确定', '关闭'],
+				success:function(){
+					$.ajax({
+						type:"get",
+						url:URL_area_info,
+						dataType:"json",
+						data:{
+							areaId:areaId
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.addition = ret.data;
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+				yes: function(index, layero){
+					vm.toSave();
+				},
+				btn2: function(index, layero){
+					layer.close(index);
+				}
+			});
+		};
+
+		// 删除区域
+		function deleteArea(){
+			var checkData = table.checkStatus("areaList").data;
+			if(checkData.length){
+				layer.confirm('确定要删除已选中的信息么？！', {
+					btn: ['删除', '取消']
+				}, function() {
+					for(var i in checkData){
+						arr.push(checkData[i].area_id);
+					}
+					$.ajax({
+						type:"post",
+						url:URL_area_delete,
+						dataType:"json",
+						data:{
+							ids:arr.join(",")
+						},
+						beforeSend:function(){
+							layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								layer.msg("删除成功！");
+								initData();
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，删除操作失败！");
+						},
+						complete:function(){
+							layer.closeAll("loading");
+						}
+					})
+				}, function(){});
+				
+			}else{
+				layer.alert('您还未选择要删除的信息！', {icon : 2});
+				return false;
+			}
+		};
+
+		// 删除区域站点
+		function deleteAreaSite(dataId){
+			$.ajax({
+				type:"post",
+				url:URL_area_site_delete,
+				dataType:"json",
+				data:{
+					ids:dataId
+				},
+				beforeSend:function(){
+					layer.load(2,{shade:0.5});
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						layer.msg("删除成功！");
+						renderAreaSiteList();
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，删除操作失败！");
+				},
+				complete:function(){
+					layer.closeAll("loading");
+				}
+			})
+		};
+
+		var vm = new Vue({
+			el:"#editPage",
+			data:{
+				addition:{
+					baiduLng:"",
+					baiduLat:""
+				},
+			},
+			methods:{
+				// 获取地理位置
+				getLocation:function(){
+					layui.use('admin', function(){
+						var admin = layui.admin;
+						selectLocationDialog = admin.open({
+							type:1,
+							title: '选择位置',
+							url: '../location.html',
+							area: ['750px','455px'],
+							offset: '65px',
+							skin: 'diy-class',
+							success: function (layero, dIndex) {
+								// 弹窗超出范围不出现滚动条
+								$(layero).children('.layui-layer-content').css('overflow', 'visible');
+							},
+							end:function(){
+								vm.addition.baiduLng = $("#baidu_lng").val();
+								vm.addition.baiduLat = $("#baidu_lat").val();
+							}
+						});
+					})
+				},
+
+				// 保存信息
+				saveInfo:function(){
+					if(vm.type == "add"){
+						var infoId = "";
+					}else{
+						var infoId = areaId;
+					}
+					$.ajax({
+						type:"post",
+						url:URL_area_save,
+						dataType:"json",
+						data:{
+							areaId:infoId,
+							areaName:vm.addition.areaName,
+							areaAddress:vm.addition.areaAddress,
+							gpsLng:vm.addition.gpsLng,
+							gpsLat:vm.addition.gpsLat,
+							baiduLng:vm.addition.baiduLng,
+							baiduLat:vm.addition.baiduLat
+						},
+						beforeSend:function(){
+							this.layerIndex = layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								layer.close(pageIndex);
+								layer.msg("信息保存成功！");
+								setTimeout(function(){
+									renderAreaList();
+								}, 20);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，信息保存失败！");
+						},
+						complete:function(){
+							layer.close(this.layerIndex);
+						}
+					})
+				},
+
+				// 父页面调用保存
+				toSave:function(){
+					$("#btnSave").trigger("click");
+				},
+			}
+		})
+	</script>
+</html>

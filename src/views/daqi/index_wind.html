@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script type="text/javascript" src="../../common/commonCss.js"></script>
+    <script type="text/javascript" src="../../common/commonUrl.js"></script>
+    <script type="text/javascript" src="../../common/commonJs.js"></script>
+    <script type="text/javascript" src="../../common/baiduMap.js"></script>
+    <title>综合分析</title>
+</head>
+
+<body>
+    <div class="layui-container">
+        <div id="map" style="width:100%;height:350px;"></div>
+        <div class="changeStatus">显示、隐藏</div>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+loadmap();
+
+function loadmap() {
+    // **这段是风场数据处理调用的方法，可以暂时忽略**
+    // https://github.com/Esri/wind-js/blob/master/windy.js#L41
+    var createWindBuilder = function(uComp, vComp) {
+        var uData = uComp.data,
+            vData = vComp.data;
+        return {
+            header: uComp.header,
+            data: function(i) {
+                return [uData[i], vData[i]];
+            }
+        }
+    };
+
+    var createBuilder = function(data) {
+        var uComp = null,
+            vComp = null,
+            scalar = null;
+
+        data.forEach(function(record) {
+            switch (record.header.parameterCategory + "," + record.header.parameterNumber) {
+                case "2,2":
+                    uComp = record;
+                    break;
+                case "2,3":
+                    vComp = record;
+                    break;
+                default:
+                    scalar = record;
+            }
+        });
+
+        return createWindBuilder(uComp, vComp);
+    };
+
+    var buildGrid = function(data, callback) {
+        var builder = createBuilder(data);
+
+        var header = builder.header;
+        var λ0 = header.lo1,
+            φ0 = header.la1; // the grid's origin (e.g., 0.0E, 90.0N)
+        var Δλ = header.dx,
+            Δφ = header.dy; // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
+        var ni = header.nx,
+            nj = header.ny; // number of grid points W-E and N-S (e.g., 144 x 73)
+        var date = new Date(header.refTime);
+        date.setHours(date.getHours() + header.forecastTime);
+
+        // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
+        // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
+        var grid = [],
+            p = 0;
+        var isContinuous = Math.floor(ni * Δλ) >= 360;
+        for (var j = 0; j < nj; j++) {
+            var row = [];
+            for (var i = 0; i < ni; i++, p++) {
+                row[i] = builder.data(p);
+            }
+            if (isContinuous) {
+                // For wrapped grids, duplicate first column as last column to simplify interpolation logic
+                row.push(row[0]);
+            }
+            grid[j] = row;
+        }
+        callback(header, grid);
+    };
+
+    // ** 1、首先初始化echarts实例，在想放地图的容器里**
+
+    var dom = document.getElementById("map");
+    var myChart = echarts.init(dom);
+    var app = {};
+    // **定义地图对象，用于获取echarts的百度地图对象**
+    var map = null; //地图对象
+    option = null;
+    var data = [];
+    var maxMag = 0;
+    var minMag = Infinity;
+
+    // ** 3、这一步获取风场数据，将整理好的数据push到data数组里**
+
+    $.getJSON('./json/wind.json', function(windData) {
+        buildGrid(windData, function(header, grid) {
+            var p = 0;
+            for (var j = 0; j < header.ny; j++) { //ny=181
+                for (var i = 0; i < header.nx; i++) { //nx=360
+                    var vx = grid[j][i][0];
+                    var vy = grid[j][i][1];
+                    var mag = Math.sqrt(vx * vx + vy * vy);
+                    var lng = i / header.nx * 360;
+                    if (lng >= 180) {
+                        lng = 180 - lng;
+                    }
+                    // 数据是一个一维数组
+                    // [ [经度, 维度，向量经度方向的值，向量维度方向的值] ]
+                    data.push([
+                        lng,
+                        90 - j / header.ny * 180,
+                        vx,
+                        vy,
+                        mag
+                    ]);
+                    maxMag = Math.max(mag, maxMag);
+                    minMag = Math.min(mag, minMag);
+                }
+            }
+        }); //buildGrid结束
+
+        // ** 4、这里是风场开关，分别向series里添加风场数据和null数据控制风场的显隐，正常到这一步风场部分完成**
+        //风场开关
+        var flag = 0; //风场展示标志
+        $(".changeStatus").click(function() {
+            console.log($(this).html());
+            if (flag == 0) {
+                myChart.setOption({
+                    series: [{
+                        data: data,
+                    }]
+                });
+                flag = 1;
+            } else {
+                myChart.setOption({
+                    series: [{
+                        data: null,
+                    }]
+                });
+                flag = 0;
+            }
+        })
+    }); //getjson结束
+
+    // ** 2、给echarts添加设置，正常情况下有1、2、两步就可以显示地图了**
+    myChart.setOption({
+        visualMap: {
+            left: 'right',
+            dimension: 4,
+            inRange: {
+
+                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            },
+            realtime: false,
+            calculable: true,
+            textStyle: {
+                color: '#fff'
+            },
+        },
+
+        bmap: {
+            center: [114.511323, 37.077704],
+            zoom: 10,
+            roam: true
+            // **通常在这里设置地图样式，但是本文设置了自定义样式，所以在别处**           
+        },
+
+        series: [{
+            type: 'flowGL',
+            coordinateSystem: 'bmap',
+            // **风场数据在这里添加，但是加了开关，所以放在别处**
+            // data: data,
+            supersampling: 5, //采样更平滑，但是耗能大
+            particleType: 'line',
+            particleDensity: 15, //粒子密度，越大越密，实际粒子数为该值的平方
+            particleSpeed: 5,
+            itemStyle: {
+                opacity: 0.7, //透明度              
+            },
+        }]
+    });
+
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+
+    // ** 5、这里获取百度地图对象，用这个对象以后可以使用百度地图API操作地图，获取到对象就可以添加标注，设置监听了**
+    map = myChart.getModel().getComponent('bmap').getBMap();
+    console.log(map,88);
+    // **在这里添加的自定义地图样式，mj是本地的一个json数组**
+    // map.setMapStyleV2({styleJson: mj});
+    // **给地图的标注设置了点击弹窗，但是被风场的层给遮住了，虽然能显示标注但是点击不到，所以将风场的层级降到比label标注的低，label标注的层级可查看控制台**
+    //将风场层的显示优先级降到比BMapLabel的低 以不遮挡label的点击
+    $(".BMap_mask").next().children().eq(3).find("div").css("z-index", "-8000000");
+    console.log($(".BMap_mask").next().children().eq(3).find("div"));
+
+    // **这是一个弹窗**
+    //创建弹窗
+    var infoWindow = new BMap.InfoWindow('', { offset: new BMap.Size(60, -30) });
+
+    function openPopWindow(masker, el_id) {
+        var els = $('#' + el_id).clone().show();
+        if (els.size() > 0) {
+            infoWindow.setContent(els[0]);
+            map.openInfoWindow(infoWindow, masker.getPosition());
+            els.find("div.bar[data-chart]").each(function() {
+                bar_map(this, $(this).data('args'));
+            });
+            els.find("div.pie[data-chart]").each(function() {
+                pie_map(this);
+            });
+        }
+    }
+
+    // **这是在地图加的label标注点**
+    //网格员
+    var pointGood = new BMap.Point(114.5113230000, 37.0777040000);
+    map.centerAndZoom(pointGood, 12);
+    var goodUp = {
+        position: pointGood, // 指定文本标注所在的地理位置
+        offset: new BMap.Size(15, -30) //设置文本偏移量
+    }
+    var labelGoodUp = new BMap.Label("", goodUp); // 创建文本标注对象
+    labelGoodUp.setStyle({
+        cursor: 'pointer',
+        width: "26px",
+        height: "30px",
+        fontSize: "12px",
+        lineHeight: "26px",
+        textAlign: "center",
+        fontFamily: "微软雅黑",
+        border: "none",
+        backgroundColor: "none",
+        borderRadius: "4px",
+        backgroundImage: "url('../../images/tools/checked.png')",
+        backgroundPosition: "center",
+    });
+
+    labelGoodUp.addEventListener("click", function() {
+        console.log('点击了');
+        openPopWindow(this, 'pop_person');
+    });
+
+    map.addOverlay(labelGoodUp);
+
+    var goodDown = {
+        position: pointGood, // 指定文本标注所在的地理位置
+        offset: new BMap.Size(0, 4) //设置文本偏移量
+    }
+    var labelGoodDown = new BMap.Label("网格员", goodDown); // 创建文本标注对象
+    labelGoodDown.setStyle({
+        fontSize: "12px",
+        width: "76px",
+        backgroundColor: "#cdd3d7",
+        textAlign: "center",
+        height: "24px",
+        color: "#000",
+        lineHeight: "24px",
+        fontFamily: "微软雅黑",
+        border: "none",
+        borderRadius: "4px",
+    });
+
+    map.addOverlay(labelGoodDown);
+
+    // **这里监听zoom变化，实现当zoom小于一个数字之后，隐藏掉带“网格员”的label标注**
+    //地图缩放 label展示变化
+    var overlays = map.getOverlays();
+    var length = overlays.length;
+    var textOverlays = [];
+    for (var i = 0; i < length; i++) {
+        try {
+            // **这里能获取但是报错，报错会影响监听缩放，所以catch了一下**
+            if (overlays[i].getOffset().width == 0) { //获取展示文字的label
+                textOverlays.push(overlays[i]);
+            }
+        } catch (e) {}
+    }
+    var textLength = textOverlays.length;
+    var hide = false;
+    if (map.getZoom() < 15) {
+        for (var i = 0; i < textLength; i++) {
+            textOverlays[i].hide();
+        }
+        hide = true;
+    }
+    map.addEventListener('zoomend', function() {
+        if (map.getZoom() < 15 && hide != true) {
+            for (var i = 0; i < textLength; i++) {
+                textOverlays[i].hide();
+            }
+            hide = true;
+        } else if (map.getZoom() >= 15 && hide == true) {
+            for (var i = 0; i < textLength; i++) {
+                textOverlays[i].show();
+            }
+            hide = false;
+        }
+
+    })
+}
+</script>

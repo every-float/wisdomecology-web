@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+     <head>
+          <meta charset="utf-8">
+          <script src="https://cdn.bootcss.com/echarts/3.7.1/echarts.min.js"></script>
+          <script src="../../scripts/echarts/theme/macarons.js"></script>
+          <script src="./json/echartJson.js"></script>
+          <script src="http://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js"></script>
+     </head>
+     <body>
+          <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+          <div id="main" style="width:550px;height:260px;"></div>
+          <script type="text/javascript">
+              console.log(res);
+              var echartJson=res.data;
+              var myChart = echarts.init(document.getElementById('main'),'macarons');
+              var option={
+                  // title: {
+                  //     text: '折线图堆叠'
+                  // },
+                  tooltip: {
+                      trigger: 'axis'
+                  },
+                  legend: {
+                      data: echartJson.legend,
+                      selectedMode:'multiple',
+                      selected: {
+                        'AQI': true,
+                        'PM2.5': false,
+                        'PM10': false,
+                        'SO2': false,
+                        'NO2': false,
+                        'CO': false,
+                        'O3': false
+                      }
+                  },
+                  grid: {
+                      left: '3%',
+                      right: '4%',
+                      bottom: '3%',
+                      containLabel: true
+                  },
+                  xAxis: {
+                      type: 'category',
+                      boundaryGap: false,
+                      data: echartJson.xaxis
+                  },
+                  yAxis: {
+                      type: 'value'
+                  },
+                  series: echartJson.series
+              };
+
+              myChart.setOption(option);
+          </script>
+     </body>
+</html>

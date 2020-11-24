@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<title>污染源企业管理</title>
+		<style>
+			[v-cloak]{
+				display: none!important;
+			}
+			.layui-form-label{width: 120px;}
+			.layui-input-block{margin-left:150px;}
+            .detailItem{
+				display: block; 
+				height: 20px;
+				line-height: 20px; 
+				padding: 8px;
+				border: 1px solid #ccc;
+				background: #F2F2F2;
+			}
+			.detailTextarea{
+				min-height: 100px;
+				height: auto;
+				line-height: 20px;
+				padding: 6px 10px;
+				border: 1px solid #ccc;
+			}
+			.upload-attachments-list.upload-attachments-file-list .btn-upload, .btn-delete.layui-icon-delete{
+				visibility: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-card">
+				<div class="layui-card-header">污染源企业信息详情</div>
+				<div class="layui-card-body">
+					<form id="form1" class="layui-form" lay-filter="form1">
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>企业基本信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label">企业名称</label>
+									<div class="layui-input-block" style="width:555px;">
+										<div class="detailItem">{{ detailInfo.coName }}</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">企业编码</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coCode }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">名录类别</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.conDatatype }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">所属乡镇</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coTownship }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">注册类型</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coRetype }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">单位类别</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coCotype }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">企业规模</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coScale }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">隶属关系</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coParent }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">行业类别</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coIndtype }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">流域编码</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coRiver }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">关注程度</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coAttention }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">占地总面积</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coArea }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">投产日期</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coWorkdate }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">中心经度</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coLongitude }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">中心纬度</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coLatitude }}</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>环保部门信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">环保部门名称</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coEpDepart }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">负责人</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coEpPerson }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">联系电话</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coEpPhone }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">环保部门人数</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coEpNums }}</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>工商登记信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">统一社会信用代码</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coBuSocietycode }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">法定代表人</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coBuPerson }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">开户银行</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coBuBank }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">银行账号</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coBuAccount }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label">注册地址</label>
+									<div class="layui-input-block" style="width:555px;">
+										<div class="detailItem">{{ detailInfo.coBuAddress }}</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>企业联系方式</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">办公电话</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coTexphone }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">传真</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.conSend }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">移动电话</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coMobilephone }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">电子邮件</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.coEmail }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">邮政编码</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.conPostcode }}</div>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">企业网址</label>
+										<div class="layui-input-inline">
+											<div class="detailItem">{{ detailInfo.conWebsite }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label">通讯地址</label>
+									<div class="layui-input-block" style="width:555px;">
+										<div class="detailItem">{{ detailInfo.coConaddress }}</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>工艺流程</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<div class="detailTextarea">{{ detailInfo.conGylc }}</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>主要原辅料</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 500px">
+										<div class="detailTextarea">{{ detailInfo.conZyyfl }}</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>环评审批</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList1" class="layui-table" filter="fileList1"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>验收文档</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList2" class="layui-table" filter="fileList2"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>监测报告</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList3" class="layui-table" filter="fileList3"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>检查情况</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList4" class="layui-table" filter="fileList4"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>处罚情况</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList5" class="layui-table" filter="fileList5"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>企业行业信息</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList6" class="layui-table" filter="fileList6"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>应急预案</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label">内容</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<div class="detailTextarea">{{ detailInfo.conYjya }}</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList7" class="layui-table" filter="fileList7"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>变更记录</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList8" class="layui-table" filter="fileList8"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>产污节点</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList9" class="layui-table" filter="fileList9"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>实际产量</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList10" class="layui-table" filter="fileList10"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>危废管理</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<div class="detailTextarea">{{ detailInfo.conWfgl }}</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList11" class="layui-table" filter="fileList11"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>危废转移情况</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">内容</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<div class="detailTextarea">{{ detailInfo.conZyqk }}</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList12" class="layui-table" filter="fileList12"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="layui-elem-field layui-field-title">
+							<legend>排污口</legend>
+							<div class="layui-field-box">
+								<div class="layui-form-item">
+									<label class="layui-form-label" for="">附件</label>
+									<div class="layui-input-inline" style="width: 580px">
+										<table id="fileList13" class="layui-table" filter="fileList13"></table>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var layer;
+		$(function(){
+			layui.use('layer', function(){
+				layer = layui.layer;
+				vm.getDetail();
+			});
+		});
+
+		var vm = new Vue({
+			el:"#webPage",
+			data:{
+				detailInfo:{},
+			},
+			methods:{
+				// 获取乡镇信息
+				getTownList:function(dataInfo){
+					$.ajax({
+						type:"get",
+						url:URL_gb_areaTree,
+						dataType:"json",
+						data:{
+							parentId:"120111"
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								for(var i in ret.data.tree){
+									if(dataInfo.coTownship == ret.data.tree[i].id){
+										vm.detailInfo.coTownship = ret.data.tree[i].name;
+									}
+								}
+								vm.townList = ret.data.tree;
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+
+				// 获取行业类别
+				getCompanyType:function(dataInfo){
+					$.ajax({
+						type:"get",
+						url:URL_get_company_type,
+						dataType:"json",
+						success:function(ret){
+							if(ret.code == 0){
+								for(var i in ret.data){
+									if(ret.data[i].id == dataInfo.coIndtype){
+										vm.detailInfo.coIndtype = ret.data[i].title;
+									}
+								}
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+				// 获取详情
+				getDetail:function(){
+					$.ajax({
+						type:"get",
+						url:URL_company_info_detail,
+						dataType:"json",
+						data:{
+							coId:$.getUrlParam("coId")
+						},
+						beforeSend:function(){
+							this.layerIndex = parent.layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.detailInfo = ret.data;
+								vm.getTownList(ret.data);
+								vm.getCompanyType(ret.data);
+								// 名录类别
+								if(ret.data.conDatatype){
+									var arr = ret.data.conDatatype.split(",");
+									vm.detailInfo.conDatatype = "";
+									for(var i in arr){
+										switch(arr[i]){
+											case "water":
+											vm.detailInfo.conDatatype += "水环境";
+												break;
+											case "earth":
+											vm.detailInfo.conDatatype += "土壤环境";
+												break;
+											case "air":
+											vm.detailInfo.conDatatype += "大气环境";
+												break;
+											case "others":
+											vm.detailInfo.conDatatype += "其他环境";
+												break;
+										}
+										if(i < arr.length-1){
+											vm.detailInfo.conDatatype += ",";
+										}
+									}
+								}
+
+								// 注册类型
+								if(ret.data.coRetype){
+									switch(ret.data.coRetype){
+										case "1":
+											vm.detailInfo.coRetype = "国有企业";
+											break;
+										case "2":
+											vm.detailInfo.coRetype = "集体企业";
+											break;
+										case "3":
+											vm.detailInfo.coRetype = "股份合作企业";
+											break;
+										case "4":
+											vm.detailInfo.coRetype = "联营企业";
+											break;
+										case "5":
+											vm.detailInfo.coRetype = "国有企业";
+											break;
+										case "6":
+											vm.detailInfo.coRetype = "股份有限公司";
+											break;
+										case "7":
+											vm.detailInfo.coRetype = "私营企业";
+											break;
+										case "8":
+											vm.detailInfo.coRetype = "港/澳/台商投资企业";
+											break;
+										case "9":
+											vm.detailInfo.coRetype = "外资投资企业";
+											break;
+										case "10":
+											vm.detailInfo.coRetype = "个体经营";
+											break;
+									}
+								}
+
+								// 单位类别
+								if(ret.data.coCotype){
+									switch(ret.data.coCotype){
+										case "1":
+											vm.detailInfo.coCotype = "县以上工业企业";
+											break;
+										case "2":
+											vm.detailInfo.coCotype = "县以上非工业企业";
+											break;
+										case "3":
+											vm.detailInfo.coCotype = "事业单位";
+											break;
+										case "4":
+											vm.detailInfo.coCotype = "乡镇街道工业企业";
+											break;
+										case "5":
+											vm.detailInfo.coCotype = "乡镇街道非工业企业";
+											break;
+										case "6":
+											vm.detailInfo.coCotype = "部队";
+											break;
+										case "7":
+											vm.detailInfo.coCotype = "其他";
+											break;
+										case "8":
+											vm.detailInfo.coCotype = "私营企业";
+											break;
+									}
+								}
+
+								// 企业规模
+								if(ret.data.coScale){
+									switch(ret.data.coScale){
+										case "1":
+											vm.detailInfo.coScale = "特大型";
+											break;
+										case "2":
+											vm.detailInfo.coScale = "大型一档";
+											break;
+										case "3":
+											vm.detailInfo.coScale = "大型二档";
+											break;
+										case "4":
+											vm.detailInfo.coScale = "中一型";
+											break;
+										case "5":
+											vm.detailInfo.coScale = "中二型";
+											break;
+										case "6":
+											vm.detailInfo.coScale = "小型";
+											break;
+										case "7":
+											vm.detailInfo.coScale = "其他";
+											break;
+									}
+								}
+
+								// 隶属关系
+								if(ret.data.coParent){
+									switch(ret.data.coParent){
+										case "1":
+											vm.detailInfo.coParent = "中央";
+											break;
+										case "2":
+											vm.detailInfo.coParent = "省";
+											break;
+										case "3":
+											vm.detailInfo.coParent = "市、地区";
+											break;
+										case "4":
+											vm.detailInfo.coParent = "县";
+											break;
+										case "5":
+											vm.detailInfo.coParent = "街道、镇、乡";
+											break;
+										case "6":
+											vm.detailInfo.coParent = "街道";
+											break;
+										case "7":
+											vm.detailInfo.coParent = "镇";
+											break;
+										case "8":
+											vm.detailInfo.coParent = "乡";
+											break;
+										case "9":
+											vm.detailInfo.coParent = "居民、村民委员会";
+											break;
+										case "10":
+											vm.detailInfo.coParent = "居民委员会";
+											break;
+										case "11":
+											vm.detailInfo.coParent = "村民委员会";
+											break;
+										case "12":
+											vm.detailInfo.coParent = "其他";
+											break;
+									}
+								}
+
+								// 流域编码
+								if(ret.data.coRiver){
+									switch(ret.data.coRiver){
+										case "1":
+											vm.detailInfo.coRiver = "子牙河";
+											break;
+										case "2":
+											vm.detailInfo.coRiver = "中亭河";
+											break;
+										case "3":
+											vm.detailInfo.coRiver = "南运河";
+											break;
+										case "4":
+											vm.detailInfo.coRiver = "大沽排水河";
+											break;
+										case "5":
+											vm.detailInfo.coRiver = "外环河";
+											break;
+									}
+								}
+
+								// 关注程度
+								if(ret.data.coAttention){
+									switch(ret.data.coAttention){
+										case "1":
+											vm.detailInfo.coAttention = "国控";
+											break;
+										case "2":
+											vm.detailInfo.coAttention = "省控";
+											break;
+										case "3":
+											vm.detailInfo.coAttention = "市控";
+											break;
+										case "4":
+											vm.detailInfo.coAttention = "非重点污染源";
+											break;
+									}
+								}
+								vm.getUploadTable(1,ret.data.filesHpsp?ObjectParse(ret.data.filesHpsp):[]);
+								vm.getUploadTable(2,ret.data.filesYswd?ObjectParse(ret.data.filesYswd):[]);
+								vm.getUploadTable(3,ret.data.filesJcbg?ObjectParse(ret.data.filesJcbg):[]);
+								vm.getUploadTable(4,ret.data.filesJcqk?ObjectParse(ret.data.filesJcqk):[]);
+								vm.getUploadTable(5,ret.data.filesCfqk?ObjectParse(ret.data.filesCfqk):[]);
+								vm.getUploadTable(6,ret.data.filesHyxx?ObjectParse(ret.data.filesHyxx):[]);
+								vm.getUploadTable(7,ret.data.filesYjya?ObjectParse(ret.data.filesYjya):[]);
+								vm.getUploadTable(8,ret.data.filesBgjl?ObjectParse(ret.data.filesBgjl):[]);
+								vm.getUploadTable(9,ret.data.filesCwjd?ObjectParse(ret.data.filesCwjd):[]);
+								vm.getUploadTable(10,ret.data.filesSjcl?ObjectParse(ret.data.filesSjcl):[]);
+								vm.getUploadTable(11,ret.data.filesWfgl?ObjectParse(ret.data.filesWfgl):[]);
+								vm.getUploadTable(12,ret.data.filesZyqk?ObjectParse(ret.data.filesZyqk):[]);
+								vm.getUploadTable(13,ret.data.filesPwk?ObjectParse(ret.data.filesPwk):[]);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						},
+						complete:function(){
+							parent.layer.close(this.layerIndex);
+						}
+					})
+				},
+
+				// 上传文件预览列表
+				getUploadTable:function(index, data){
+					layui.use('table', function(){
+						var table = layui.table;
+						table.render({
+							elem:'#fileList'+index,
+							data:data,
+							height:177,
+							page:true,
+							cols:[[
+								{field: 'name', title: '文件名称', minWidth:200, align: 'center'},
+								{field: 'type', title: '文件类型', width:120, align: 'center'},
+								{title: '文件大小', width:120, align: 'center', templet:function(d){
+									return (d.size/1024).toFixed(2)+"kb";
+								}},
+								{title: '操作', width:80, align: 'center', templet:function(d){
+									return "<div><a class='layui-btn layui-btn-xs layui-btn-primary' onclick='toPreview(\""+d.path+"\")'>预览</a></div>"
+								}}
+							]]
+						});
+					})
+				},
+			}
+		})
+
+		// 预览
+		function toPreview(path){
+			if(path.split(".")[1]=="jpg" || path.split(".")[1]=="png" || path.split(".")[1]=="gif"){
+				layer.photos({
+					photos: {
+						"title": "", //相册标题
+						"id": 123, //相册id
+						"start": 0, //初始显示的图片序号，默认0
+						"data": [   //相册包含的图片，数组格式
+						{
+							"alt": "",
+							"pid": 0, //图片id
+							"src": path, //原图地址
+							"thumb": "" //缩略图地址
+						}
+						]
+					},
+					anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机
+				});
+			}else{
+				window.open(path);
+			}
+		}
+	</script>
+</html>

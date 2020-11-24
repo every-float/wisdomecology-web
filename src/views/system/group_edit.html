@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>人员组</title>
+</head>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-body">
+			<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="groupId" name="groupId">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">组名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="groupName" name="groupName" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">组编码<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select id="groupCode" name="groupCode" lay-verify="required" lay-search>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">备注</label>
+				<div class="layui-input-block">
+					<textarea class="layui-textarea" id="remark" name="remark"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+			</form>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var groupId = $.getUrlParam('groupId');
+		var form;
+		$(function() {
+			layui.use(['form'], function() {
+				form = layui.form;
+				//初始化
+				initParamInfo();
+
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function checkForm(){
+			$('#btnSave').click();
+		}
+
+		function initParamInfo(){
+			$.ajax({
+				url : URL_group_initParamInfo,
+				data : {},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						var list_ryz = res.data.list_ryz;
+						var option_ryz = '<option value=""></option>';
+						for (var i = 0; i < list_ryz.length; i++) {
+							option_ryz += '<option value="'+list_ryz[i].value+'">'+list_ryz[i].name+'【'+list_ryz[i].value+'】'+'</option>';
+						}
+						$('#groupCode').html(option_ryz);
+						layui.form.render('select');
+
+						if(groupId!=null&&groupId!=''){
+							$('#groupId').val(groupId);
+							initDataInfo();
+						}
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		
+		function initDataInfo(){
+			$.ajax({
+				url : URL_group_detailInfo,
+				data : {
+					groupId: groupId
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'groupId': res.data.groupId,
+							'groupName': res.data.groupName,
+							'groupCode': res.data.groupCode,
+							'remark': res.data.remark
+						});
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		function save(){
+			$.ajax({
+				url : URL_group_save,
+				data : $('#form1').serialize(),
+				type : 'post',
+				dataType : 'json',
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

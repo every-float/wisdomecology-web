@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>权限管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+			<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="privilegeId" name="privilegeId">
+			<input type="hidden" id="menuId" name="menuId">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">权限名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="privilegeName" name="privilegeName" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">权限代码<font color='red'>*</font></label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" id="privilegeCode" name="privilegeCode" lay-verify="required">
+				</div>
+				<button type="button" class="layui-btn" onclick="checkCode()">校验唯一</button>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">是否菜单</label>
+				<div class="layui-input-block">
+					<input type="radio" name="isMenu" value="1" title="是">
+					<input type="radio" name="isMenu" value="0" title="否" checked>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">是否使用</label>
+				<div class="layui-input-block">
+					<input type="radio" name="isUse" value="1" title="是" checked>
+					<input type="radio" name="isUse" value="0" title="否">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">访问URL</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="privilegeUrl" name="privilegeUrl">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">其他URL</label>
+				<div class="layui-input-block">
+					<textarea class="layui-textarea" id="privilegeUrlOther" name="privilegeUrlOther" placeholder="格式：system/menu/save,system/menu/getPageList"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+		</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/privilege_edit.js"></script>
+</body>
+</html>

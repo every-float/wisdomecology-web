@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>乡镇监测数据</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">乡镇信息
+							<div class="layui-btn-group" style="margin-bottom: 10px;float: right">
+								<button type="button" class="layui-btn layui-btn-sm" onclick="addTown()">新增</button>
+								<button type="button" class="layui-btn layui-btn-sm" onclick="editTown()">修改</button>
+								<button type="button" class="layui-btn layui-btn-sm" onclick="deleteTown()">删除</button>
+							</div>
+						</div>
+						<div class="layui-card-body">
+							<table id="townList" class="layui-table" lay-filter="townList"></table>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">乡镇站点</div>
+						<div class="layui-card-body">
+							<script type="text/html" id="toolbar">
+								<button type="button" class="layui-btn layui-btn-primary" lay-event="addTownSite">新增</button>
+								<button type="button" class="layui-btn layui-btn-primary" lay-event="deleteTownSite">删除</button>
+							</script>
+							<table id="townSiteList" lay-filter="townSiteList" class="layui-table"></table>
+							<script type="text/html" id="operation">
+								<a class="layui-btn layui-btn-xs" lay-event="editTownSite">编辑</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="editPage" style="display: none;">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<form id="dataForm" class="layui-form" lay-filter="dataForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">乡镇名称<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.townName" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">乡镇地址<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.townAddress" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">选择位置:</label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn layui-btn-sm" @click="getLocation()"><i class="layui-icon"></i>打开地图</button><br>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS经度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLng" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS纬度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLat" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度经度</label>
+							<div class="layui-input-inline">
+								<input id="baidu_lng" type="text" class="layui-input" v-model="addition.baiduLng" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度纬度</label>
+							<div class="layui-input-inline">
+								<input id="baidu_lat" type="text" class="layui-input" v-model="addition.baiduLat" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item" style="display: none">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="../../common/baiduMap.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var townList, townSiteList, tableHeight;
+		var townId = "", dataId = "";
+		var arr = [];
+		var isSearch = true;
+		var pageIndex;
+		var selectLocationDialog=null;
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-40);
+			$(".layui-col-xs9").height($("body").height()-40);
+			tableHeight = $(".layui-col-xs3").height()-63;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-40);
+				$(".layui-col-xs9").height($("body").height()-40);
+				tableHeight = $(".layui-col-xs3").height()-63;
+				renderTownList();
+				renderTownSiteList();
+			}
+            layui.use(['table', 'form', 'layer'], function(){
+				table = layui.table,
+				form = layui.form,
+                layer = layui.layer;
+                
+                initData();
+
+                table.on("toolbar(townSiteList)", function(obj){
+					var checkStatus = table.checkStatus(obj.config.id);
+					var data = checkStatus.data;
+                    if(obj.event == "addTownSite"){
+                        layer.open({
+							type: 2,
+							title: '新增乡镇站点信息',
+							shade: 0.6,
+							maxmin: true,
+							area: ['800px', '490px'],
+							content: pageUrl+'views/we/townSiteInfo_edit.html?townId='+townId+"&dataId=",
+							btn: ['确定', '关闭'],
+							yes: function(index, layero){
+								var iframeWin = window[layero.find('iframe')[0]['name']];
+								iframeWin.vm.toSave();
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						});
+                    }else if(obj.event == "deleteTownSite"){
+                        if(data.length){
+                            layer.confirm('确定要删除已选中的信息么？！', {
+								btn: ['删除', '取消']
+							}, function() {
+								var arr = [];
+								for (var i = 0; i < data.length; i++) {
+									arr.push(data[i].data_id);
+								}
+								deleteTownSite(arr.join(","));
+							}, function(){});
+                        }else{
+                            layer.alert('您还未选择要删除的信息！', {icon : 2});
+							return false;
+                        }
+                    }
+				})
+
+                table.on("tool(townSiteList)", function(obj){
+                    var data = obj.data;
+					dataId = data.data_id;
+					if(obj.event == "editTownSite"){
+                        layer.open({
+							type: 2,
+							title: '修改乡镇站点信息',
+							shade: 0.6,
+							maxmin: true,
+							area: ['800px', '490px'],
+							content: pageUrl+'views/we/townSiteInfo_edit.html?townId='+townId+"&dataId="+dataId,
+							btn: ['确定', '关闭'],
+							yes: function(index, layero){
+								var iframeWin = window[layero.find('iframe')[0]['name']];
+								iframeWin.vm.toSave();
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						});
+                    }
+				});
+				
+				// 保存监听
+				form.on('submit(btnSave)', function(){
+					vm.saveInfo();
+					return false;
+				})
+            })
+		});
+		
+		function initData(){
+			layer.load(2,{shade:0.6});
+			getTownList();
+		};
+		
+		function getTownList(){
+			townList = table.render({
+				elem : '#townList',
+				url : URL_town_list,
+				page: true,
+				height:tableHeight,
+				toolbar: false,
+				defaultToolbar: false,
+				cols: [[
+					{type: 'checkbox', fixed: 'left'},
+					{title: '序号', align: 'center', width:60, templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{field: 'town_name', title: '乡镇名称', minWidth:220, align: 'center'}
+				]],
+				done:function(ret){
+					townId = ret.data[0].town_id;
+					getTownSiteList(townId);
+					$(".layui-col-xs3 table tr:eq(1)").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+					$(".layui-col-xs3 table tr").find("td[data-field=1]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						townId = ret.data[$(this).parent("tr")[0].dataset.index].town_id;
+						getTownSiteList(ret.data[$(this).parent("tr")[0].dataset.index].town_id);
+					})
+					$(".layui-col-xs3 table tr").find("td[data-field=town_name]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						townId = ret.data[$(this).parent("tr")[0].dataset.index].town_id;						
+						getTownSiteList(ret.data[$(this).parent("tr")[0].dataset.index].town_id);
+					})
+				}
+			})
+		};
+		function renderTownList(){
+			townList.reload({
+				height:tableHeight,
+				done:function(ret){
+					townId = ret.data[0].town_id;
+					getTownSiteList(townId);
+					$(".layui-col-xs3 table tr:eq(1)").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+					$(".layui-col-xs3 table tr").find("td[data-field=1]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						townId = ret.data[$(this).parent("tr")[0].dataset.index].town_id;						
+						getTownSiteList(ret.data[$(this).parent("tr")[0].dataset.index].town_id);
+					})
+					$(".layui-col-xs3 table tr").find("td[data-field=town_name]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						townId = ret.data[$(this).parent("tr")[0].dataset.index].town_id;						
+						getTownSiteList(ret.data[$(this).parent("tr")[0].dataset.index].town_id);
+					})
+				},
+				page: {curr: 1}
+			});
+		}
+
+		function getTownSiteList(townId){
+			townSiteList = table.render({
+				elem : '#townSiteList',
+				url : URL_town_site_list,
+				page: true,
+				toolbar: '#toolbar',
+				defaultToolbar: false,
+				height:tableHeight,
+				where:{
+					townId:townId
+				},
+				cols: [[
+					{type: 'checkbox', fixed: 'left'},
+					{title: '监测时间', width:180, align: 'center', templet:function(d){
+						if(d.monitor_time){
+							return gettingTimeYYYMMddhhmmss(d.monitor_time);
+						}else{
+							return "暂无相关数据";
+						}
+					}},
+					{field: 'cod', title: '化学需氧量COD', minWidth:135, align: 'center'},
+					{field: 'andan', title: '氨氮(mg/L)', width:120, align: 'center'},
+					{field: 'zonglin', title: '总磷(mg/L)', width:120, align: 'center'},
+					{field: 'zongdan', title: '总氮(mg/L)', width:120, align: 'center'},
+					{field: 'gaomengsuanyan', title: '高锰酸盐指数(mg/L)', width:160, align: 'center'},
+					{field: 'shuiwen', title: '水温(℃)', minWidth:120, align: 'center'},
+					{field: 'ph', title: 'PH(无量纲)', width:120, align: 'center'},
+					{field: 'rongjieyang', title: '溶解氧(mg/L)', width:120, align: 'center'},
+					{field: 'zhuodu', title: '浊度(NTU)', width:120, align: 'center'},
+					{field: 'diandaolv', title: '电导率(μS/cm)', width:130, align: 'center'},
+					{title: '操作', toolbar : '#operation', width:100, align:'center', fixed:'right'}
+				]],
+				done:function(){
+					layer.closeAll("loading");
+				}
+			})
+		};
+		function renderTownSiteList(){
+			townSiteList.reload({
+				height:tableHeight,
+				where:{
+					townId:townId
+				},
+				done:function(ret){
+					layer.closeAll("loading");
+				},
+				page: {curr: 1}
+			});
+		}
+
+		// 新增乡镇
+		function addTown(){
+			vm.type = "add";
+			vm.addition = {
+				baiduLng:"",
+				baiduLat:""
+			};
+			pageIndex = layer.open({
+				type: 1,
+				title: '新增乡镇信息',
+				shade: 0.6,
+				maxmin: true,
+				area: ['450px', '500px'],
+				content: $("#editPage"),
+				btn: ['确定', '关闭'],
+				yes: function(index, layero){
+					vm.toSave();
+				},
+				btn2: function(index, layero){
+					layer.close(index);
+				}
+			});
+		};
+
+		// 修改乡镇
+		function editTown(){
+			vm.type = "edit";
+			var checkData = table.checkStatus("townList").data;
+			if(checkData.length){
+				if(checkData.length > 1){
+					layer.msg("请选择一条信息进行修改操作！");
+					return false;
+				}else{
+					townId = checkData[0].town_id;
+				}
+			}else{
+				layer.msg("您还未选择要修改的乡镇信息！");
+				return false;
+			}
+			pageIndex = layer.open({
+				type: 1,
+				title: '修改乡镇信息',
+				shade: 0.6,
+				maxmin: true,
+				area: ['450px', '500px'],
+				content: $("#editPage"),
+				btn: ['确定', '关闭'],
+				success:function(){
+					$.ajax({
+						type:"get",
+						url:URL_town_info,
+						dataType:"json",
+						data:{
+							townId:townId
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.addition = ret.data;
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+				yes: function(index, layero){
+					vm.toSave();
+				},
+				btn2: function(index, layero){
+					layer.close(index);
+				}
+			});
+		};
+
+		// 删除乡镇
+		function deleteTown(){
+			var checkData = table.checkStatus("townList").data;
+			if(checkData.length){
+				layer.confirm('确定要删除已选中的信息么？！', {
+					btn: ['删除', '取消']
+				}, function() {
+					for(var i in checkData){
+						arr.push(checkData[i].town_id);
+					}
+					$.ajax({
+						type:"post",
+						url:URL_town_delete,
+						dataType:"json",
+						data:{
+							ids:arr.join(",")
+						},
+						beforeSend:function(){
+							layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								layer.msg("删除成功！");
+								initData();
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，删除操作失败！");
+						},
+						complete:function(){
+							layer.closeAll("loading");
+						}
+					})
+				}, function(){});
+				
+			}else{
+				layer.alert('您还未选择要删除的信息！', {icon : 2});
+				return false;
+			}
+		};
+
+		// 删除乡镇站点
+		function deleteTownSite(dataId){
+			$.ajax({
+				type:"post",
+				url:URL_town_site_delete,
+				dataType:"json",
+				data:{
+					ids:dataId
+				},
+				beforeSend:function(){
+					layer.load(2,{shade:0.5});
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						layer.msg("删除成功！");
+						renderTownSiteList();
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，删除操作失败！");
+				},
+				complete:function(){
+					layer.closeAll("loading");
+				}
+			})
+		};
+
+		var vm = new Vue({
+			el:"#editPage",
+			data:{
+				addition:{
+					baiduLng:"",
+					baiduLat:""
+				},
+			},
+			methods:{
+				// 获取地理位置
+				getLocation:function(){
+					layui.use('admin', function(){
+						var admin = layui.admin;
+						selectLocationDialog = admin.open({
+							type:1,
+							title: '选择位置',
+							url: '../location.html',
+							area: ['750px','455px'],
+							offset: '65px',
+							skin: 'diy-class',
+							success: function (layero, dIndex) {
+								// 弹窗超出范围不出现滚动条
+								$(layero).children('.layui-layer-content').css('overflow', 'visible');
+							},
+							end:function(){
+								vm.addition.baiduLng = $("#baidu_lng").val();
+								vm.addition.baiduLat = $("#baidu_lat").val();
+							}
+						});
+					})
+				},
+
+				// 保存信息
+				saveInfo:function(){
+					if(vm.type == "add"){
+						var infoId = "";
+					}else{
+						var infoId = townId;
+					}
+					$.ajax({
+						type:"post",
+						url:URL_town_save,
+						dataType:"json",
+						data:{
+							townId:infoId,
+							townName:vm.addition.townName,
+							townAddress:vm.addition.townAddress,
+							gpsLng:vm.addition.gpsLng,
+							gpsLat:vm.addition.gpsLat,
+							baiduLng:vm.addition.baiduLng,
+							baiduLat:vm.addition.baiduLat
+						},
+						beforeSend:function(){
+							this.layerIndex = layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								layer.close(pageIndex);
+								layer.msg("信息保存成功！");
+								setTimeout(function(){
+									renderTownList();
+								}, 20);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，信息保存失败！");
+						},
+						complete:function(){
+							layer.close(this.layerIndex);
+						}
+					})
+				},
+
+				// 父页面调用保存
+				toSave:function(){
+					$("#btnSave").trigger("click");
+				},
+			}
+		})
+	</script>
+</html>

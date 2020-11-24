@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>走航</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<style type="text/css">
+		html, body{height:100%;}
+		body{overflow: hidden;margin:0;padding:0;}
+		img{width:100%;}
+	</style>
+</head>
+<body class="layui-layout-body">
+<img alt="" src="../../images/zouhang.png" />
+</body>
+<script type="text/javascript" src="../../scripts/jquery/jquery-1.11.3.min.js"></script>
+<script type="text/javascript">
+	var imageHeight = $("body").height();
+	$("img").height(imageHeight);
+	window.addEventListener("resize", function () {
+		var imageHeight = $("body").height();
+		$("img").height(imageHeight);
+	});
+</script>
+</html>
+
+

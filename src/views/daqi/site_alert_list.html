@@ -1,0 +1,223 @@
+<style>
+    #userEditForm .layui-form-label{
+        width: 123px;
+    }
+    #userEditForm .layui-input-block{
+        margin-left: 153px;
+    }
+    tbody .layui-table-cell{
+        min-height:auto;
+        height: auto!important;
+        white-space: normal;
+    }
+    tbody .layui-table-cell .layui-badge{
+        height: auto!important;
+        line-height: 18px!important;
+    }
+</style>
+<div class="layui-fluid" id="site_alert_box">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input name="pointName" class="layui-input" placeholder="输入站点名称" />
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="userTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <span class="layui-btn icon-btn" id="historyTbSearch">
+                            历史
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="userTbBar">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="edit">处理</a>
+    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+</script>
+<script type="text/html" id="contentTpl">
+    <span class="">【{{ d.msgTitle }}】</span>
+    <div>
+        <span class="layui-badge layui-bg-orange">【{{ d.msgContent }}】</span>
+    </div>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="userEditDialog">
+    <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-left: 28px;">
+                <textarea style="width: 100%;" name="warnProcContent" placeholder="请说点什么" class="layui-textarea" lay-vertype="tips" lay-verify="required" required=""></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="userEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="historyDialog">
+    <table id="historyTable" lay-filter="historyTable"></table>
+</script>
+<script>
+var historyDialog = null;
+layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'fileChoose'], function() {
+    var $ = layui.jquery;
+    var layer = layui.layer;
+    var form = layui.form;
+    var table = layui.table;
+    var util = layui.util;
+    var admin = layui.admin;
+    var xmSelect = layui.xmSelect;
+    var fileChoose = layui.fileChoose;
+
+    form.render();
+
+    // 地图选择位置
+    $("body").on("click", "#dialogBtn9", function() {
+        console.log("===")
+        admin.chooseLocation({
+            needCity: true,
+            onSelect: function(res) {
+                console.log(111)
+                form.val('userEditForm', res);
+                // layer.msg(JSON.stringify(res), {icon: 1});
+            }
+        });
+    });
+
+    /* 渲染表格 */
+    var insTb = table.render({
+        elem: '#userTable',
+        url: baseUrl + "dq/warn/getWarnMsgList",
+        page: true,
+        // toolbar: ['<p>',
+        //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+        //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+        //     '</p>'].join(''),
+        cellMinWidth: 100,
+        where: {
+            status: -1,
+            pointName:'',
+        },
+        cols: [
+            [
+                // {type: 'checkbox'},
+                { type: 'numbers' },
+                { field: 'content', title: '站点名称', templet: '#contentTpl' },
+                {field: 'warnTime', title: '报警时间', width:170},
+                { title: '操作', toolbar: '#userTbBar', align: 'center', width: 80 }
+            ]
+        ]
+    });
+
+    /* 表格搜索 */
+    form.on('submit(userTbSearch)', function(data) {
+        insTb.reload({ where: data.field, page: { curr: 1 } });
+        return false;
+    });
+
+    /* 表格工具条点击事件 */
+    table.on('tool(userTable)', function(obj) {
+        if (obj.event === 'edit') { // 修改
+            showEditModel(obj.data);
+        }
+    });
+
+    /* 显示表单弹窗 */
+    function showEditModel(mData) {
+        admin.open({
+            type: 1,
+            title: '处理警报',
+            content: $('#userEditDialog').html(),
+            success: function(layero, dIndex) {
+                // 表单提交事件
+                form.on('submit(userEditSubmit)', function(data) {
+                    data.field.warnMsgId = mData.id;
+                    data.field.warnProcPerson = layui.data('layuiAdmin')['userInfo'].realName;
+                    var loadIndex = layer.load(2);
+                    $.ajax({
+                        url: baseUrl + "dq/warn/procWarnMsg",
+                        type: "POST",
+                        data: JSON.stringify(data.field),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function(res) {
+                            layer.close(loadIndex);
+                            if (res.code === 0) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, { icon: 1 });
+                                insTb.reload({ page: { curr: 1 } });
+                            } else {
+                                layer.msg(res.msg, { icon: 2 });
+                            }
+                        }
+                    })
+                    return false;
+                });
+                // 渲染多选下拉框
+                var insRoleSel = xmSelect.render({
+                    el: '#userEditRoleSel',
+                    name: 'userEditRoleSel',
+                    layVerify: 'required',
+                    radio: true,
+                    clickClose: true,
+                    layVerType: 'tips',
+                    data: [{
+                        name: 'voc',
+                        value: 2
+                    }]
+                });
+                // 回显选中角色
+                if (mData && mData.type) {
+                    insRoleSel.setValue(mData.type.map(function(item) {
+                        return item;
+                    }));
+                }
+                // 禁止弹窗出现滚动条
+                $(layero).children('.layui-layer-content').css('overflow', 'visible');
+            }
+        });
+    }
+
+    /* 删除 */
+    function doDel(ids) {
+        layer.confirm('确定要删除选中数据吗？', {
+            skin: 'layui-layer-admin',
+            shade: .1
+        }, function(i) {
+            layer.close(i);
+            var loadIndex = layer.load(2);
+            $.ajax({
+                url: baseUrl + "dq/voc/delete",
+                type: "POST",
+                data: JSON.stringify({ ids: ids.join(',') }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(res) {
+                    layer.close(loadIndex);
+                    if (res.code === 0) {
+                        layer.msg(res.msg, { icon: 1 });
+                        insTb.reload({ page: { curr: 1 } });
+                    } else {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                }
+            })
+        });
+    }
+});
+</script>

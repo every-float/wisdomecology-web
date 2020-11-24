@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>菜单设置</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">菜单结构</div>
+		<div class="layui-card-body">
+			<div class="well">
+			<ul id="menuTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+			</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+		<div class="layui-card-header">菜单信息</div>
+		<div class="layui-card-body">
+				<form id="form1" class="layui-form">
+					<input type="hidden" id="menuId" name="menuId">
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">菜单名称<font color="red">*</font></label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input" id="menuName" name="menuName" required lay-verify="required">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">上级菜单</label>
+						<div class="layui-input-block">
+							<input type="hidden" class="layui-input" id="parentId" name="parentId">
+							<input type="text" class="layui-input" id="parentName" name="parentName" readonly="readonly" onclick="showList(); return false;">
+							<div id="parentList" style="background:#fff;border:1px solid #ddd;display: none; position: absolute;z-index: 999"> 
+								<ul id="menuTreeList" class="ztree" style="margin-top:0; width:200px;"></ul> 
+							</div>
+							<p class="layui-input-static">【<a href="javascript:;" onclick="setRoot()">没有上级菜单</a>】</p>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">图标</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input" id="menuIcon" name="menuIcon">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">窗口名称</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input" id="winName" name="winName">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">动画分类</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input" id="itemClass" name="itemClass">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">对应地址</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input" id="menuUrl" name="menuUrl" value="">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">排序</label>
+						<div class="layui-input-block">
+							<input type="number" class="layui-input" id="sortNum" name="sortNum" placeholder="请输入数字" lay-verify="number">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">是否配置子菜单</label>
+						<div class="layui-input-block">
+							<input type="radio" name="ishavechild" value="0" title="否" checked>
+							<input type="radio" name="ishavechild" value="1" title="是">
+					</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for=""></label>
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn layui-btn-primary" onclick="add()" id="btn_add">新增</button>
+							<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btn_save">保存</button>
+							<button type="button" class="layui-btn layui-btn-primary" onclick="del()" id="btn_del">删除</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/menu_list.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+</body>
+</html>

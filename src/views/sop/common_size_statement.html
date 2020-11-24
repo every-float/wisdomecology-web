@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>同比报表</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+			.well{overflow:auto;}
+			.layui-form-label{width:63px;}
+			.layui-table-page{display: none;}	/*隐藏分页条*/
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">污染源(废气)信息</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="pollutionList" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">数据信息</div>
+						<div class="layui-card-body">
+							<form id="search-form" class="layui-form" lay-filter="search-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+										<div class="layui-input-inline">
+											<input type="text" id="monitorTime" class="layui-input" placeholder="请选择监测日期" readonly="readonly" lay-verify="required" />
+										</div>
+									</div>
+									<div class="layui-inline">
+										<div class="layui-input-inline">
+											<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+										</div>
+									</div>
+								</div>
+							</form>
+							<table id="dataList" lay-filter="dataList" class="layui-table"></table>
+							<div class="layui-card">
+								<div class="layui-card-body">
+									<b>注：1.排放总量为烟尘、二氧化硫、氮氧化物三项合计。</b>
+									<b style="margin-left:8px;">2.标红表示不降反升。</b>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="../../scripts/math.min.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var pollutionList, dataList, tableHeight, dataInfo = [];
+		var PSCodes = [];	// 污染源编码
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs9").height($("body").height()-30);
+			$(".well").height($(".layui-col-xs3").height()-103);
+			tableHeight = $(".layui-col-xs9").height()-175;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs9").height($("body").height()-30);
+				$(".well").height($(".layui-col-xs3").height()-103);
+				tableHeight = $(".layui-col-xs9").height()-175;
+				renderDataList();
+			}
+            layui.use(['table', 'form', 'layer', 'laydate'], function(){
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				
+				$("#monitorTime").val(getOneWeek().previousTime +" ~ "+getOneWeek().currentTime);
+				layui.laydate.render({
+					elem:'#monitorTime',
+					value:getOneWeek().previousTime +" ~ "+getOneWeek().currentTime,
+					trigger:'click',
+					range:"~",
+                    done:function(value, date, endDate){
+						$("#monitorTime").val(value);
+                    }
+                })
+                
+				initTree();
+				
+				// 搜索监听
+				form.on('submit(toSearch)', function(){
+					getDataList("search");
+					return false;
+				})
+            })
+		});
+
+		// 污染源&排放口列表
+		function initTree(){
+			$.ajax({
+				type:"get",
+				url:URL_pollution_company_list,
+				dataType:"json",
+				data:{
+					wrytype:"fq"
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						var treeNodes = ret.data;
+						treeNodes[0].checked = true;
+						for(var i in treeNodes){
+							if(treeNodes[i].children.length){
+								treeNodes[i].children = [];
+							}
+						}
+						var setting = {
+							check: {
+								enable: true
+							},
+							data: {
+								simpleData: {
+									enable: true,
+									idKey: 'id',
+									pIdKey: 'parentId'
+								},
+								key: {
+									name: 'name',
+									title: 'name'
+								}
+							}
+						};
+						pollutionList = $.fn.zTree.init($('#pollutionList'), setting, treeNodes);
+						PSCodes.push(treeNodes[0].id);
+						
+						getDataList("init");
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，未能获取到信息！");
+				}
+			})
+		}
+		
+		// 数据信息列表
+		function getDataList(type){
+			if(type != "init"){
+				PSCodes = [];
+				var arr = pollutionList.getCheckedNodes(true);
+				if(arr.length){
+					for(var i in arr){
+						PSCodes.push(arr[i].id);
+					}
+				}
+			}
+			if(PSCodes.length == 0){
+				layer.msg("请选择污染源企业！");
+				return false;
+			}
+			layer.load(2,{shade:0.6});
+			$.ajax({
+				type:"post",
+				url:URL_common_size_report,
+				dataType:"json",
+				data:{
+					PSCodes:PSCodes.join(","),
+					startDate:$("#monitorTime").val()?$("#monitorTime").val().split("~")[0].replace(" ", ""):"",
+					endDate:$("#monitorTime").val()?$("#monitorTime").val().split("~")[1].replace(" ", ""):""
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						if(ret.data.length){
+							dataInfo = ret.data;
+						}else{
+							dataInfo = [];
+						}
+						getTableList();
+					}else{
+						layer.closeAll("loading");
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.closeAll("loading");
+					layer.msg("网络访问出错，获取同比信息失败！");
+				}
+			})
+		};
+
+		function getTableList(){
+			dataList = table.render({
+				elem: '#dataList',
+				data: dataInfo,
+				page: false,
+				height:tableHeight,
+				toolbar: false,
+				defaultToolbar: false,
+				cols: [[
+					{title: '序号', align: 'center', width:60, fixed:"left", rowspan:2, templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{title: '企业名称', minWidth:220, align: 'center', rowspan:2, templet:function(d){
+						if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+							return "<span style='color:red;'>"+d.yanchen_last+"</span>";
+						}else{
+							return d.PSName;
+						}
+					}},
+					{title: '<div>'+($("#monitorTime").val().substring(0,4)-1)+'年</div>', align: 'center', width:60, colspan:4},
+					{title: '<div>'+$("#monitorTime").val().substring(0,4)+'年</div>', align: 'center', width:60, colspan:4},
+					{title: '同期减排比例', width:160, align: 'center', rowspan:2, templet:function(d){
+						if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+							return "<span style='color:red;'>"+confirmCalculation(math.format(math.chain(math.bignumber(d.cnt_now)).subtract(math.bignumber(d.cnt_last)).divide(math.bignumber(d.cnt_last)).multiply(100).done()))+"%</span>";
+						}else{
+							return "-";
+						}
+					}}
+				],[
+					{title: '烟尘', width:120, align: 'center', templet:function(d){
+						if(d.yanchen_last){
+							if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+								return "<span style='color:red;'>"+d.yanchen_last+"</span>";
+							}else{
+								return d.yanchen_last;
+							}
+						}else{
+							return "-";
+						}
+					}},
+					{title: '二氧化硫', width:120, align: 'center', templet:function(d){
+						if(d.so2_last){
+							if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+								return "<span style='color:red;'>"+d.so2_last+"</span>";
+							}else{
+								return d.so2_last;
+							}
+						}else{
+							return "-";
+						}
+					}},
+					{title: '氮氧化物', width:120, align: 'center', templet:function(d){
+						if(d.no2_last){
+							if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+								return "<span style='color:red;'>"+d.no2_last+"</span>";
+							}else{
+								return d.no2_last;
+							}
+						}else{
+							return "-";
+						}
+					}},
+					{title: '排放量(t)', width:160, align: 'center', templet:function(d){
+						if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+							return "<span style='color:red;'>"+d.cnt_last+"</span>";
+						}else{
+							return d.cnt_last?d.cnt_last:"-";
+						}
+					}},
+					{title: '烟尘', width:120, align: 'center', templet:function(d){
+						if(d.yanchen_now){
+							if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+								return "<span style='color:red;'>"+d.yanchen_now+"</span>";
+							}else{
+								return d.yanchen_now;
+							}
+						}else{
+							return "-";
+						}
+					}},
+					{title: '二氧化硫', width:120, align: 'center', templet:function(d){
+						if(d.so2_now){
+							if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+								return "<span style='color:red;'>"+d.so2_now+"</span>";
+							}else{
+								return d.so2_now;
+							}
+						}else{
+							return "-";
+						}
+					}},
+					{title: '氮氧化物', width:120, align: 'center', templet:function(d){
+						if(d.no2_now){
+							if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+								return "<span style='color:red;'>"+d.no2_now+"</span>";
+							}else{
+								return d.no2_now;
+							}
+						}else{
+							return "-";
+						}
+					}},
+					{title: '排放量(t)', width:160, align: 'center', templet:function(d){
+						if(d.cnt_now && d.cnt_last && d.cnt_last<d.cnt_now){
+							return "<span style='color:red;'>"+d.cnt_now+"</span>";
+						}else{
+							return d.cnt_now?d.cnt_now:"-";
+						}
+					}}
+				]],
+				done:function(){
+					layer.closeAll("loading");
+				}
+			})
+		}
+
+		// 搜索
+		function renderDataList(){
+			dataList.reload({
+				height:tableHeight,
+				page: {curr: 1}
+			});
+		}
+
+		// 获取以当前时间为截止时间的一个星期的时间段
+		function getOneWeek(){
+			var currentTime = new Date().getTime();
+			var previousTime = currentTime - 24*60*60*1000*6;
+			var weekTime = {
+				"previousTime":gettingTime(previousTime).split(" ")[0],
+				"currentTime":gettingTime(currentTime).split(" ")[0]
+			}
+			return weekTime;
+		}
+		
+		// 保留两位小数
+		function confirmCalculation(num){
+			if(typeof num=="string"){
+				if(num.indexOf("+")==-1 && Number(num) % 1 === 0){
+					return num;
+				}else{
+					var y = num.indexOf(".") + 1;//获取小数点的位置
+					var count = num.length - y;//获取小数点后的个数
+					if(count <= 2){
+						return num;
+					}else{
+						if(num.indexOf("+")==-1){
+							num = math.multiply(math.bignumber(Number(num)),100);
+							num = math.round(Number(num));
+							num = math.format(math.divide(math.bignumber(Number(num)),100));
+							return num;
+						}else{
+							return parseFloat(num).toFixed(2);
+						}
+					}
+				}
+			}else{
+				if(num % 1 === 0){
+					return num;
+				}else{
+					var y = String(num).indexOf(".") + 1;//获取小数点的位置
+					var count = String(num).length - y;//获取小数点后的个数
+					if(count <= 2){
+						return num;
+					}else{
+						if(String(num).indexOf("+")==-1){
+							num = math.multiply(math.bignumber(num),100);
+							num = math.round(num);
+							num = math.format(math.divide(math.bignumber(num),100));
+							return num;
+						}else{
+							return parseFloat(num).toFixed(2);
+						}
+					}
+				}
+			}
+		}
+	</script>
+</html>

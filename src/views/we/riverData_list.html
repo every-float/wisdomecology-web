@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>河流监测数据</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">河流信息
+							<div class="layui-btn-group" style="margin-bottom: 10px;float: right">
+								<button type="button" class="layui-btn layui-btn-sm" onclick="addRiver()">新增</button>
+								<button type="button" class="layui-btn layui-btn-sm" onclick="editRiver()">修改</button>
+								<button type="button" class="layui-btn layui-btn-sm" onclick="deleteRiver()">删除</button>
+							</div>
+						</div>
+						<div class="layui-card-body">
+							<table id="riverList" class="layui-table" lay-filter="riverList"></table>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">河流站点</div>
+						<div class="layui-card-body">
+							<script type="text/html" id="toolbar">
+								<button type="button" class="layui-btn layui-btn-primary" lay-event="addRiverSite">新增</button>
+								<button type="button" class="layui-btn layui-btn-primary" lay-event="deleteRiverSite">删除</button>
+							</script>
+							<table id="riverSiteList" lay-filter="riverSiteList" class="layui-table"></table>
+							<script type="text/html" id="operation">
+								<a class="layui-btn layui-btn-xs" lay-event="editRiverSite">编辑</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="editPage" style="display: none;">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<form id="dataForm" class="layui-form" lay-filter="dataForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">河流名称<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.riverName" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">河流地址<span style="color:red;">*</span></label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.riverAddress" lay-verify="required" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">选择位置:</label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn layui-btn-sm" @click="getLocation()"><i class="layui-icon"></i>打开地图</button><br>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS经度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLng" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">GPS纬度</label>
+							<div class="layui-input-inline">
+								<input type="text" class="layui-input" v-model="addition.gpsLat" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度经度</label>
+							<div class="layui-input-inline">
+								<input id="baidu_lng" type="text" class="layui-input" v-model="addition.baiduLng" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">百度纬度</label>
+							<div class="layui-input-inline">
+								<input id="baidu_lat" type="text" class="layui-input" v-model="addition.baiduLat" readonly="readonly" style="cursor:no-drop;" />
+							</div>
+						</div>
+						<div class="layui-form-item" style="display: none">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="../../common/baiduMap.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var riverList, riverSiteList, tableHeight;
+		var riverId = "", dataId = "";
+		var arr = [];
+		var isSearch = true;
+		var pageIndex;
+		var selectLocationDialog=null;
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-40);
+			$(".layui-col-xs9").height($("body").height()-40);
+			tableHeight = $(".layui-col-xs3").height()-63;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-40);
+				$(".layui-col-xs9").height($("body").height()-40);
+				tableHeight = $(".layui-col-xs3").height()-63;
+				renderRiverList();
+				renderRiverSiteList();
+			}
+            layui.use(['table', 'form', 'layer'], function(){
+				table = layui.table,
+				form = layui.form,
+                layer = layui.layer;
+                
+                initData();
+
+                table.on("toolbar(riverSiteList)", function(obj){
+					var checkStatus = table.checkStatus(obj.config.id);
+					var data = checkStatus.data;
+                    if(obj.event == "addRiverSite"){
+                        layer.open({
+							type: 2,
+							title: '新增河流站点信息',
+							shade: 0.6,
+							maxmin: true,
+							area: ['800px', '490px'],
+							content: pageUrl+'views/we/riverSiteInfo_edit.html?riverId='+riverId+"&dataId=",
+							btn: ['确定', '关闭'],
+							yes: function(index, layero){
+								var iframeWin = window[layero.find('iframe')[0]['name']];
+								iframeWin.vm.toSave();
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						});
+                    }else if(obj.event == "deleteRiverSite"){
+                        if(data.length){
+                            layer.confirm('确定要删除已选中的信息么？！', {
+								btn: ['删除', '取消']
+							}, function() {
+								var arr = [];
+								for (var i = 0; i < data.length; i++) {
+									arr.push(data[i].data_id);
+								}
+								deleteRiverSite(arr.join(","));
+							}, function(){});
+                        }else{
+                            layer.alert('您还未选择要删除的信息！', {icon : 2});
+							return false;
+                        }
+                    }
+				})
+
+                table.on("tool(riverSiteList)", function(obj){
+                    var data = obj.data;
+					dataId = data.data_id;
+					if(obj.event == "editRiverSite"){
+                        layer.open({
+							type: 2,
+							title: '修改河流站点信息',
+							shade: 0.6,
+							maxmin: true,
+							area: ['800px', '490px'],
+							content: pageUrl+'views/we/riverSiteInfo_edit.html?riverId='+riverId+"&dataId="+dataId,
+							btn: ['确定', '关闭'],
+							yes: function(index, layero){
+								var iframeWin = window[layero.find('iframe')[0]['name']];
+								iframeWin.vm.toSave();
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						});
+                    }
+				});
+				
+				// 保存监听
+				form.on('submit(btnSave)', function(){
+					vm.saveInfo();
+					return false;
+				})
+            })
+		});
+		
+		function initData(){
+			layer.load(2,{shade:0.6});
+			getRiverList();
+		};
+		
+		function getRiverList(){
+			riverList = table.render({
+				elem : '#riverList',
+				url : URL_river_list,
+				page: true,
+				height:tableHeight,
+				toolbar: false,
+				defaultToolbar: false,
+				cols: [[
+					{type: 'checkbox', fixed: 'left'},
+					{title: '序号', align: 'center', width:60, templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{field: 'river_name', title: '河流名称', minWidth:220, align: 'center'}
+				]],
+				done:function(ret){
+					riverId = ret.data[0].river_id;
+					getriverSiteList(riverId);
+					$(".layui-col-xs3 table tr:eq(1)").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+					$(".layui-col-xs3 table tr").find("td[data-field=1]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						riverId = ret.data[$(this).parent("tr")[0].dataset.index].river_id;
+						getriverSiteList(ret.data[$(this).parent("tr")[0].dataset.index].river_id);
+					})
+					$(".layui-col-xs3 table tr").find("td[data-field=river_name]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						riverId = ret.data[$(this).parent("tr")[0].dataset.index].river_id;						
+						getriverSiteList(ret.data[$(this).parent("tr")[0].dataset.index].river_id);
+					})
+				}
+			})
+		};
+		function renderRiverList(){
+			riverList.reload({
+				height:tableHeight,
+				done:function(ret){
+					riverId = ret.data[0].river_id;
+					getriverSiteList(riverId);
+					$(".layui-col-xs3 table tr:eq(1)").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+					$(".layui-col-xs3 table tr").find("td[data-field=1]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						riverId = ret.data[$(this).parent("tr")[0].dataset.index].river_id;						
+						getriverSiteList(ret.data[$(this).parent("tr")[0].dataset.index].river_id);
+					})
+					$(".layui-col-xs3 table tr").find("td[data-field=river_name]").click(function(){
+						$(this).parent("tr").css({"background-color":"#009866","color":"#FFF"}).siblings("tr").css({"background-color":"#FFF","color":"#666"});
+						riverId = ret.data[$(this).parent("tr")[0].dataset.index].river_id;						
+						getriverSiteList(ret.data[$(this).parent("tr")[0].dataset.index].river_id);
+					})
+				},
+				page: {curr: 1}
+			});
+		}
+
+		function getriverSiteList(riverId){
+			riverSiteList = table.render({
+				elem : '#riverSiteList',
+				url : URL_river_site_list,
+				page: true,
+				toolbar: '#toolbar',
+				defaultToolbar: false,
+				height:tableHeight,
+				where:{
+					riverId:riverId
+				},
+				cols: [[
+					{type: 'checkbox', fixed: 'left'},
+					{title: '监测时间', width:180, align: 'center', templet:function(d){
+						if(d.monitor_time){
+							return gettingTimeYYYMMddhhmmss(d.monitor_time);
+						}else{
+							return "暂无相关数据";
+						}
+					}},
+					{field: 'cod', title: '化学需氧量COD', minWidth:135, align: 'center'},
+					{field: 'andan', title: '氨氮(mg/L)', width:120, align: 'center'},
+					{field: 'zonglin', title: '总磷(mg/L)', width:120, align: 'center'},
+					{field: 'zongdan', title: '总氮(mg/L)', width:120, align: 'center'},
+					{field: 'gaomengsuanyan', title: '高锰酸盐指数(mg/L)', width:160, align: 'center'},
+					{field: 'shuiwen', title: '水温(℃)', minWidth:120, align: 'center'},
+					{field: 'ph', title: 'PH(无量纲)', width:120, align: 'center'},
+					{field: 'rongjieyang', title: '溶解氧(mg/L)', width:120, align: 'center'},
+					{field: 'zhuodu', title: '浊度(NTU)', width:120, align: 'center'},
+					{field: 'diandaolv', title: '电导率(μS/cm)', width:130, align: 'center'},
+					{title: '操作', toolbar : '#operation', width:100, align:'center', fixed:'right'}
+				]],
+				done:function(){
+					layer.closeAll("loading");
+				}
+			})
+		};
+		function renderRiverSiteList(){
+			riverSiteList.reload({
+				height:tableHeight,
+				where:{
+					riverId:riverId
+				},
+				done:function(ret){
+					layer.closeAll("loading");
+				},
+				page: {curr: 1}
+			});
+		}
+
+		// 新增河流
+		function addRiver(){
+			vm.type = "add";
+			vm.addition = {
+				baiduLng:"",
+				baiduLat:""
+			};
+			pageIndex = layer.open({
+				type: 1,
+				title: '新增河流信息',
+				shade: 0.6,
+				maxmin: true,
+				area: ['450px', '500px'],
+				content: $("#editPage"),
+				btn: ['确定', '关闭'],
+				yes: function(index, layero){
+					vm.toSave();
+				},
+				btn2: function(index, layero){
+					layer.close(index);
+				}
+			});
+		};
+
+		// 修改河流
+		function editRiver(){
+			vm.type = "edit";
+			var checkData = table.checkStatus("riverList").data;
+			if(checkData.length){
+				if(checkData.length > 1){
+					layer.msg("请选择一条信息进行修改操作！");
+					return false;
+				}else{
+					riverId = checkData[0].river_id;
+				}
+			}else{
+				layer.msg("您还未选择要修改的河流信息！");
+				return false;
+			}
+			pageIndex = layer.open({
+				type: 1,
+				title: '修改河流信息',
+				shade: 0.6,
+				maxmin: true,
+				area: ['450px', '500px'],
+				content: $("#editPage"),
+				btn: ['确定', '关闭'],
+				success:function(){
+					$.ajax({
+						type:"get",
+						url:URL_river_info,
+						dataType:"json",
+						data:{
+							riverId:riverId
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.addition = ret.data;
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+				yes: function(index, layero){
+					vm.toSave();
+				},
+				btn2: function(index, layero){
+					layer.close(index);
+				}
+			});
+		};
+
+		// 删除河流
+		function deleteRiver(){
+			var checkData = table.checkStatus("riverList").data;
+			if(checkData.length){
+				layer.confirm('确定要删除已选中的信息么？！', {
+					btn: ['删除', '取消']
+				}, function() {
+					for(var i in checkData){
+						arr.push(checkData[i].river_id);
+					}
+					$.ajax({
+						type:"post",
+						url:URL_river_delete,
+						dataType:"json",
+						data:{
+							ids:arr.join(",")
+						},
+						beforeSend:function(){
+							layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								layer.msg("删除成功！");
+								initData();
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，删除操作失败！");
+						},
+						complete:function(){
+							layer.closeAll("loading");
+						}
+					})
+				}, function(){});
+				
+			}else{
+				layer.alert('您还未选择要删除的信息！', {icon : 2});
+				return false;
+			}
+		};
+
+		// 删除河流站点
+		function deleteRiverSite(dataId){
+			$.ajax({
+				type:"post",
+				url:URL_river_site_delete,
+				dataType:"json",
+				data:{
+					ids:dataId
+				},
+				beforeSend:function(){
+					layer.load(2,{shade:0.5});
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						layer.msg("删除成功！");
+						renderRiverSiteList();
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，删除操作失败！");
+				},
+				complete:function(){
+					layer.closeAll("loading");
+				}
+			})
+		};
+
+		var vm = new Vue({
+			el:"#editPage",
+			data:{
+				addition:{
+					baiduLng:"",
+					baiduLat:""
+				},
+			},
+			methods:{
+				// 获取地理位置
+				getLocation:function(){
+					layui.use('admin', function(){
+						var admin = layui.admin;
+						selectLocationDialog = admin.open({
+							type:1,
+							title: '选择位置',
+							url: '../location.html',
+							area: ['750px','455px'],
+							offset: '65px',
+							skin: 'diy-class',
+							success: function (layero, dIndex) {
+								// 弹窗超出范围不出现滚动条
+								$(layero).children('.layui-layer-content').css('overflow', 'visible');
+							},
+							end:function(){
+								vm.addition.baiduLng = $("#baidu_lng").val();
+								vm.addition.baiduLat = $("#baidu_lat").val();
+							}
+						});
+					})
+				},
+
+				// 保存信息
+				saveInfo:function(){
+					if(vm.type == "add"){
+						var infoId = "";
+					}else{
+						var infoId = riverId;
+					}
+					$.ajax({
+						type:"post",
+						url:URL_river_save,
+						dataType:"json",
+						data:{
+							riverId:infoId,
+							riverName:vm.addition.riverName,
+							riverAddress:vm.addition.riverAddress,
+							gpsLng:vm.addition.gpsLng,
+							gpsLat:vm.addition.gpsLat,
+							baiduLng:vm.addition.baiduLng,
+							baiduLat:vm.addition.baiduLat
+						},
+						beforeSend:function(){
+							this.layerIndex = layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								layer.close(pageIndex);
+								layer.msg("信息保存成功！");
+								setTimeout(function(){
+									renderRiverList();
+								}, 20);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，信息保存失败！");
+						},
+						complete:function(){
+							layer.close(this.layerIndex);
+						}
+					})
+				},
+
+				// 父页面调用保存
+				toSave:function(){
+					$("#btnSave").trigger("click");
+				},
+			}
+		})
+	</script>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="assets/images/favicon.ico" rel="icon">
+    <link href="../layuiadmin/layui/css/layui.css" rel="stylesheet" type="text/css">
+    <link href="../css/admin.css" rel="stylesheet" type="text/css">
+    <title>西青区智慧生态环境大数据分析及指挥调度平台</title>
+    <link href="../css/message.css" rel="stylesheet" type="text/css">
+    <link href="../scripts/jqueryiviewer/jquery.iviewer.css" rel="stylesheet" type="text/css">
+    <link href="../layuiadmin/style/layPhoto.css" rel="stylesheet" type="text/css">
+    <style>
+        #LAY_app>.layui-body>.layui-tab>ul>li:first-child{
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin" id="LAY_app" v-cloak>
+        <!-- 头部 -->
+        <div class="layui-header">
+            <div class="layui-logo">
+                <img src="../images/logo.png" />
+                <cite>&nbsp;西青区智慧生态环境</cite>
+            </div>
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item" lay-unselect>
+                    <a ew-event="flexible" title="侧边伸缩"><i class="layui-icon layui-icon-shrink-right"></i></a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a ew-event="refresh" title="刷新"><i class="layui-icon layui-icon-refresh-3"></i></a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a id="console" href="../theme/theme_2/index.html#/page1" title="控制台/首页">
+                        <i class="layui-icon layui-icon-home" style="font-weight: bold"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a title="local">
+                        <span class="layui-btn layui-btn-primary">当前位置：{{menuName}}</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <!--      <li class="layui-nav-item" lay-unselect>-->
+                <!--        <a ew-event="message" title="消息">-->
+                <!--          <i class="layui-icon layui-icon-notice"></i>-->
+                <!--          <span class="layui-badge-dot"></span>-->
+                <!--        </a>-->
+                <!--      </li>-->
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a @click="localStorageClear()" title="清缓存"><i class="layui-icon layui-icon-fonts-clear"></i>
+                        <!--          <img style="width:16px;" src="../images/tools/icon_clear.png" alt="">-->
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a ew-event="fullScreen" title="全屏"><i class="layui-icon layui-icon-screen-full"></i></a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a>
+                        <!--          <img src="images/head.jpg" class="layui-nav-img">-->
+                        <cite>{{ userInfo.realName }}</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+<!--                        <dd lay-unselect><a ew-href="common/personal_center.html">个人中心</a></dd>-->
+<!--                        <hr>-->
+                        <dd lay-unselect @click="toLogout()"><a href="javascript:;">退出</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a ew-event="theme" title="主题"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                </li>
+            </ul>
+        </div>
+        <!-- 侧边栏 -->
+        <div class="layui-side">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" lay-shrink="_all">
+                    <li v-for="(vo, index) in menuList" class="layui-nav-item">
+                        <a v-if="vo.children">
+                            <i class="layui-icon" :class="vo.iconCls"></i>&emsp;<cite>{{ vo.name }}</cite><span class="layui-nav-more"></span>
+                        </a>
+                        <a :href=" '#'+vo.menuUrl " v-else :lay-href="vo.menuType == '2'?vo.menuUrl:hostUrl+vo.menuUrl"><i class="layui-icon" :class="vo.iconCls"></i>&emsp;<cite>{{ vo.name }}</cite>
+                        </a>
+                        <dl class="layui-nav-child" v-if="vo.children">
+                            <dd v-for="(v1, index1) in vo['children']" v-if="vo.children != undefined">
+                                <a :lay-href="v1.menuType == '2'?v1.menuUrl:(hostUrl+v1.menuUrl)">{{ v1.name }}<span v-if="v1.children" class="layui-nav-more"></span></a>
+                                <dl v-if="v1.children" class="layui-nav-child">
+                                    <dd v-for="(v2, index2) in v1['children']" data-name="list">
+                                        <a :lay-href="v2.menuType == '2'?v2.menuUrl:hostUrl+v2.menuUrl">{{ v2.name }}</a>
+                                    </dd>
+                                </dl>
+                            </dd>
+                            <dd v-for="(v1, index1) in vo['children']" v-else>
+                                <a :lay-href="v1.menuType == '2'?v1.menuUrl:hostUrl+v1.menuUrl">{{ v1.name }}</a>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 主体部分 -->
+        <div class="layui-body"></div>
+        <!-- 底部 -->
+        <div class="layui-footer layui-text">
+            copyright © 2020 <a href="javascript:;" target="_blank">天津市智慧大数据</a>
+            <span class="pull-right"></span>
+        </div>
+    </div>
+    <!-- 加载动画 -->
+    <div class="page-loading">
+        <div class="ball-loader">
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+    <!-- js部分 -->
+    <script type="text/javascript" src="../common/commonUrl.js"></script>
+    <script type="text/javascript" src="../scripts/jquery/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../scripts/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../scripts/jquery/jquery-ui-1.12.1.custom.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../scripts/jquery/jquery.jqprint.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../scripts/jqueryiviewer/jquery.mousewheel.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../scripts/jqueryiviewer/jquery.iviewer.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../layuiadmin/layui/layui.js"></script>
+    <script type="text/javascript" src="../layuiadmin/modules/contextMenu.js"></script>
+    <script type="text/javascript" src="../scripts/vue/vue.js"></script>
+    <script type="text/javascript" src="../scripts/toastr/toastr.min.js"></script>
+    <script type="text/javascript" src="../common/common.js"></script>
+    <script type="text/javascript" src="../common/tool.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        vm.initLeftMenu();
+        vm.initUserInfo();
+        //vm.initUnreadCnt();
+        //initWebsocketServerStatus();
+
+
+    });
+
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        console.log(decodeURIComponent(query)); //js解码（超链接中的中文获取时可能存在编码的情况）
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return decodeURIComponent(pair[1]); }
+        }
+        return (false);
+    }
+
+    function reload() {
+        //默认保留方法
+    }
+
+    function initWebsocketServerStatus() {
+        //验证浏览器是否支持WebSocket协议
+        if (!window.WebSocket) {
+            //alert("这个浏览器不支持websocket!");
+            return;
+        }
+        var wsAddress = wsUrl + "websocket/onlineUser/" + getUserToken();
+        var online_ws = new WebSocket(wsAddress);
+        //监听消息
+        online_ws.onmessage = function(event) {
+            //console.info(event.data);
+            //判断是消息类型
+            var res = JSON.parse(event.data);
+            if (res.type == 'count') {
+                //未读消息数量
+            } else if (res.type == 'logout') {
+                alert(res.msg);
+                window.location.href = pageUrl + "views/login.html";
+            } else if (res.type == 'goout') {
+                alert(res.msg);
+                window.location.href = pageUrl + "views/login.html";
+            } else if (res.type == 'notice') {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "positionClass": "toast-top-right",
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr["success"]('', res.msg);
+                //更新通知列表
+                vm.initUnreadCnt();
+            }
+        };
+        // 关闭WebSocket
+        online_ws.onclose = function(event) {
+            //WebSocket Status:: Socket Closed
+        };
+        // 打开WebSocket
+        online_ws.onopen = function(event) {
+            //WebSocket Status:: Socket Open
+            online_ws.send('上线啦');
+        };
+        online_ws.onerror = function(event) {
+            //WebSocket Status:: Error was reported
+        };
+    }
+
+    var vm = new Vue({
+        el: "#LAY_app",
+        data: {
+            menuList: [],
+            userInfo: {},
+            msgCnt: 0,
+            list: [],
+            menuName: '',
+        },
+        methods: {
+            initLeftMenu: function() {
+                var menuId = getQueryVariable("menuId");
+                vm.menuName = getQueryVariable("menuName");
+                $.ajax({
+                    url: baseUrl + "index/getHomeInfo",
+                    data: {
+                        menuId: menuId
+                    },
+                    type: "post",
+                    dataType: "json",
+                    beforeSend: function() {
+                        // loading show
+                    },
+                    success: function(res) {
+                        if (res.code == 0) {
+                            //$('#console').attr('href',res.data.consoleUrl);
+                            //权限
+                            layui.data('layuiAdmin', { key: 'configjson_000', value: res.data.configjson });
+                            vm.hostUrl = pageUrl;
+                            var _menus = res.data.menujson;
+                            vm.menuList = _menus.menus;
+                            //欢迎页
+                            if (res.data.wel_html != '') {
+                                $('#wel_iframe').attr('src', res.data.wel_html);
+                            }
+
+                            //加载完成后在执行此方法，防止二级菜单不显示
+                            setTimeout(function() {
+                                layui.use(['index', 'admin'], function() {
+                                    var $ = layui.jquery;
+                                    var index = layui.index;
+                                    var admin = layui.admin;
+
+                                    // 默认加载主页
+                                    index.loadHome({
+                                        menuPath: 'welcome.html?menuId=' + menuId,
+                                        menuName: '<i class="layui-icon layui-icon-home"></i>',
+                                        loadSetting: false,
+                                    });
+
+                                    var pageUrl_maodian = location.href.split("#")[1];
+                                    if (pageUrl_maodian) {
+                                        if(pageUrl_maodian.indexOf("http")>-1){
+                                            for (var i = 0; i < vm.menuList.length; i++) {
+                                                var item = vm.menuList[i];
+                                                if (item.children) {
+                                                    item.children.forEach(function(element) {
+                                                        if (element.menuUrl == pageUrl_maodian) {
+                                                            index.openTab({
+                                                                title: element.name,
+                                                                url: pageUrl_maodian
+                                                            });
+                                                        }
+                                                    });
+                                                } else {
+                                                    if (item.menuUrl == pageUrl_maodian) {
+                                                        index.openTab({
+                                                            title: item.name,
+                                                            url: pageUrl_maodian
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }else{
+                                            for (var i = 0; i < vm.menuList.length; i++) {
+                                                var item = vm.menuList[i];
+                                                if (item.children) {
+                                                    item.children.forEach(function(element) {
+                                                        if (element.menuUrl == pageUrl_maodian) {
+                                                            index.openTab({
+                                                                title: element.name,
+                                                                url: vm.hostUrl + pageUrl_maodian
+                                                            });
+                                                        }
+                                                    });
+                                                } else {
+                                                    if (item.menuUrl == pageUrl_maodian) {
+                                                        index.openTab({
+                                                            title: item.name,
+                                                            url: vm.hostUrl + item.menuUrl
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        for (var i = 0; i < vm.menuList.length; i++) {
+                                            var item = vm.menuList[i];
+                                            if (item.children) {
+                                                item.children.forEach(function(element) {
+                                                    if (element.isDefault == 1) {
+                                                        index.openTab({
+                                                            title: element.name,
+                                                            url: vm.hostUrl + element.menuUrl
+                                                        });
+                                                    }
+                                                });
+                                            } else {
+                                                if (item.isDefault == 1) {
+                                                    index.openTab({
+                                                        title: item.name,
+                                                        url: vm.hostUrl + item.menuUrl
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    admin.on('tab', function(d) {
+                                        var layId = d.layId;
+                                        window.location.hash = layId.split("/wisdomecology-web/")[1];
+                                    });
+                                });
+                            }, 100);
+                        }
+                    },
+                    complete: function() {}
+                });
+            },
+
+            localStorageClear: function() {
+                layer.msg('缓存已清理');
+                localStorage.clear();
+                // sessionStorage.clear();
+            },
+
+            initUserInfo: function() {
+                $.ajax({
+                    url: baseUrl + "index/getUserInfo",
+                    data: {},
+                    type: "post",
+                    dataType: "json",
+                    beforeSend: function() {
+                        // loading show
+                    },
+                    success: function(res) {
+                        if (res.code == 0) {
+                            vm.userInfo = res.data;
+                            layui.data('layuiAdmin', { key: 'userInfo', value: res.data });
+                        }
+                    },
+                    complete: function() {}
+                });
+            },
+
+            initUnreadCnt: function() {
+                $.ajax({
+                    url: baseUrl + "msg/message/getUnreadCnt",
+                    data: {},
+                    type: "post",
+                    dataType: "json",
+                    beforeSend: function() {
+                        // loading show
+                    },
+                    success: function(res) {
+                        if (res.code == 0) {
+                            vm.msgCnt = res.data.msgCnt;
+                            vm.list = res.data.list_msg;
+                            for (var i = 0; i < vm.list.length; i++) {
+                                vm.list[i].send_time = gettingTime(vm.list[i].send_time);
+                            }
+                        } else {}
+                    },
+                    complete: function() {}
+                });
+            },
+            // 退出登录
+            toLogout: function() {
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    var index;
+                    $.ajax({
+                        type: "post",
+                        url: URL_logout,
+                        dataType: "json",
+                        beforeSend: function() {
+                            index = layer.load(1, {
+                                shade: [0.1, '#f5f5f5'] //0.1透明度的白色背景
+                            });
+                        },
+                        success: function(ret) {
+                            console.log(ret);
+                            if (ret.code == 0) {
+                                window.location.href = "login.html";
+                            } else {
+                                layer.msg(ret.msg);
+                            }
+                        },
+                        error: function(err) {
+                            layer.msg("网络访问出错！");
+                        },
+                        complete: function() {
+                            layer.close(index);
+                        }
+                    });
+                });
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

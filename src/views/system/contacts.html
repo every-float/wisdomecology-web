@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>企业通讯录</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">部门信息</div>
+		<div class="layui-card-body">
+			<input type="hidden" id="departId" name="departId" value="">
+			<input type="hidden" id="orgId" name="orgId" value="">
+			<form class="layui-form">
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<select id="orgList" name="orgList" lay-filter="orgList" lay-verify="required">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			</form>
+			<div class="well" style="margin-top: 15px">
+			<ul id="departTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+		</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+			<div class="layui-card-header">成员信息</div>
+			<div class="layui-card-body">
+				<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_name" placeholder="请输入用户账号或姓名">
+					</div>
+					<button class="layui-btn" lay-submit lay-filter="formSearch">查询</button>
+					<button type="button" class="layui-btn layui-btn-primary" onclick="reset1()">重置</button>
+				</div>
+				</form>
+				<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="js/contacts.js"></script>
+</body>
+</html>

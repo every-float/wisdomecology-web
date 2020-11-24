@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>组织结构</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">组织机构<a href="javascript:;" class="layui-btn layui-btn-sm" style="float: right; margin-top: 6px; background: #F56C6C" onclick="viewTree()">查看组织人员</a></div>
+		<div class="layui-card-body">
+			<form class="layui-form">
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<select id="orgList" name="orgList" lay-filter="orgList" lay-verify="required">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			</form>
+			<div class="well">
+				<ul id="zTreeList" class="ztree" style="margin-top:0; width:100%;height: 450px;overflow: auto"></ul>
+			</div>
+		</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+			<div class="layui-card-header">部门信息</div>
+			<div class="layui-card-body">
+				<form id="form1" class="layui-form" lay-filter="form1">
+				<input type="hidden" id="departId" name="departId">
+				<input type="hidden" id="orgId" name="orgId">
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">部门名称<font color="red">*</font></label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input" id="departName" name="departName" required lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">部门编码<font color="red">*</font></label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="departCode" name="departCode" required lay-verify="required">
+					</div>
+					<button type="button" class="layui-btn" onclick="checkCode()">校验唯一</button>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">上级部门</label>
+					<div class="layui-input-block">
+						<input type="hidden" class="layui-input" id="parentDepartId" name="parentId">
+						<input type="text" class="layui-input" id="parentDepartName" name="parentName" readonly="readonly" onclick="showDepartList()">
+						<p class="layui-input-static">【<a href="javascript:;" onclick="setDepartRoot()">没有上级部门</a>】</p>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">部门性质<font color="red">*</font></label>
+					<div class="layui-input-inline">
+						<select name="departType" id="departType" lay-verify="required">
+						<option value=""></option>
+						</select>
+					</div>
+					<label class="layui-form-label" for="">排序</label>
+					<div class="layui-input-inline">
+						<input type="number" class="layui-input" id="sortNum" name="sortNum" placeholder="请输入数字" lay-verify="number">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">联系人</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="contact" name="contact" maxlength="40">
+					</div>
+					<label class="layui-form-label" for="">联系电话</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="phone" name="phone" maxlength="40">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">位置</label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input" id="location" name="location" maxlength="200">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">备注</label>
+					<div class="layui-input-block">
+						<textarea class="layui-textarea" id="remark" name="remark"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for=""></label>
+					<div class="layui-input-block">
+						<button type="button" class="layui-btn layui-btn-primary" onclick="add()" id="btn_add">新增</button>
+						<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btn_save">保存</button>
+						<button type="button" class="layui-btn layui-btn-primary" onclick="del()" id="btn_del">删除</button>
+					</div>
+				</div>
+			</form>
+			</div>
+			</div>
+			<div class="layui-card">
+			<div class="layui-card-header">岗位信息</div>
+			<div class="layui-card-body">
+				<input type="hidden" id="departId" name="departId">
+				<script type="text/html" id="toolbar">
+					<button type="button" class="layui-btn layui-btn-primary" onclick="addPosition()">新增岗位</button>
+					<button type="button" class="layui-btn layui-btn-primary" onclick="delPosition()">删除岗位</button>
+				</script>
+				<table id="dataGridPosition" lay-filter="dataGridPosition"></table>
+				<script type="text/html" id="barOpt">
+					<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+					<a class="layui-btn layui-btn-xs" lay-event="user" style="background: #E6A23C">成员管理</a>
+				</script>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<!-- ztree -->
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	
+	<script type="text/javascript" src="js/departPosition_list.js"></script>
+	<script type="text/javascript" src="js/depart_list.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>用户管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">用户列表</div>
+		<div class="layui-card-body">
+			<div class="layui-card">
+		<div class="layui-card-body">
+				<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					<label class="layui-form-label" for="">用户名</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_userName">
+					</div>
+					</div>
+					<div class="layui-inline">
+					<label class="layui-form-label" for="">姓名</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_realName">
+					</div>
+					</div>
+					<div class="layui-inline">
+					<label class="layui-form-label" for="">部门</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_departName">
+					</div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for=""></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="formSearch">查询</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</form>
+			<script type="text/html" id="toolbar">
+				{{#if (configjson.GRANT.match('YHGL_02')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="add()">新增</button>
+				{{# } }}
+				{{#if (configjson.GRANT.match('YHGL_04')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+				{{# } }}
+			</script>
+			<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+			<script type="text/html" id="statusTpl">
+				{{# if(d.status == 1){ }}
+					<span class="layui-badge layui-bg-green">正常</span>
+				{{# } else { }}
+					<span class="layui-badge layui-bg-gray">禁用</span> 
+				{{# } }}
+			</script>
+			<script type="text/html" id="barOpt">
+			{{#if (configjson.GRANT.match('YHGL_03')) { }}
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			{{# } }}
+			</script>
+			</div>
+		</div>
+		</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/userInfo_list.js"></script>
+</body>
+</html>

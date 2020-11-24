@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="../../common/commonCss.js"></script>
+    <style>
+        .theme-white .list,.theme-white .list-time{
+            color: #fff;
+        }
+        .list-container{
+            height: calc(100% - 26px);
+            overflow: auto;
+        }
+        .list-box{
+            position: relative;
+            padding: 10px;
+            border-bottom:1px solid #e6e6e6;
+        }
+        .list-box::after{
+            content: "";
+            display: block;
+            height: 0;
+            clear:both;
+            visibility: hidden;
+        }
+        .pic{
+            float: left;;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+        .list{
+            float: left;
+            width: calc(100% - 2rem - 10px);
+            margin-left: 10px;
+        }
+        .list-name{
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .list-time{
+            font-size: 14px;
+            color: #999;
+        }
+        .list-content{
+            display: -webkit-box;
+            /* -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden; */
+            word-break: break-all;
+            width:100%;
+            line-height: 22px;
+            margin-bottom: 10px;
+        }
+        .list-image{
+            display: flex;
+        }
+        .img{
+            margin-left: 10px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            width: 10vw;
+            height: 10vw;
+            cursor: pointer;
+        }
+        .img-preview{
+            left: 50%!important;
+            top: 50%!important;
+            transform: translate(-50%,-50%);
+            background-color: transparent!important;
+        }
+        .img-preview .none{
+            display: none;
+        }
+        .img-preview .layui-layer-content{
+            overflow:visible;
+            height: auto!important;
+        }
+        .carousel-box{
+            position: relative;
+            color: #fff;
+            font-size: 20px;
+        }
+        .carousel-box .layui-icon-left{
+            position: absolute;
+            color: #fff;
+            top: 50%;
+            font-size: 42px;
+            transform: translate(-40px, -50%);
+        }
+        .carousel-box .layui-icon-right{
+            position: absolute;
+            color: #fff;
+            top: 50%;
+            right: 0;
+            font-size: 42px;
+            transform: translate(40px, -50%);
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+    <div id="app">
+        <div class="list-container">
+            <div v-for="(val,i) in listData" :key="i" class="list-box">
+                <div class="pic"></div>
+                <div class="list">
+                    <div class="list-name">{{val.user_name}}</div>
+                    <div class="list-time">{{val.create_time}}</div>
+                    <div class="list-content">{{val.content}}</div>
+                    <div class="list-image">
+                        <div @click="viewImg(val.files,j)" v-for="(img,j) in val.files" :key="j" :style="{'backgroundImage':'url('+img.path+')'}" class="img"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="pagation"></div>
+        <div v-show="false" id="carousel"class="carousel-box" >
+            <template v-if="images.length>1">
+                <div @click="viewNextImg('prev')" class="layui-icon layui-icon-left"></div>
+                <div @click="viewNextImg('next')"  class="layui-icon layui-icon-right"></div>
+            </template>
+            <div class="img-box"></div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript" src="../../common/commonUrl.js"></script>
+    <script type="text/javascript" src="../../common/commonJs.js"></script>
+    <script type="text/javascript" src="js/ajaxUrl.js"></script>
+    <script>
+        var laypage;
+        layui.use('laypage', function(){
+            laypage = layui.laypage;
+        });
+
+        var vm = new Vue({
+            el:"#app",
+            created() {
+                this.getList(true)
+            },
+            data:{
+                pageSize:5,
+                pageNum:1,
+                listData:[],
+                activeIndex:0,
+                images:[]
+            },
+            methods: {
+                getList(flag){
+                    $.ajax({
+                        type: 'post',
+                        url: URL_quan_list,
+                        data:{
+                            page:this.pageNum,
+                            limit:this.pageSize
+                        },
+                        dataType: 'json',
+                        success: function(res) {
+                            if (res.code == 0) {
+                                vm.listData=res.data.map(function(ele){
+                                    ele.files=eval(ele.files)
+                                    ele.create_time = dateFormat(ele.create_time,'yyyy-MM-dd HH:mm:ss')
+                                    return ele
+                                })
+                                //执行一个laypage实例
+                                if(flag){
+                                    laypage.render({
+                                    limit:vm.pageSize,
+                                    elem: 'pagation' //注意，这里的 test1 是 ID，不用加 # 号
+                                    ,count: res.count //数据总数，从服务端得到
+                                    ,jump: function(obj, first){
+                                            if(obj.curr==vm.pageNum)return;
+                                            vm.pageNum=obj.curr;
+                                            vm.getList()
+                                        }
+                                    });
+                                }
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        },
+                        error: function(err) {
+                            layer.msg("网络访问出错！");
+                        },
+                        complete: function() {
+                        }
+                    });
+                },
+                viewNextImg(params){
+                    var imgs= $('.img-box img');
+                    imgs.eq(this.activeIndex).addClass('none');
+                    if(params=='prev'){
+                        if(this.activeIndex>0){
+                            this.activeIndex--;
+                        }else{
+                            this.activeIndex=imgs.length-1
+                        }
+                    }else{
+                        if(this.activeIndex<this.images.length-1){
+                            vm.activeIndex++;
+                        }else{
+                            vm.activeIndex=0;
+                        }
+                    }
+                    imgs.eq(this.activeIndex).removeClass('none')
+                },
+                viewImg(imgs,index){
+                    vm.activeIndex=index||0;
+                    this.images=imgs;
+                    $('.img-box').empty()
+                    var imgHtml="",len=imgs.length;
+                    for(var i=0;i<len;){
+                        var img = new Image();  
+                        img.src = imgs[i].path;
+                        var height = img.height*0.2; //获取图片高度
+                        var width = img.width*0.2; //获取图片宽度
+                        if(i==this.activeIndex){
+                            imgHtml += "<img  style='width:"+width+"px;height:"+height+"' src='" + imgs[i].path + "' />"; 
+                        }else{
+                            imgHtml += "<img class='none' style='width:"+width+"px;height:"+height+"' src='" + imgs[i].path + "' />"; 
+                        } 
+                        i++; 
+                    }
+                    $('.img-box').append(imgHtml)
+                    layer.open({
+                        skin: 'img-preview',
+                        type: 1, 
+                        title : '',
+                        shadeClose : true,
+                        shade : 0.6,
+                        scrollbar: false,
+                        anim:5,
+                        area : [ 'auto', 'auto' ],
+                        content: $('#carousel'), 
+                        cancel: function () {  
+                            //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构', { time: 5000, icon: 6 });  
+                        }  
+                    }); 
+                }
+            },
+        })
+    </script>
+</body>
+</html>

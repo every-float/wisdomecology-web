@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<link href="../../scripts/ueditor/themes/default/css/ueditor.min.css" rel="stylesheet" type="text/css" />
+	<title>版本管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">编辑版本</div>
+		<div class="layui-card-body">
+		<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="versionId" name="versionId" value=""/>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">版本名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="versionName" name="versionName" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">版本号<font color='red'>*</font></label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" id="versionNo" name="versionNo" lay-verify="required">
+				</div>
+				<label class="layui-form-label" for="">app类型<font color='red'>*</font></label>
+				<div class="layui-input-inline">
+					<select id="appType" name="appType" lay-filter="appType">
+						<option value="android">安卓</option>
+						<option value="ios">苹果</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">更新摘要<br>(限100字)</label>
+				<div class="layui-input-block">
+					<textarea id="updateResume" name="updateResume" class="layui-textarea"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">更新内容</label>
+				<div class="layui-input-block">
+					<div id="ueditor" style="width: 794px; height: 200px; line-height: 20px;"></div>
+					<input type="hidden" class="form-control" id="content" name="content" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">更新地址<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="updateUrl" name="updateUrl" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">是否使用<font color='red'>*</font></label>
+				<div class="layui-input-inline">
+					<input type="radio" name="isUse" value="1" title="使用" checked>
+					<input type="radio" name="isUse" value="0" title="停用">
+				</div>
+				<label class="layui-form-label" for="">是否强制更新<font color='red'>*</font></label>
+				<div class="layui-input-inline">
+					<input type="radio" name="isForce" value="1" title="是" >
+					<input type="radio" name="isForce" value="0" title="否" checked>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">上架商店<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="hidden" id="storeOn" name="storeOn">
+					<select id="list_store" xm-select="list_store" xm-select-search xm-select-placeholder="请选择">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">备注</label>
+				<div class="layui-input-block">
+					<textarea id="remark" name="remark" class="layui-textarea"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">附件</label>
+				<div class="layui-input-block" style="width: 500px">
+					<input type="text" name="fileJson" id="fileJson" class="uploadPanel">
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<label class="layui-form-label" for=""></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="../../common/fileupload.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<!-- ue -->
+	<script type="text/javascript" src="../../scripts/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" src="../../scripts/ueditor/ueditor.all.js"></script>
+	<script type="text/javascript">
+		UE.Editor.prototype._bkGetActionUrl=UE.Editor.prototype.getActionUrl;
+		UE.Editor.prototype.getActionUrl=function(action){
+			//先传本地
+			if (action == 'uploadimage' ||action== 'uploadscrawl' || action == 'uploadfile') {
+				return baseUrl+"fileupload/uploadFileUE?useType=APP";
+			} else if(action =='uploadvideo') {
+				return baseUrl+"fileupload/uploadFileUE?useType=APP";
+			}else{
+				return this._bkGetActionUrl.call(this, action);
+			}
+		};
+		var ue = UE.getEditor('ueditor', {
+			zIndex: '0',
+			toolbars : [
+				[ 'fullscreen', 'source', '|', 'undo', 'redo', '|',
+					'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+					'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+					'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+					'directionalityltr', 'directionalityrtl', 'indent', '|',
+					'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+					'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+					'insertimage','map', 'pagebreak', 'template', '|',
+					'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+					'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+					'print', 'preview', 'searchreplace'
+				]
+			]
+		});
+	</script>
+	<script type="text/javascript">
+		var token = getUserToken();
+		//封面
+		var fu = $(document).fileupload({
+			token: token,
+			fileType: 'file',
+			fileNumLimit: 1,
+			server: baseUrl+'fileupload/uploadFile?useType=APP&dataClass=0', //数据
+			objId: 'fileJson'
+		});
+		fu.init();
+		var versionId = $.getUrlParam('versionId');
+		var form;
+		var androidarr=[{'name': '酷安', 'value': 'kuan'}];
+		var iosarr=[{'name': '苹果', 'value': 'apple'}];
+		$(function() {
+			layui.use(['form','formSelects'], function() {
+				form = layui.form;
+				//
+				form.on('select(appType)', function(data){
+					changeAppType(data.value);
+				});
+
+				initParamInfo();
+				
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function changeAppType(val){
+			if(val=='ios'){
+				layui.formSelects.data('list_store', 'local', {
+					arr: iosarr
+				});
+			}else{
+				if(val=='ios'){
+				layui.formSelects.data('list_store', 'local', {
+					arr: androidarr
+				});
+			}
+			}
+		}
+		
+		function checkForm(){
+			$('#btnSave').click();
+		}
+
+		function initParamInfo(){
+			$.ajax({
+				url : URL_appVersion_initParamInfo,
+				data : {},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// var list_store = res.data.list_store;
+						// var arr = new Array();
+						// for (var i = 0; i < list_store.length; i++) {
+						// 	arr[i] = {"name": list_store[i].name, "value": list_store[i].value};
+						// }
+						
+						layui.formSelects.render({
+							name : 'list_store'
+						});
+						
+						layui.formSelects.data('list_store', 'local', {
+							arr: androidarr
+						});
+
+						if(versionId!=null&&versionId!=''){
+							$('#versionId').val(versionId);
+							initDataInfo();
+						}
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+
+		function initDataInfo(){
+			$.ajax({
+				url : URL_appVersion_detailInfo,
+				data : {
+					versionId: versionId
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'versionId': res.data.versionId,
+							'versionName': res.data.versionName,
+							'versionNo': res.data.versionNo,
+							'isForce': res.data.isForce,
+							'appType': res.data.appType,
+							'updateResume': res.data.updateResume,
+							'content': res.data.content,
+							'updateUrl': res.data.updateUrl,
+							'isUse': res.data.isUse,
+							'storeOn': res.data.storeOn,
+							'remark': res.data.remark
+						});
+						changeAppType(res.data.appType);
+
+						var arr = new Array();
+						var urs = res.data.storeOn.split(',');
+						for (var i = 0; i < urs.length; i++) {
+							arr[i] = urs[i];
+						}
+						//赋值
+						layui.formSelects.value('list_store', arr);
+						ue.setContent(res.data.content, true);
+						var fileJson = res.data.fileJson;
+						fu.uploadPaneledCallBack('fileJson', ObjectParse(fileJson));
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		function save(){
+			$('#content').val(ue.getContent());
+			$('#storeOn').val(layui.formSelects.value('list_store', 'val'));
+			$.ajax({
+				url : URL_appVersion_save,
+				data : $('#form1').serialize(),
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

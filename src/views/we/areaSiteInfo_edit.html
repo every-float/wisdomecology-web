@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../layuiadmin/style/formSelects-v4.css" />
+		<title>区域站点信息-新增/编辑</title>
+		<style>
+			[v-cloak]{
+				display: none!important;
+			}
+			.layui-form-label{width:103px;}
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<form id="dataForm" class="layui-form" lay-filter="dataForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">监测时间</label>
+							<div class="layui-input-inline">
+								<input id="monitorTime" type="text" class="layui-input" readonly="readonly" v-model="addition.monitorTime" placeholder="请选择监测时间" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">化学需氧量COD</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.cod" />
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">氨氮</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.andan" />
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">总磷</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.zonglin" />
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">总氮</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.zongdan" />
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">高猛酸盐指数</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.gaomengsuanyan" />
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">水温</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.shuiwen" />
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">PH</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.ph" />
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">溶解氧</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.rongjieyang" />
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">浊度</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.zhuodu" />
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">电导率</label>
+								<div class="layui-input-inline">
+									<input type="text" class="layui-input" v-model="addition.diandaolv" />
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item" style="display: none">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var form, layer;
+		$(function(){
+			vm.areaId = $.getUrlParam("areaId");
+			vm.dataId = $.getUrlParam("dataId");
+			console.log(vm.areaId);
+			console.log(vm.dataId);
+			layui.use(['form', 'layer', 'laydate'], function(){
+				form = layui.form, layer = layui.layer;
+				var laydate = layui.laydate;
+
+				// 监测时间
+				laydate.render({
+					elem:"#monitorTime",
+					type:"datetime",
+					trigger:"click",
+					done:function(value, date, endDate){
+						vm.addition.monitorTime = value;
+					}
+				});
+
+				// 保存监听
+				form.on('submit(btnSave)', function(){
+					vm.saveInfo();
+					return false;
+				})
+
+				if(vm.dataId){
+					vm.getDetail();
+				}
+			})
+		});
+
+		var vm = new Vue({
+			el:"#webPage",
+			data:{
+				areaId:"",
+				dataId:"",
+				addition:{},
+			},
+			methods:{
+				getDetail:function(){
+					$.ajax({
+						type:"get",
+						url:URL_area_site_info,
+						dataType:"json",
+						data:{
+							dataId:vm.dataId
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								vm.addition = ret.data;
+								vm.addition.monitorTime = gettingTimeYYYMMddhhmmss(ret.data.monitorTime);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到详情！");
+						}
+					})
+				},
+
+				// 保存信息
+				saveInfo:function(){
+					$.ajax({
+						type:"post",
+						url:URL_area_site_save,
+						dataType:"json",
+						data:{
+							areaId:vm.areaId,
+							dataId:vm.dataId,
+							monitorTime:vm.addition.monitorTime,
+							cod:vm.addition.cod,
+							andan:vm.addition.andan,
+							zonglin:vm.addition.zonglin,
+							zongdan:vm.addition.zongdan,
+							gaomengsuanyan:vm.addition.gaomengsuanyan,
+							shuiwen:vm.addition.shuiwen,
+							ph:vm.addition.ph,
+							rongjieyang:vm.addition.rongjieyang,
+							zhuodu:vm.addition.zhuodu,
+							diandaolv:vm.addition.diandaolv
+						},
+						beforeSend:function(){
+							this.layerIndex = parent.layer.load(2,{shade:0.5});
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.layer.close(index);
+								parent.layer.msg("信息保存成功！");
+								setTimeout(function(){
+									parent.renderAreaSiteList();
+								}, 20);
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，信息保存失败！");
+						},
+						complete:function(){
+							parent.layer.close(this.layerIndex);
+						}
+					})
+				},
+
+				// 父页面调用保存
+				toSave:function(){
+					$("#btnSave").trigger("click");
+				},
+			}
+		})
+	</script>
+</html>

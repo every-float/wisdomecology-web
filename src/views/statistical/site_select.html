@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <script type="text/javascript" src="../../common/commonCss.js"></script>
+        <script type="text/javascript" src="../../common/commonUrl.js"></script>
+        <script type="text/javascript" src="../../common/commonJs.js"></script>
+        <style>
+            [v-cloak]{
+                display: none;
+            }
+        </style>
+        <title>统计</title>
+    </head>
+    <body>
+        <div id="app" v-cloak>
+            <div class="layui-fluid">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <div class="layui-btn-group">
+                            <button @click="fnSelect(item, index)" lay-event="getCheckData" v-for="(item, index) in list" :key="index" type="button" 
+                            class="layui-btn layui-btn-sm"
+                            :class="item.name==curItem.name?'layui-btn-normal':'layui-btn-primary'"
+                            >
+                                {{item.name}}
+                            </button>
+                        </div>
+
+                        <div class="layui-btn-group" style="float: right;">
+                            <button id="fnSure" type="button" class="layui-btn layui-btn-sm">
+                                确定
+                            </button>
+                        </div>
+                    </div>
+                    <div class="layui-card-header">
+                        <!-- 表格工具栏 -->
+                        <form class="layui-form toolbar">
+                            <div class="layui-form-item" style="text-align: right;">
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input name="keywords" class="layui-input" placeholder="请输入站点名称"/>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">&emsp;
+                                    <button class="layui-btn icon-btn layui-btn-sm" lay-filter="TbSearch" lay-submit>
+                                        <i class="layui-icon">&#xe615;</i>搜索
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="layui-card-body" id="tableBox">
+                        <!-- 数据表格 -->
+                        <table id="loginRecordTable" lay-filter="loginRecordTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    var insTb=null;
+    layui.use(['layer', 'form', 'admin',  'table', 'util', 'dropdown', 'laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+
+        var vm = new Vue({
+          el:"#app",
+          data:{
+              list:[],
+              curItem:{},
+              type:'checkbox',
+          },
+          methods:{
+            fnSelect:function(item, index){
+                vm.curItem=item;
+                fn_initTable();
+            },
+          }
+        });
+
+        if('初使化页面数据'){
+            console.log(admin.getLayerData().page,'page->>>>>>>>>>>')
+            vm.list=admin.getLayerData().list;
+            vm.type=admin.getLayerData().type;
+            vm.curItem=vm.list[0];
+            vm.$nextTick(function(){
+                fn_initTable();
+            });
+        }
+        
+        $('#fnSure').click(function(){
+            admin.putLayerData('optionType', 'sure');
+            admin.putLayerData('list', vm.list);
+            admin.closeThisDialog();
+        });
+
+        /* 渲染表格 */
+        function fn_initTable(){
+            var tableList=[];
+            for (var i = 0; i < vm.curItem.children.length; i++) {
+                if(vm.curItem.children[i].LAY_CHECKED){
+                    console.log(111)
+                }
+                tableList.push({
+                    "sid":vm.curItem.children[i].sid,
+                    "name":vm.curItem.children[i].name,
+                    "pid":vm.curItem.children[i].pid,
+                    "LAY_CHECKED":vm.curItem.children[i].LAY_CHECKED
+                });
+            }
+
+
+            vm.curItem.children=tableList
+            vm.$nextTick(function(){
+                insTb = table.render({
+                    elem: '#loginRecordTable',
+                    data: vm.curItem.children,
+                    page: false,
+                    limit:99999,
+                    cellMinWidth: 100,
+                    cols: [[
+                        {type: vm.type},
+                        {field: 'name', title: '站点名称'}
+                    ]]
+                });
+
+                if(vm.type=='radio'){
+                    table.on(vm.type+'(loginRecordTable)', function(obj){
+                        var list=vm.curItem.children;
+                        var sid=obj.data.sid;
+                        for (var i = 0; i < vm.list.length; i++) {
+                            console.log(vm.list[i])
+                            for (var j = 0; j < vm.list[i].children.length; j++) {
+                                vm.list[i].children[j].LAY_CHECKED=false;
+                                if(vm.list[i].children[j].sid == sid){
+                                    vm.list[i].children[j].LAY_CHECKED=true;
+                                }
+                            }
+                        }
+                    });
+                }
+
+                if(vm.type=='checkbox'){
+                    table.on(vm.type+'(loginRecordTable)', function(obj){
+                        var list=vm.curItem.children;
+                        var sid=obj.data.sid;
+                        for (var i = 0; i < list.length; i++) {
+                            if(list[i].sid == sid){
+                                list[i].LAY_CHECKED=obj.checked;
+                            }
+                        }
+
+                        if('超过20条限制'&&admin.getLayerData().page&&admin.getLayerData().page=='index_trend'){
+                            var totalCount=0;
+                            for (var i = 0; i < vm.list.length; i++) {
+                                console.log(vm.list[i])
+                                for (var j = 0; j < vm.list[i].children.length; j++) {
+                                    if(vm.list[i].children[j].LAY_CHECKED){
+                                        totalCount++;
+                                    }
+                                }
+                            }
+                            if(totalCount>20){
+                                layer.msg("最多显示20条数据");
+                            }
+                        }
+                        
+                    });
+                }
+            });
+            
+        }
+
+        /* 表格搜索 */
+        form.on('submit(TbSearch)', function (data) {
+            console.log(data.field,999)
+            var list=vm.curItem.children;
+            var keywords=data.field.keywords;
+            if(keywords!=''){
+                var new_list=[];
+                for (var i = 0; i < list.length; i++) {
+                    if(list[i].name.indexOf(keywords) != -1){
+                        new_list.push(list[i]);
+                    }
+                }
+                insTb.reload({data: new_list});
+            }else{
+                insTb.reload({data: list});
+            }
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>视频通话</title>
+    <link href="../../layuiadmin/layui/css/layui.css" rel="stylesheet" type="text/css">
+    <link href="../../layuiadmin/style/formSelects-v4.css" rel="stylesheet" type="text/css">
+    <link href="../../css/admin.css" rel="stylesheet" type="text/css">
+    <link href="../../css/main.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" href="css/materialize.min.css">
+		<link rel="stylesheet" type="text/css" href="css/common.css" />
+    <style>
+      html, body, .layui-container, .layui-row, .layui-col-md6, .layui-card{
+        height: 100%;
+      }
+      .layui-container{
+        width: 100%;
+        padding: 0px;
+      }
+      .layui-table-box{
+        overflow:auto;
+      }
+      .layui-table-box::-webkit-scrollbar {
+        height: 1px;
+      }
+      .callList .layui-card-body{
+        display: flex;
+        display: -webkit-flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: space-around;
+      }
+      .chosenUserRow{
+        display: flex;
+        display: -webkit-flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .chosenUserRow .video-grid{
+        width: 150px;
+        height: 140px;
+        line-height: 3;
+        border: 1px solid #E7E7E7;
+        border-radius: 8px;
+        background-color: #FAFAFA;
+        text-align: center;
+        padding: 10px 0;
+        position:relative;
+        box-sizing: border-box;
+      }
+      .chosenUserRow img{
+        width: 4rem;
+        height: 4rem;
+        border-radius: 100%;
+        margin: 0 auto;
+      }
+      .startVideo{
+        width: 240px;
+        margin: 0 auto;
+        border-radius: 8px;
+      }
+      .hangUp, .typeChange{
+        width: 120px;
+        margin-right: 10px;
+        border-radius: 8px;
+      }
+
+      /* 视频界面 */
+      .video-grid, .video-view, #local_stream, .remote-video-placeholder{
+        height: 100%;
+        padding:0!important;
+      }
+      .cus_interact_zoom{
+        position: absolute;
+        width: 1.2rem;
+        height: 1.2rem;
+        background: url(images/icon_full.png) no-repeat center;
+        background-size: 100% 100%;
+        top: 0.12rem;
+        right: 0.12rem;
+        cursor: pointer;
+        z-index: 9999;
+      }
+      .video-view{
+        width: 100%;
+        height: 100%;
+        position: relative!important;
+      }
+      #local_stream div{
+        /* height:120px!important; */
+        border-radius: 8px;
+      }
+      .defaultDiv{
+        position: absolute;
+        top: 25px;
+        left: 0;
+        right: 0;
+      }
+      video{
+        position:relative!important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="webPage" class="layui-container" v-cloak>
+      <form id="infoForm" class="layui-form" style="display: none;">
+        <div class="layui-form-item">
+          <label class="layui-form-label">CAMERA</label>
+          <div class="layui-input-inline">
+            <select name="cameraId" id="cameraId"></select>
+          </div>
+          <label class="layui-form-label">MICROPHONE</label>
+          <div class="layui-input-inline">
+            <select name="microphoneId" id="microphoneId"></select>
+          </div>
+        </div>
+      </form>
+      <div class="layui-row">
+        <div class="layui-col-md6">
+          <div class="layui-card userList">
+            <div class="layui-card-header">联系人列表</div>
+            <div class="layui-card-body">
+              <table id="contactList" class="layui-table" lay-filter="contactList"></table>
+            </div>
+          </div>
+        </div>
+        <div class="layui-col-md6" style="border-left:1px solid #CCC;">
+          <div class="layui-card callList">
+            <div class="layui-card-body">
+              <div class="chosenUserRow">
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('local')"></div>
+                  <div id="localView" class="video-view" style="z-index:99;">
+                    <div id="local_stream" class="video-placeholder"></div>
+                    <div id="local_video_info" class="video-profile hide"></div>
+                    <div id="video_autoplay_local" class="autoplay-fallback hide"></div>
+                  </div>
+                  <div>
+                    <div class="defaultDiv" v-if="isConnection">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ userName }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',1)"></div>
+                  <div class="video-view videoClient" id="video1"></div>
+                  <div id="video1" v-if="chosenUserList.length">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[0].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',2)"></div>
+                  <div class="video-view videoClient" id="video2" v-if="chosenUserList.length<2"></div>
+                  <div id="video2" v-if="chosenUserList.length>=2">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[1].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chosenUserRow">
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',3)"></div>
+                  <div class="video-view videoClient" id="video3" v-if="chosenUserList.length<3"></div>
+                  <div id="video3" v-if="chosenUserList.length>=3">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[2].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',4)"></div>
+                  <div class="video-view videoClient" id="video4" v-if="chosenUserList.length<4"></div>
+                  <div id="video4" v-if="chosenUserList.length>=4">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[3].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',5)"></div>
+                  <div class="video-view videoClient" id="video5" v-if="chosenUserList.length<5"></div>
+                  <div id="video5" v-if="chosenUserList.length>=5">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[4].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chosenUserRow">
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',6)"></div>
+                  <div class="video-view videoClient" id="video6" v-if="chosenUserList.length<6"></div>
+                  <div id="video6" v-if="chosenUserList.length>=6">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[5].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',7)"></div>
+                  <div class="video-view videoClient" id="video7" v-if="chosenUserList.length<7"></div>
+                  <div id="video7" v-if="chosenUserList.length>=7">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[6].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="video-grid">
+                  <div class="cus_interact_zoom" v-if="isConnection" @click="showZoomView('remote',8)"></div>
+                  <div class="video-view videoClient" id="video8" v-if="chosenUserList.length<8"></div>
+                  <div id="video8" v-if="chosenUserList.length==8">
+                    <div class="defaultDiv">
+                      <img src="images/defaultPhoto.jpg" />
+                      <p>{{ chosenUserList[7].real_name }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:center;">
+                <button type="button" class="layui-btn layui-btn-normal startVideo" onclick="startVideo()" v-if="!isConnection">开始视频</button>
+                <div class="connectionTime" v-if="isConnection">00:00</div>
+                <img src="images/addUser.png" style="width:30px;height:30px;margin-right:15px;" @click="addUser()" v-if="isConnection" />
+                <button type="button" class="layui-btn layui-btn-danger hangUp" onclick="leaveChannel()" v-if="isConnection">挂断</button>
+                <button type="button" class="layui-btn typeChange" onclick="changeType()" v-if="isConnection">音视频切换</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+	<script src="../../common/commonUrl.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../common/commonJs.js" type="text/javascript" charset="utf-8"></script>
+	<!-- 视频通话 -->
+	<script src="js/materialize.min.js" type="text/javascript"></script>
+	<script src="js/AgoraRTCSDK-3.1.1.js" type="text/javascript"></script>
+	<script src="js/phoneCall.js" type="text/javascript"></script>
+</html>

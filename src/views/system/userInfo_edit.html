@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<link rel="stylesheet" href="../../scripts/ztree/bootstrapStyle/bootstrapStyle.css" type="text/css">
+	<title>用户管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-header">用户信息</div>
+		<div class="layui-card-body">
+			<blockquote class="layui-elem-quote">初始创建用户密码如不填写，默认为123456</blockquote>
+		<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="userId" name="userId"/>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">真实姓名<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="realName" name="realName" required lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">用户名<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="userName" name="userName" autocomplete="off" required lay-verify="required">
+					</div>
+					<label class="layui-form-label" for="">性别</label>
+					<div class="layui-input-inline">
+						<input type="radio" name="sex" value="男" title="男" checked>
+						<input type="radio" name="sex" value="女" title="女">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">组织<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<select class="layui-input" id="orgId" name="orgId" lay-filter="orgId" lay-verify="required" lay-search>
+							<option value="">---请选择组织---</option>
+						</select>
+					</div>
+					<label class="layui-form-label" for="">所属部门<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<input type="hidden" id="departId" name="departId">
+						<input type="text" class="layui-input" id="departName" name="departName" onclick="showDeptList()">
+						<div id="deptList" style="margin-top: -1px;background:#fff;border:1px solid #c9c9c9;display: none; position: absolute;z-index: 999"> 
+							<ul id="deptTreeList" class="ztree" style="width: 300px;max-height: 380px;overflow: auto;"></ul> 
+						</div>
+					</div>
+					</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">权限角色</label>
+					<div class="layui-input-block">
+						<div id="userRole" class="xm-select-demo"></div>
+<!--						<input type="hidden" id="userRole" name="userRole">-->
+<!--						<select id="list_role" xm-select="roles" xm-select-search xm-select-placeholder="请选择">-->
+<!--						</select>-->
+					</div>
+				</div>
+<!--				<div class="layui-form-item">-->
+<!--					<label class="layui-form-label" for="">App角色</label>-->
+<!--					<div class="layui-input-block">-->
+<!--						<div id="appuserRole" class="xm-select-demo"></div>-->
+<!--&lt;!&ndash;						<input type="hidden" id="appuserRole" name="appuserRole">&ndash;&gt;-->
+<!--&lt;!&ndash;						<select xm-select="approles" xm-select-search xm-select-placeholder="请选择">&ndash;&gt;-->
+<!--&lt;!&ndash;						</select>&ndash;&gt;-->
+<!--					</div>-->
+<!--				</div>-->
+				<div class="layui-form-item">
+
+					<label class="layui-form-label" for="">状态<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<select name="status" lay-verify="required">
+							<option value=""></option>
+							<option value="1" selected="selected">正常</option>
+							<option value="-1">禁用</option>
+						</select>
+					</div>
+					<label class="layui-form-label" for="">用户类型<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<select id="userType" name="userType" lay-verify="required">
+							<option value=""></option>
+							<option value="1" selected>普通用户</option>
+							<option value="2">虚拟用户</option>
+						</select>
+					</div>
+					<div class="layui-form-mid layui-word-aux"><i class="layui-icon layui-icon-tips" id="ut" onclick="showTip()"></i></div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">手机</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="phone" name="phone"/>
+					</div>
+					<label class="layui-form-label" for="">邮箱</label>
+					<div class="layui-input-inline">
+						<input type="email" class="layui-input" id="email" name="email"/>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">密码</label>
+					<div class="layui-input-inline">
+						<input type="password" class="layui-input" id="password" name="password" autocomplete="off" lay-verify="password" placeholder="请输入密码" >
+					</div>
+					<label class="layui-form-label" for="">确认密码</label>
+					<div class="layui-input-inline">
+						<input type="password" class="layui-input" id="passwordConfirm" name="passwordConfirm" autocomplete="off" lay-verify="passwordConfirm" placeholder="请输入密码" >
+					</div>
+				</div>
+
+			<div class="layui-form-item" style="display: none">
+				<label class="control-label col-md-2" for=""></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="js/userInfo_edit.js"></script>
+</body>
+</html>

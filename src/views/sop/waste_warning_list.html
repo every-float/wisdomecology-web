@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>废气/废水 超标统计</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<style>
+			html, body{height:100%;overflow:hidden;}
+			.layui-tab{background:#FFF;padding:0 10px;}
+			.layui-form-label{width:35px;}
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-tab  layui-tab-brief" lay-filter="wasteType">
+				<ul class="layui-tab-title">
+					<li class="layui-this">废气</li>
+					<li>废水</li>
+				</ul>
+				<div class="layui-tab-content">
+					<form class="layui-form" lay-filter="search-form">
+						<div class="layui-form-item" style="margin:0;">
+							<div class="layui-inline">
+								<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+								<div class="layui-input-inline">
+									<input type="text" id="monitorTime" v-model="monitorTime" class="layui-input" placeholder="请选择时间" readonly="readonly" lay-verify="required" />
+								</div>
+							</div>
+							<div class="layui-inline" style="width:60px;">
+								<div class="layui-input-inline">
+									<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div class="layui-tab-item layui-show">
+						<table id="wasteGasList" lay-filter="wasteGasList" class="layui-table"></table>
+					</div>
+					<div class="layui-tab-item">
+						<table id="wasteWaterList" lay-filter="wasteWaterList" class="layui-table"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var wasteGasList, wasteWaterList;
+        $(function(){
+			$("#webPage").height($("body").height()-30);
+			vm.tableHeight = $("#webPage").height() - 156;
+			window.onresize = function(){
+				$("#webPage").height($("body").height()-30);
+				vm.tableHeight = $("#webPage").height() - 156;
+				if(vm.wasteType == "fq"){
+					vm.renderGasDataList();
+				}else{
+					vm.renderWaterDataList();
+				}
+			}
+
+            layui.use(['element', 'table', 'form', 'layer', 'laydate'], function(){
+				var element = layui.element;
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				
+				layui.laydate.render({
+					elem:'#monitorTime',
+					value:getOneWeek().previousTime +" ~ "+getOneWeek().currentTime,
+					trigger:'click',
+					range:"~",
+                    done:function(value, date, endDate){
+						vm.monitorTime = value;
+                    }
+				})
+
+				vm.getGasDataList();
+				vm.getWaterDataList();
+
+				element.on("tab(wasteType)", function(data){
+					if(data.index == 0){
+						vm.wasteType = "fq";
+						vm.renderGasDataList();
+					}else{
+						vm.wasteType = "fs";
+						vm.renderWaterDataList();
+					}
+				})
+				
+				// 查询监听
+				form.on('submit(toSearch)', function(){
+					if(vm.wasteType == "fq"){
+						vm.renderGasDataList();
+					}else{
+						vm.renderWaterDataList();
+					}
+					return false;
+				})
+            })
+		});
+
+		var vm = new Vue({
+			el:"#webPage",
+			data:{
+				wasteType:"fq",
+				monitorTime:getOneWeek().previousTime +" ~ "+getOneWeek().currentTime,		// 查询时间
+				tableHeight:0
+			},
+			methods:{
+				// 废气统计列表
+				getGasDataList:function(){
+					var index = layer.load(2,{shade:0.6});
+					wasteGasList = table.render({
+						elem: '#wasteGasList',
+						url: URL_waste_gas_beyond_index,
+						height:vm.tableHeight,
+						page: false,
+						where:{
+							startDate:vm.monitorTime.split("~")[0].replace(" ", ""),
+							endDate:vm.monitorTime.split("~")[1].replace(" ", "")
+						},
+						toolbar: false,
+						defaultToolbar: false,
+						cols: [[
+							{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+								return d.LAY_TABLE_INDEX+1;
+							}},
+							{field:'PSName', title: '污染源名称', minWidth:180, align: 'center'},
+							{field:'OutputName', title: '监控点名称', width:150, align: 'center'},
+							{field:'PollutantName', title: '污染物名称', width:150, align: 'center'},
+							{field:'StandardValue', title: '标准值', width:140, align:'center'},
+							{field:'ConcenAlarmLowerLimit', title: '预警下限值', width:140, align:'center'},
+							{field:'ConcenAlarmUpperLimit', title: '预警上限值', width:140, align:'center'}
+						]],
+						done:function(){
+							layer.closeAll("loading");
+						}
+					})
+				},
+				renderGasDataList:function(){
+					wasteGasList.reload({
+						height:vm.tableHeight,
+						where:{
+							startDate:vm.monitorTime.split("~")[0].replace(" ", ""),
+							endDate:vm.monitorTime.split("~")[1].replace(" ", "")
+						}
+					});
+				},
+
+				// 废水统计列表
+				getWaterDataList:function(){
+					var index = layer.load(2,{shade:0.6});
+					wasteWaterList = table.render({
+						elem: '#wasteWaterList',
+						url: URL_waste_water_beyond_index,
+						height:vm.tableHeight,
+						page: false,
+						where:{
+							startDate:vm.monitorTime.split("~")[0].replace(" ", ""),
+							endDate:vm.monitorTime.split("~")[1].replace(" ", "")
+						},
+						toolbar: false,
+						defaultToolbar: false,
+						cols: [[
+							{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+								return d.LAY_TABLE_INDEX+1;
+							}},
+							{field:'PSName', title: '污染源名称', minWidth:240, align: 'center'},
+							{field:'OutputName', title: '监控点名称', width:150, align: 'center'},
+							{field:'PollutantName', title: '污染物名称', width:150, align: 'center'},
+							{field:'StandardValue', title: '监测值', width:140, align:'center'},
+							{field:'ConcenAlarmLowerLimit', title: '预警下限值', width:140, align:'center'},
+							{field:'ConcenAlarmUpperLimit', title: '预警上限值', width:140, align:'center'},
+							{field:'cnt_cb', title: '疑似条数', width:110, align:'center'}
+						]],
+						done:function(){
+							layer.closeAll("loading");
+						}
+					})
+				},
+				renderWaterDataList:function(){
+					wasteWaterList.reload({
+						height:vm.tableHeight,
+						where:{
+							startDate:vm.monitorTime.split("~")[0].replace(" ", ""),
+							endDate:vm.monitorTime.split("~")[1].replace(" ", "")
+						}
+					});
+				},
+			}
+		})
+
+		// 获取以当前时间为截止时间的一个星期的时间段
+		function getOneWeek(){
+			var currentTime = new Date().getTime();
+			var previousTime = currentTime - 24*60*60*1000*6;
+			var weekTime = {
+				"previousTime":gettingTime(previousTime).split(" ")[0],
+				"currentTime":gettingTime(currentTime).split(" ")[0]
+			}
+			return weekTime;
+		}
+	</script>
+</html>

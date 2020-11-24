@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>河道闸口信息管理</title>
+	<style>
+		.layui-form-label{
+			width: 140px;
+		}
+	</style>
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-header">闸口信息</div>
+		<div class="layui-card-body">
+			<form id="form1" class="layui-form" lay-filter="form1">
+				<input type="hidden" id="gateId" name="gateId"/>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">所属区域<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<input type="hidden" id="areaName" name="areaName"/>
+						<select class="layui-input" id="areaId" name="areaId" lay-filter="areaId" lay-verify="required" lay-search>
+						</select>
+					</div>
+					<label class="layui-form-label" for="">入河排污（水）<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="intoRiver" name="intoRiver" lay-verify="required"/>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">排入水体名称<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="waterName" name="waterName" lay-verify="required"/>
+					</div>
+					<label class="layui-form-label" for="">闸口分类<font color='red'>*</font></label>
+					<div class="layui-input-inline">
+						<select class="layui-input" id="gateType" name="gateType" lay-filter="gateType" lay-verify="required" lay-search>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">河长姓名</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="riverLeaderName" name="riverLeaderName" />
+					</div>
+					<label class="layui-form-label" for="">河长电话</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="riverLeaderPhone" name="riverLeaderPhone" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">选择位置:</label>
+					<div class="layui-input-block">
+						<button type="button" class="layui-btn layui-btn-sm" onclick="getLocation()"><i class="layui-icon"></i>打开地图</button><br>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">gps经度</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="gpsLng" name="gpsLng" />
+					</div>	
+					<label class="layui-form-label" for="">gps纬度</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="gpsLat" name="gpsLat" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">百度经度</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="baiduLng" name="baiduLng" autocomplete="off" readonly="readonly" style="cursor:no-drop;" />
+					</div>
+					<label class="layui-form-label" for="">百度纬度</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="baiduLat" name="baiduLat" autocomplete="off" readonly="readonly" style="cursor:no-drop;" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">岸别</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="shore" name="shore" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">入河方式</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="intoWay" name="intoWay" autocomplete="off" />
+					</div>
+				</div>	
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">入河排污（水）口类型</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="intoType" name="intoType" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">收水范围</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="receivingRange" name="receivingRange" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">覆盖管网</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="overlayPipe" name="overlayPipe" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">责任主体</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="legalDuty" name="legalDuty" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">治理计划</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="governancePlan" name="governancePlan" autocomplete="off" />
+					</div>
+					<label class="layui-form-label" for="">是否计划封堵</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="pluggingFlag" name="pluggingFlag" autocomplete="off" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">详细地址</label>
+					<div class="layui-input-inline">
+						<textarea style="height: 100px;width:560px;" id="address" name="address" placeholder="请输入内容" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">备注</label>
+					<div class="layui-input-inline">
+						<textarea style="height: 100px;width:560px;" id="remark" name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<!-- <fieldset class="layui-elem-field layui-field-title"> -->
+					<!-- <legend>排污口照片</legend> -->
+					<!-- <div class="layui-field-box"> -->
+						<div class="layui-form-item">
+							<label class="layui-form-label" for="">附件</label>
+							<div class="layui-input-inline" style="width: 500px">
+								<input type="text" name="filesOutfall" id="filesOutfall" class="uploadPanel">
+								<span>提示：最多上传<strong style="color: red">10</strong>个附件</span>
+							</div>
+						</div>
+					<!-- </div> -->
+				<!-- </fieldset> -->
+				<div class="layui-form-item" style="display: none">
+					<label class="control-label col-md-2" for=""></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../common/fileupload.js"></script>
+	<script>
+		var token = getUserToken();
+		//环评审批
+		var fu = $(document).fileupload({
+			token: token,
+			fileType: 'files',
+			fileNumLimit: 10,
+			server: baseUrl+'fileupload/uploadFile?useType=HDZK&dataClass=1', //数据
+			objId: 'filesOutfall'
+		});
+		fu.init();
+	
+	</script>
+	<script type="text/javascript" src="js/weGateInfo_edit.js"></script>
+</body>
+</html>

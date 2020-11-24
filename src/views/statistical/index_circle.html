@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+        <style>
+            .icon {
+              width: 1em;
+              height: 1em;
+              vertical-align: -0.15em;
+              fill: currentColor;
+              overflow: hidden;
+            }
+            .layui-form-label{
+                width: auto;
+            }
+        </style>
+		<title>统计</title>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="layui-fluid">
+			    <div class="layui-card">
+			        <div class="layui-card-body">
+			            <!-- 表格工具栏 -->
+			            <form class="layui-form toolbar">
+			                <div class="layui-form-item">
+                                <div class="layui-inline" style="width:100px;">
+                                    <div class="layui-input-inline" style="width: 100%;">
+                                        <select name="dateType" lay-filter="dateType">
+                                            <option value="day">日</option>
+                                            <option value="week">周</option>
+                                            <option value="month">月</option>
+                                        </select>
+                                    </div>
+                                </div>
+			                    <div class="layui-inline">
+			                        <label class="layui-form-label">时间:</label>
+			                        <div class="layui-input-inline">
+			                            <input v-show="dateType=='day'" name="time_day" class="layui-input icon-date" placeholder="选择时间"/>
+                                        <input v-show="dateType=='week'" name="time_week" class="layui-input icon-date" placeholder="选择时间"/>
+                                        <input v-show="dateType=='month'" name="time_month" class="layui-input icon-date" placeholder="选择时间"/>
+			                        </div>
+			                    </div>
+			                    <div class="layui-inline" style="width:100px;">
+			                        <div class="layui-input-inline" style="width:100%;">
+			                            <select name="ratioType" lay-filter="ratioType">
+		                                    <option value="month">环比</option>
+                                            <option value="year">同比</option>
+		                                </select>
+			                        </div>
+			                    </div>
+								<div class="layui-inline">
+			                        <div class="layui-input-inline">
+			                            <span id="dialogBtn13" class="layui-btn layui-btn-primary icon-btn">
+		                                    &nbsp;站点 <i class="layui-icon layui-icon-drop"></i>
+		                                </span>
+			                        </div>
+			                    </div>
+			                    <div class="layui-inline">&emsp;
+			                        <a class="layui-btn icon-btn" lay-filter="loginRecordTbSearch" lay-submit>
+			                            <i class="layui-icon">&#xe615;</i>搜索
+			                        </a>
+                                    <a class="layui-btn icon-btn" onclick="exportExtendDemo()">
+                                        <i class="layui-icon">&#xe615;</i>导出
+                                    </a>
+			                    </div>
+			                </div>
+			            </form>
+
+			            <!-- 数据表格 -->
+			            <table id="loginRecordTable" lay-filter="loginRecordTable"></table>
+			        </div>
+			    </div>
+			</div>
+		</div>
+
+        <script type="text/html" id="compositeIndexTpl">
+            {{# if(d.compositeIndex*1 && d.preCompositeIndex*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preCompositeIndex}}" class="layui-table-link">
+                        {{d.js_compositeIndex?d.js_compositeIndex+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_compositeIndex_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="pm10Tpl">
+            {{# if(d.pm10*1 && d.prePm10*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.prePm10}}" class="layui-table-link">
+                        {{d.js_pm10?d.js_pm10+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_pm10_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="pm25Tpl">
+            {{# if(d.pm25*1 && d.prePm25*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.prePm25}}" class="layui-table-link">
+                        {{d.js_pm25?d.js_pm25+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_pm25_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="so2Tpl">
+            {{# if(d.so2*1 && d.preSo2*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preSo2}}" class="layui-table-link">
+                        {{d.js_so2?d.js_so2+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_so2_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="no2Tpl">
+            {{# if(d.no2*1 && d.preNo2*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preNo2}}" class="layui-table-link">
+                        {{d.js_no2?d.js_no2+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_no2_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="coTpl">
+            {{# if(d.co*1 && d.preCo*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preCo}}" class="layui-table-link">
+                        {{d.js_co?d.js_co+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_co_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="o3Tpl">
+            {{# if(d.o3*1 && d.preO3*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preO3}}" class="layui-table-link">
+                        {{d.js_o3?d.js_o3+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_o3_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="o38hTpl">
+            {{# if(d.o38h*1 && d.preO38h*1 ){ }}
+                <div>
+                    <a href="javascript:;" title="{{d.preO38h}}" class="layui-table-link">
+                        {{d.js_o38h?d.js_o38h+"%":""}}
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-{{d.js_o38h_icon}}"></use>
+                        </svg>
+                    </a>
+                </div>
+            {{#  } }}
+        </script>
+	</body>
+</html>
+<script>
+    if('vue'){
+    	var vm = new Vue({
+	      el:"#app",
+	      data:{
+			list:[],
+			index_list:[],
+
+            time_day:'',
+            time_week:'',
+            time_month:'',
+            dateType:'day',
+            time:'',
+            ratioType:'month',
+
+            excelData:[]
+	      },
+	    });
+    }
+	var insTb=null;
+    layui.use(['layer', 'form', 'admin',  'table', 'util', 'dropdown', 'laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+
+        var curDate = new Date();
+        var preDay = new Date(curDate.getTime() - 24*60*60*1000); //前一天
+        
+        vm.time_day=dateFormat(preDay, 'yyyy-MM-dd');
+        vm.time_week=dateFormat(new Date(), 'yyyy-MM-dd');
+        vm.time_month=dateFormat(new Date(), 'yyyy-MM');
+        laydate.render({
+            elem: 'input[name="time_day"]',
+            type: 'date',
+            value: preDay,
+            done: function(value, date, endDate){
+                vm.time_day=value;
+            }
+        });
+        laydate.render({
+            elem: 'input[name="time_week"]',
+            type: 'date',
+            value: new Date(),
+            done: function(value, date, endDate){
+                vm.time_week=value;
+            }
+        });
+        laydate.render({
+            elem: 'input[name="time_month"]',
+            type: 'month',
+            value: new Date(),
+            done: function(value, date, endDate){
+                vm.time_month=value;
+            }
+        });
+
+        form.on('select(dateType)', function(data){
+             vm.dateType=data.value;
+        })
+
+        form.on('select(ratioType)', function(data){
+             vm.ratioType=data.value;
+        })
+
+        axios.all([fnGetSiteList(), fnGetIndexList()])
+            .then(axios.spread(function(res1, res2) {
+            	if(res1.status==200){
+            		vm.index_list=res1.data;
+            	}
+            	if(res2.status==200){
+            		var site_list=res2.data;
+            		for (var i = 0; i < site_list.length; i++) {
+	        	        if(site_list[i].pid==0){
+	        	            vm.list.push(site_list[i]);
+	        	        }
+	        	    }
+	        	    for (var i = 0; i < vm.list.length; i++) {
+	        	        var children=[];
+	        	        for (var j = 0; j < site_list.length; j++) {
+	        	            if(vm.list[i].sid==site_list[j].pid){
+	        	                var item=site_list[j];
+	        	                if(i==0){
+	        	                	item.LAY_CHECKED=true;
+	        	                }else{
+	        	                	item.LAY_CHECKED=false;
+	        	                }
+	        	                children.push(item);
+	        	            }
+	        	        }
+	        	        vm.list[i]['children']=children;
+	        	    }
+            	}
+	            vm.$nextTick(function(){
+	            	form.render();
+	               	fn_getData();
+	            });
+            })
+        );
+
+        function fn_getData(){
+            if('准备查询参数'){
+                var ids=[];
+                for (var i = 0; i < vm.list.length; i++) {
+                    var itemI=vm.list[i];
+                    for (var j = 0; j < itemI['children'].length; j++) {
+                        var itemJ=itemI['children'][j];
+                        if(itemJ.LAY_CHECKED){
+                            ids.push(itemJ.sid);
+                        }
+                    }
+                }
+            }
+            switch (vm.dateType) {
+                case 'day':
+                    vm.time=vm.time_day;
+                    break;
+                case 'week':
+                    vm.time=vm.time_week;
+                    break;
+                case 'month':
+                    vm.time=vm.time_month;
+                    break;
+            }
+            let param = new URLSearchParams()
+            param.append('ids', ids.join(','));
+            param.append('dateType', vm.dateType);
+            param.append('time', vm.time);
+            param.append('ratioType', vm.ratioType);
+            axios({
+                method: 'post',
+                url: baseUrl + 'dq/statistic/statisticRatioTable',
+                headers: {
+                    'Authorization': 'Bearer ' + $.cookie('login_sid_t_we'),
+                },
+                data: param
+            }).then(function(res) {
+                if ( res.data.code == 0 ) {
+                    fn_initTable(res.data.data);
+                }
+            });
+        }
+
+        function fnGetSiteList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getIndex',
+            });
+        }
+
+        function fnGetIndexList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getPointTree',
+            });
+        }
+
+        /* 渲染表格 */
+        function fn_initTable(list){
+            $.each(list,function(index,value){
+                 if(value.compositeIndex*1 && value.preCompositeIndex*1){
+                    list[index].js_compositeIndex=(((value.compositeIndex*1-value.preCompositeIndex*1)/value.preCompositeIndex*1)*100).toFixed(2);
+                    if(list[index].js_compositeIndex>0){
+                        list[index].js_compositeIndex_icon='shang';
+                    }
+                    if(list[index].js_compositeIndex==0){
+                        list[index].js_compositeIndex_icon='shang';
+                    }
+                    if(list[index].js_compositeIndex<0){
+                        list[index].js_compositeIndex_icon='down';
+                    }
+                 }
+                 if(value.pm10*1 && value.prePm10*1){
+                    list[index].js_pm10=(((value.pm10*1-value.prePm10*1)/value.prePm10*1)*100).toFixed(2);
+                    if(list[index].js_pm10>0){
+                        list[index].js_pm10_icon='shang';
+                    }
+                    if(list[index].js_pm10==0){
+                        list[index].js_pm10_icon='shang';
+                    }
+                    if(list[index].js_pm10<0){
+                        list[index].js_pm10_icon='down';
+                    }
+                 }
+                 if(value.pm25*1 && value.prePm25*1){
+                    list[index].js_pm25=(((value.pm25*1-value.prePm25*1)/value.prePm25*1)*100).toFixed(2);
+                    if(list[index].js_pm25>0){
+                        list[index].js_pm25_icon='shang';
+                    }
+                    if(list[index].js_pm25==0){
+                        list[index].js_pm25_icon='shang';
+                    }
+                    if(list[index].js_pm25<0){
+                        list[index].js_pm25_icon='down';
+                    }
+                 }
+                 if(value.so2*1 && value.preSo2*1){
+                    list[index].js_so2=(((value.so2*1-value.preSo2*1)/value.preSo2*1)*100).toFixed(2);
+                    if(list[index].js_so2>0){
+                        list[index].js_so2_icon='shang';
+                    }
+                    if(list[index].js_so2==0){
+                        list[index].js_so2_icon='shang';
+                    }
+                    if(list[index].js_so2<0){
+                        list[index].js_so2_icon='down';
+                    }
+                 }
+                 if(value.no2*1 && value.preNo2*1){
+                    list[index].js_no2=(((value.no2*1-value.preNo2*1)/value.preNo2*1)*100).toFixed(2);
+                    if(list[index].js_no2>0){
+                        list[index].js_no2_icon='shang';
+                    }
+                    if(list[index].js_no2==0){
+                        list[index].js_no2_icon='shang';
+                    }
+                    if(list[index].js_no2<0){
+                        list[index].js_no2_icon='down';
+                    }
+                 }
+                 if(value.co*1 && value.preCo*1){
+                    list[index].js_co=(((value.co*1-value.preCo*1)/value.preCo*1)*100).toFixed(2);
+                    if(list[index].js_co>0){
+                        list[index].js_co_icon='shang';
+                    }
+                    if(list[index].js_co==0){
+                        list[index].js_co_icon='shang';
+                    }
+                    if(list[index].js_co<0){
+                        list[index].js_co_icon='down';
+                    }
+                 }
+                 if(value.o3*1 && value.preO3*1){
+                    list[index].js_o3=(((value.o3*1-value.preO3*1)/value.preO3*1)*100).toFixed(2);
+                    if(list[index].js_o3>0){
+                        list[index].js_o3_icon='shang';
+                    }
+                    if(list[index].js_o3==0){
+                        list[index].js_o3_icon='shang';
+                    }
+                    if(list[index].js_o3<0){
+                        list[index].js_o3_icon='down';
+                    }
+                 }
+                 if(value.o38h*1 && value.preO38h*1){
+                    list[index].js_o38h=(((value.o38h*1-value.preO38h*1)/value.preO38h*1)*100).toFixed(2);
+                    if(list[index].js_o38h>0){
+                        list[index].js_o38h_icon='shang';
+                    }
+                    if(list[index].js_o38h==0){
+                        list[index].js_o38h_icon='shang';
+                    }
+                    if(list[index].js_o38h<0){
+                        list[index].js_o38h_icon='down';
+                    }
+                 }
+            });
+
+            console.log(list)
+            vm.excelData=list;
+        	insTb = table.render({
+        	    elem: '#loginRecordTable',
+                data:list,
+        	    page: false,
+        	    limit:99999,
+        	    cellMinWidth: 150,
+                height: 'full-100',
+        	    cols: [
+                    [
+                        {type: 'numbers', title: '序号', rowspan: 2, fixed: 'left'},
+                        {field: 'name', title: '检测位点', align: 'center', sort: true, rowspan: 2, fixed: 'left'},
+
+                        {title: '综合指数', align: 'center', colspan: 2},
+                        {title: 'PM10', align: 'center', colspan: 2},
+                        {title: 'PM2.5', align: 'center', colspan: 2},
+                        {title: 'SO2', align: 'center', colspan: 2},
+                        {title: 'NO2', align: 'center', colspan: 2},
+                        {title: 'CO', align: 'center', colspan: 2},
+                        {title: 'O3', align: 'center', colspan: 2},
+                        {title: 'O38H', align: 'center', colspan: 2},
+                        {title: '优良天', align: 'center', colspan: 2}
+                    ],
+                    [
+                        // 综合指数
+                        {field: 'compositeIndex', title: '指数', align: 'center', sort: true},
+                        {field: 'js_compositeIndex', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#compositeIndexTpl"},
+
+                        //PM10
+                        {field: 'pm10', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_pm10', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#pm10Tpl"},
+
+                        //PM2.5
+                        {field: 'pm25', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_pm25', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#pm25Tpl"},
+
+                        //SO2
+                        {field: 'so2', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_so2', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#so2Tpl"},
+
+                        //NO2
+                        {field: 'no2', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_no2', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#no2Tpl"},
+
+                        //CO
+                        {field: 'co', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_co', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#coTpl"},
+
+                        //O3
+                        {field: 'o3', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_o3', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#o3Tpl"},
+
+                        //O38H
+                        {field: 'o38h', title: '浓度', align: 'center', sort: true},
+                        {field: 'js_o38h', title: vm.ratioType=='month'?'环比':'同比', align: 'center', sort: true, templet: "#o38hTpl"},
+                    ]
+                ]
+        	});
+        }
+
+        
+
+        /* 表格搜索 */
+        form.on('submit(loginRecordTbSearch)', function (data) {
+    		if('准备查询参数'){
+    			var ids=[];
+    			for (var i = 0; i < vm.list.length; i++) {
+    				var itemI=vm.list[i];
+    	            for (var j = 0; j < itemI['children'].length; j++) {
+    	            	var itemJ=itemI['children'][j];
+    	                if(itemJ.LAY_CHECKED){
+    	                    ids.push(itemJ.sid);
+    	                }
+    	            }
+    	        }
+    		}
+
+            fn_getData();
+            return false;
+        });
+
+        // iframe形式弹窗传值
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.open({
+                type: 2,
+                title: '站点选择',
+                content: 'site_select.html',
+                area: ['800px', '90%'],
+                fixed: true,
+                offset: 'auto',
+                data: {
+                    list:vm.list,
+                    type:'checkbox'
+                },
+                end: function () {  // 监听弹窗关闭
+                    if (admin.getLayerData(layIndex, 'list')) {  // 判断表单操作成功标识
+                    	vm.list=admin.getLayerData(layIndex, 'list');
+                		if('准备查询参数'){
+                			var ids=[];
+                			for (var i = 0; i < vm.list.length; i++) {
+                				var itemI=vm.list[i];
+                	            for (var j = 0; j < itemI['children'].length; j++) {
+                	            	var itemJ=itemI['children'][j];
+                	                if(itemJ.LAY_CHECKED){
+                	                    ids.push(itemJ.sid);
+                	                }
+                	            }
+                	        }
+                		}
+                        insTb.reload({
+                        	where: {
+			        	    	ids:ids.join(','),
+			        	    	time:'2020-07-06',
+			        	    	index:vm.index_list[0].value
+			        	    }, 
+			        	});
+                    }
+                }
+            });
+        });
+    });
+
+
+/**
+ * 导出复杂表头数据问题
+ * @return {[type]} [description]
+ */
+function exportExtendDemo() {
+  layui.use(['excel'], function () {
+    var excel = layui.excel
+    var data = [
+      {
+        sortNo: {
+          v: '序号', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        name: {
+          v: '监测点位', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        compositeIndex: {
+          v: '综合指数', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_compositeIndex: '', js_compositeIndex_icon: '', 
+        pm10: {
+          v: 'PM10', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_pm10: '', js_pm10_icon: '',
+        pm25: {
+          v: 'PM25', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_pm25: '', js_pm25_icon: '',
+        so2: {
+          v: 'SO2', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_so2: '', js_so2_icon: '',
+        no2: {
+          v: 'NO2', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_no2: '', js_no2_icon: '',
+        co: {
+          v: 'CO', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_co: '', js_co_icon: '',
+        o3: {
+          v: 'O3', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_o3: '', js_o3_icon: '',
+        o38h: {
+          v: 'O38H', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_o38h: '', js_o38h_icon: '',
+      },// 被合并的列数据也需要填充上
+      {
+        sortNo: '', name: '', 
+        compositeIndex: {
+          v: '指数', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_compositeIndex: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_compositeIndex_icon: '', 
+        pm10: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_pm10: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_pm10_icon: '',
+        pm25: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_pm25: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_pm25_icon: '',
+        so2: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_so2: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_so2_icon: '',
+        no2: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_no2: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_no2_icon: '',
+        co: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_co: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_co_icon: '',
+        o3: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_o3: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_o3_icon: '',
+        o38h: {
+          v: '浓度', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, 
+        js_o38h: {
+          v: '同比', 
+          s: {
+            alignment: {
+              horizontal: 'center',
+              vertical: 'center'
+            }
+          }
+        }, js_o38h_icon: '',
+      }
+    ]
+
+    var shangColor='e62727';
+    var downColor='82D320';
+    var fontSize = 14;
+    var fontWeight = 'bold';
+    vm.excelData.forEach( function(element, index) {
+        console.log(element)
+        data.push({
+            sortNo: {
+              v: index+1, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            name: {
+              v: element.name, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            compositeIndex: {
+              v: element.compositeIndex,
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_compositeIndex: {
+              v: element.js_compositeIndex!=undefined?element.js_compositeIndex+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_compositeIndex_icon: {
+              v: element.js_compositeIndex==undefined?'':(element.js_compositeIndex_icon=='shang'?'↑':'↓'),
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            }, 
+            pm10: {
+              v: element.pm10, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_pm10: {
+              v: element.js_pm10!=undefined?element.js_pm10+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_pm10_icon: {
+              v: element.js_pm10==undefined?'':(element.js_pm10_icon=='shang'?'↑':'↓'), 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+            pm25: {
+              v: element.pm25, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_pm25: {
+              v: element.js_pm25!=undefined?element.js_pm25+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_pm25_icon: {
+              v: element.js_pm25==undefined?'':(element.js_pm25_icon=='shang'?'↑':'↓'),
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+            so2: {
+              v: element.so2, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_so2: {
+              v: element.js_so2!=undefined?element.js_so2+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_so2_icon: {
+              v: element.js_so2==undefined?'':(element.js_so2_icon=='shang'?'↑':'↓'),
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+            no2: {
+              v: element.no2, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_no2: {
+              v: element.js_no2!=undefined?element.js_no2+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_no2_icon: {
+              v: element.js_no2==undefined?'':(element.js_no2_icon=='shang'?'↑':'↓'),
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+            co: {
+              v: element.co, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_co: {
+              v: element.js_co!=undefined?element.js_co+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_co_icon: {
+              v: element.js_co==undefined?'':(element.js_co_icon=='shang'?'↑':'↓'),
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+            o3: {
+              v: element.o3, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_o3: {
+              v: element.js_o3!=undefined?element.js_o3+'%':'-', 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_o3_icon: {
+              v: element.js_o3==undefined?'':(element.js_o3_icon=='shang'?'↑':'↓'),
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+            o38h: {
+              v: element.o38h, 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_o38h: {
+                v: element.js_o38h!=undefined?element.js_o38h+'%':'-',
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                }
+              }
+            }, 
+            js_o38h_icon: {
+              v: element.js_o38h==undefined?'':(element.js_o38h_icon=='shang'?'↑':'↓'), 
+              s: {
+                alignment: {
+                  horizontal: 'center',
+                  vertical: 'center'
+                },
+                font: {sz: fontSize, bold: fontWeight, color: {rgb: element.js_compositeIndex_icon=='shang'?shangColor:downColor}},
+              }
+            },
+        });
+    });
+    // 生成配置的辅助函数，返回结果作为扩展功能的配置参数传入即可
+    // 1. 复杂表头合并[B1,C1,D1][E1,F1]
+    var mergeConf = excel.makeMergeConfig([
+      ['A1', 'A2'],
+      ['B1', 'B2'],
+
+      ['C1', 'E1'],
+      ['F1', 'H1'],
+      ['I1', 'K1'],
+      ['L1', 'N1'],
+      ['O1', 'Q1'],
+      ['R1', 'T1'],
+      ['U1', 'W1'],
+      ['X1', 'Z1'],
+      ['AA1', 'AC1'],
+
+      ['D2', 'E2'],
+      ['G2', 'H2'],
+      ['J2', 'K2'],
+      ['M2', 'N2'],
+      ['P2', 'Q2'],
+      ['S2', 'T2'],
+      ['V2', 'W2'],
+      ['Y2', 'Z2'],
+      ['AB2', 'AC2'],
+    ])
+    // 2. B列宽 150，F列宽200，默认100
+    var colConf = excel.makeColConfig({
+      'B': 150,
+    }, 80)
+    // 3. 第1行行高40，第二行行高30，默认20
+    var rowConf = excel.makeRowConfig({
+      1: 20,
+      2: 20
+    }, 30)
+    
+    excel.exportExcel({
+      sheet1: data,
+    }, '站点同期对比.xlsx', 'xlsx', {
+      extend: {
+        // extend 中可以指定某个 sheet 的属性，如果不指定 sheet 则所有 sheet 套用同一套属性
+        sheet1: {
+          '!merges': mergeConf
+          , '!cols': colConf
+          , '!rows': rowConf
+        }
+      }
+    })
+  })
+}
+</script>

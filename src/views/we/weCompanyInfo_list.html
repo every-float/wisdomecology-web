@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>河道闸口信息</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+	<style>
+		/** 项目列表样式 */
+		.project-list-item {
+			background-color: #fff;
+			border: 1px solid #e8e8e8;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all .2s;
+		}
+
+		.project-list-item:hover {
+			box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+		}
+
+		.project-list-item .project-list-item-cover {
+			width: 100%;
+			height: 160px;
+			display: block;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+		}
+
+		.project-list-item-body {
+			padding: 10px;
+		}
+
+		.project-list-item .project-list-item-body > h2 {
+			font-size: 18px;
+			color: #333;
+			margin-bottom: 12px;
+		}
+
+		.project-list-item .project-list-item-text {
+			height: 44px;
+			overflow: hidden;
+			margin-bottom: 12px;
+		}
+
+		.project-list-item .project-list-item-desc {
+			position: relative;
+		}
+
+		.project-list-item .project-list-item-desc .time {
+			color: #999;
+			font-size: 12px;
+		}
+
+		.project-list-item .project-list-item-desc .ew-head-list {
+			position: absolute;
+			right: 0;
+			top: 0;
+		}
+
+		.ew-head-list .ew-head-list-item {
+			width: 22px;
+			height: 22px;
+			border-radius: 50%;
+			border: 1px solid #fff;
+			margin-left: -10px;
+		}
+
+		.ew-head-list .ew-head-list-item:first-child {
+			margin-left: 0;
+		}
+
+		/** // 项目列表样式结束 */
+	</style>
+</head>
+<body>
+<input type="hidden" id="baidu_lat" />
+<input type="hidden" id="baidu_lng" />
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">所属区域</div>
+		<div class="layui-card-body">
+			<div class="well">
+			<ul id="areaTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+			</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+			<div class="layui-card-header">重点监管企业信息</div>
+			<div class="layui-card-body">
+				<form class="layui-form">
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">企业名称</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="search_companyName">
+						</div>
+						<label class="layui-form-label" for="">企业分类</label>
+						<div class="layui-input-inline">
+							<select class="layui-input" id="companyType" name="companyType" lay-filter="companyType" lay-search>
+								<!-- <option value="">---请选择处罚单位---</option> -->
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for=""></label>
+						<div class="layui-input-inline">
+							<button class="layui-btn" lay-submit lay-filter="formSearch">查询</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+				<script type="text/html" id="toolbar">
+					<button type="button" class="layui-btn" onclick="add()">新增</button>
+					<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+				</script>
+				<table id="dataGrid" lay-filter="dataGrid"></table>
+				<script type="text/html" id="barOpt">
+					<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+					<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+				</script>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../common/commonUrl.js"></script>
+<script type="text/javascript" src="../../common/commonJs.js"></script>
+<script type="text/javascript" src="../../common/baiduMap.js"></script>
+<script type="text/javascript" src="js/ajaxurl.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="js/weCompanyInfo_list.js"></script>
+</html>

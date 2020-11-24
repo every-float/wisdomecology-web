@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>重点企业信息管理</title>
+	<style>
+		.layui-form-label{
+			width: 95px;
+		}
+	</style>
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+			<div class="layui-card-header">重点监管企业信息</div>
+			<div class="layui-card-body">
+				<form id="form1" class="layui-form" lay-filter="form1">
+					<input type="hidden" id="companyId" name="companyId"/>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">村名称<font color='red'>*</font></label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="villageName" name="villageName" lay-verify="required"/>
+						</div>
+						<label class="layui-form-label" for="">所属区域<font color='red'>*</font></label>
+						<div class="layui-input-inline">
+							<input type="hidden" id="areaName" name="areaName"/>
+							<select class="layui-input" id="areaId" name="areaId" lay-filter="areaId" lay-verify="required" lay-search>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">企业名称<font color='red'>*</font></label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="companyName" name="companyName" lay-verify="required"/>
+						</div>
+						<label class="layui-form-label" for="">企业分类<font color='red'>*</font></label>
+						<div class="layui-input-inline">
+							<select class="layui-input" id="companyType" name="companyType" lay-filter="companyType" lay-verify="required" lay-search>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">选择位置:</label>
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn layui-btn-sm" onclick="getLocation()"><i class="layui-icon"></i>打开地图</button><br>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">gps经度</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="gpsLng" name="gpsLng" />
+						</div>	
+						<label class="layui-form-label" for="">gps纬度</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="gpsLat" name="gpsLat" />
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">百度经度</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="baiduLng" name="baiduLng" autocomplete="off" readonly="readonly" style="cursor:no-drop;" />
+						</div>
+						<label class="layui-form-label" for="">百度纬度</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="baiduLat" name="baiduLat" autocomplete="off" readonly="readonly" style="cursor:no-drop;" />
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">排污情况</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="sewageDischarge" name="sewageDischarge" />
+						</div>	
+						<label class="layui-form-label" for="">任务要求</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="taskDemand" name="taskDemand" />
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" for="">进展情况</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="progress" name="progress" autocomplete="off"   >
+						</div>
+						<label class="layui-form-label" for="">相关科室</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="relevantDepartments" name="relevantDepartments" autocomplete="off"   >
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<label class="layui-form-label" for="">备注</label>
+							<div class="layui-input-inline">
+								<textarea style="height: 100px;width:515px;" id="remark" name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="layui-form-item" style="display: none">
+						<label class="control-label col-md-2" for=""></label>
+						<div class="layui-input-block">
+							<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/weCompanyInfo_edit.js"></script>
+</body>
+</html>

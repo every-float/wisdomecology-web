@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html>
+ 
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+		<script type="text/javascript" src="../../common/baiduMap.js"></script>
+		<title>综合分析</title>
+	</head>
+ 
+	<body>
+		<div id="app" v-cloak class="layui-container">
+			<div id="allmap"></div>
+			<div id="header_left">
+				<span 
+					:id="item.code"
+					v-for="(item, index) in header_left" :key="index"
+					@click="fnChangeSiteShow(item, index)" 
+					type="button" 
+					:lay-tips="item.name" 
+					lay-direction="3" 
+					class="header_left_btn" 
+					:class="item.selected?'selected':''">{{item.name}}</span>
+			</div>
+			<div id="header_right" class="layui-form">
+					<select lay-search="" lay-filter="siteFilter">
+			          <option value="">搜索</option>
+			          <option v-for="(item, index) in marker_list" :key="index" :value="item.pointName">{{item.pointName}}</option>
+			        </select>
+			</div>
+			<div id="center_left">
+					<span onclick="fnLabelStatus()" 
+							:style="{backgroundImage: (labelShow?'url(../../images/tools/icon_sitename.png)':'url(../../images/tools/icon_sitename.png)')}" 
+							type="button" 
+							lay-tips="显示/隐藏点位名称" 
+							lay-direction="3" 
+							:class="labelShow?'':'selected'"
+							class="header_left_btn">
+					</span>
+					<hr>
+				    <span onclick="fnZoomPlus()" 
+						    :style="{backgroundImage: 'url(../../images/tools/icon_fangda.png)'}" 
+						    type="button" 
+						    lay-tips="放大" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnZoomMinus()" 
+						    :style="{backgroundImage: 'url(../../images/tools/icon_suoxiao.png)'}" 
+						    type="button" 
+						    lay-tips="缩小" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr>
+				    <span onclick="fnSetMapType(1)"   
+						    :style="{backgroundImage: (mapType==1?'url(../../images/tools/icon_shiliangmap.png)':'url(../../images/tools/icon_shiliangmap.png)')}" 
+						    type="button" 
+						    lay-tips="切换为普通地图" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="mapType==1?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnSetMapType(2)" 
+					    	:style="{backgroundImage: (mapType==2?'url(../../images/tools/icon_weixingmap.png)':'url(../../images/tools/icon_weixingmap.png)')}" 
+						    type="button" 
+						    lay-tips="切换为卫星地图" 
+						    lay-direction="2" 
+					    	class="header_left_btn"
+					    	:class="mapType==2?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+					<span onclick="fnSetMapType(3)"   
+						    :style="{backgroundImage: (mapType==3?'url(../../images/tools/icon_putong.png)':'url(../../images/tools/icon_putong.png)')}" 
+						    type="button" 
+						    lay-tips="切换为矢量地图" 
+						    lay-direction="2" 
+						    class="header_left_btn"
+						    :class="mapType==3?'selected':''">
+					</span>
+					<hr>
+				    <span @click="fnChangeRankShowStatus()" 
+				    		:style="{backgroundImage: (rankShowStatus?'url(../../images/tools/icon_ranking.png)':'url(../../images/tools/icon_ranking.png)')}" 
+						    type="button" 
+						    lay-tips="显示/隐藏排名信息" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="rankShowStatus?'selected':''">
+					</span>
+					<hr>
+				    <span onclick="fnDrawingCircle()" 
+						    :style="{backgroundImage: (drawingCircle?'url(../../images/tools/icon_kuangxuan.png)':'url(../../images/tools/icon_kuangxuan.png)')}" 
+						    type="button" 
+						    lay-tips="框选点位" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="drawingCircle?'selected':''">
+					</span>
+					<hr style="height: 1px!important;background-color: white!important;">
+				    <span onclick="fnDistanceTool_open()" 
+						    :style="{backgroundImage: (dis?'url(../../images/tools/icon_ceju.png)':'url(../../images/tools/icon_ceju.png)')}" 
+						    type="button" 
+						    lay-tips="测距" 
+						    lay-direction="2" 
+						    class="header_left_btn" 
+						    :class="dis?'selected':''">
+					</span>
+					<hr>
+				    <!-- <span id="dialogBtn13" 
+				    		:style="{backgroundImage: 'url(../../images/tools/icon_sitemanage.png)'}" 
+						    type="button" 
+						    lay-tips="管理站点" 
+						    lay-direction="2" 
+						    class="header_left_btn">
+					</span>
+					<hr> -->
+					<!-- <button onclick="fnOpenInfoWindow(0)" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开指定的自定义窗口</button><br>
+				    <button onclick="fnOpenInfoWindow(1)" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开指定的自定义窗口</button><br>
+				    <button onclick="fnOpenInfoWindow(2)" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开指定的自定义窗口</button><br> -->
+					<!-- <button id="dialogBtn9" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>地图选择位置</button><br> -->
+				    <!-- <button onclick="fnOpenInfoWindow(0)" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开指定的自定义窗口</button><br>
+				    <button onclick="fnOpenInfoWindow(1)" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开指定的自定义窗口</button><br>
+				    <button onclick="fnOpenInfoWindow(2)" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>打开指定的自定义窗口</button><br>
+
+				    <button id="dialogBtn9" type="button" lay-tips="打开指定的自定义窗口" lay-direction="2" class="layui-btn layui-btn-sm"><i class="layui-icon"></i>地图选择位置</button><br> -->
+			</div>
+			<div id="center_right" v-show="rankShowStatus">
+				<div class="layui-row layui-col-space15">
+				    <div class="layui-col-md12">
+				      <div class="layui-card">
+				        <div class="layui-card-header">污染排名</div>
+				        <div class="layui-card-body">
+				        	<table class="layui-hide" id="rankingTable" lay-filter="rankingTable"></table>
+				        </div>
+				      </div>
+				    </div>
+				</div>
+			</div>
+			<div id="footer_left" class="footer_bottom_0">
+				<div class="dropdown-menu dropdown-hover">
+                    <button class="layui-btn layui-btn-primary icon-btn">
+                        当前：{{curItem}} <i class="layui-icon layui-icon-drop top"></i> 
+                    </button>
+                    <ul class="dropdown-menu-nav dropdown-top-left">
+                        <div class="dropdown-anchor"></div>
+                        <li @click="fnChangeMainShow(item, index)" 
+                            v-for="(item, index) in header_right" :key="index"
+                            >
+                            <a>{{item.name}}&nbsp;<i v-if="item.selected" style="color:red;" class="layui-icon layui-icon-ok"></i></a>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+			<div id="footer_right" class="footer_bottom_0" style="right:0px;">
+				<div class="layui-btn-group">
+					<span type="button" class="layui-btn layui-btn-sm bg-level-0">离线</span>
+					<span type="button" class="layui-btn layui-btn-sm bg-level-1">优</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-2" style="color: black;">良</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-3">轻度污染</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-4">中度污染</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-5">重度污染</span>
+				    <span type="button" class="layui-btn layui-btn-sm bg-level-6">严重污染</span>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/html" id="rankingTpl">
+		  {{#  if(d.curItem=='AQI'){ }}
+		    <span class="layui-badge" style="background: {{ d.aqi_more.bgcolor }};color: {{ d.aqi_more.color }};">{{ d.aqi }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='PM2.5'){ }}
+		    <span class="layui-badge" style="background: {{ d.pm2_5_more.bgcolor }};color: {{ d.pm2_5_more.color }};">{{ d.pm2_5 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='PM10'){ }}
+		    <span class="layui-badge" style="background: {{ d.pm10_more.bgcolor }};color: {{ d.pm10_more.color }};">{{ d.pm10 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='SO2'){ }}
+		    <span class="layui-badge" style="background: {{ d.so2_more.bgcolor }};color: {{ d.so2_more.color }};">{{ d.so2 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='NO2'){ }}
+		    <span class="layui-badge" style="background: {{ d.no2_more.bgcolor }};color: {{ d.no2_more.color }};">{{ d.no2 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='O3'){ }}
+		    <span class="layui-badge" style="background: {{ d.o3_more.bgcolor }};color: {{ d.o3_more.color }};">{{ d.o3 }}</span>
+		  {{#  } }}
+		  {{#  if(d.curItem=='CO'){ }}
+		    <span class="layui-badge" style="background: {{ d.co_more.bgcolor }};color: {{ d.co_more.color }};">{{ d.co }}</span>
+		  {{#  } }}
+		</script>
+	</body>
+</html>
+<script type="text/javascript">
+	var map;
+	var myDis;//测距
+	var drawingManager;//画圆
+ 	var markerArr=[];
+
+	//初始化函数
+	$(function() {
+		
+		vm.init();
+	});
+
+
+	var vm = new Vue({
+      el:"#app",
+      data:{
+      	labelShow:true,
+      	rankShowStatus:true,
+      	markerLabelShow:true,
+        list:[],
+        marker_list:[],
+        screen_marker_list:[],
+        screenCircle_marker_list:[],
+        mapType:3,
+        drawingCircle:false,
+        dis:false,
+        circleConfig:{
+			lng:'',
+			lat:'',
+			banjing:0
+		},
+        header_left:[{
+				code:'keliwu',
+				name: "颗粒物",
+				selected: true,
+				list:[],
+			}
+		],
+		header_right:[{
+				name: "AQI",
+				selected: true,
+				tips:'切换主显指标为AQI'
+			},{
+				name: "PM2.5",
+				selected: false,
+				tips:'切换主显指标为PM2.5'
+			},{
+				name: "PM10",
+				selected: false,
+				tips:'切换主显指标为PM10'
+			},{
+				name: "SO2",
+				selected: false,
+				tips:'切换主显指标为SO2'
+			},{
+				name: "NO2",
+				selected: false,
+				tips:'切换主显指标为NO2'
+			},{
+				name: "O3",
+				selected: false,
+				tips:'切换主显指标为O3'
+			},{
+				name: "CO",
+				selected: false,
+				tips:'切换主显指标为CO'
+			}
+		],
+		curItem:'AQI',
+		echart_search:{
+		    "id":"",
+		    "type":"",
+		    "startTime":"",
+		    "endTime":""
+		},
+		startTime1:'',
+		endTime1:'',
+		startTime2:'',
+		endTime2:'',
+		curMarker:{}
+      },
+      methods:{
+        init:function(){
+        	//请求数据
+        	for (var i = 0; i < vm.header_left.length; i++) {
+        		var item=vm.header_left[i];
+        		if(item.code=='shizhan'
+        			||item.code=='zhoubian'||item.code=='weizhan'||item.code=='keliwu'||item.code=='xiangzhen'
+        			){
+        			vm.ajax_marker_data(item.code);
+        		}
+        	}
+
+        	setTimeout(function(){
+        		initBaiDuMap();
+        	}, 500)
+        	vm.fnChangeRankShowStatus();
+        },
+
+        ajax_marker_data:function(type){
+        	$.ajax({
+        	  url : profiles.jsonUrl+type+"/"+type+".json",
+        	  type : "get",
+        	  dataType : "json",
+        	  success : function(res) {
+        	    if(res.code==0){
+        	      	var list=res.data;
+        	      	for (var i = 0; i < list.length; i++) {
+        	      		var item=list[i];
+        	      		item.code=type;
+        	      		var icon_y=0;
+      		        	switch (type) {
+  			      			case 'shizhan':
+  			      				icon_y=1;
+  			      				break;
+  			      			case 'xiangzhen':
+  			      				icon_y=2;
+  			      				break;
+  			      			case 'weizhan':
+  			      				icon_y=3;
+  			      				break;
+  			      			case 'keliwu':
+  			      				icon_y=4;
+  			      				break;
+  			      			case 'zhoubian':
+  			      				icon_y=5;
+  			      				break;
+  			      			case 'wuranyuan':
+  			      				icon_y=6;
+  			      				break;
+  			      		}
+        	      		item.aqi_more=vm.fnMarkerMore('aqi',item.aqi,icon_y);
+        	      		item.so2_more=vm.fnMarkerMore('so2',item.so2,icon_y);
+        	      		item.no2_more=vm.fnMarkerMore('no2',item.no2,icon_y);
+        	      		item.pm2_5_more=vm.fnMarkerMore('pm2_5',item.pm2_5,icon_y);
+        	      		item.pm10_more=vm.fnMarkerMore('pm10',item.pm10,icon_y);
+        	      		item.co_more=vm.fnMarkerMore('co',item.co,icon_y);
+        	      		item.o3_more=vm.fnMarkerMore('o3',item.o3,icon_y);
+        	      		if(item.aqi=='null'||item.aqi==null||item.aqi=='-'){
+        	      			item.aqi='-';
+        	      		}
+        	      		if(item.so2=='null'||item.so2==null){
+        	      			item.so2='-';
+        	      		}
+        	      		if(item.no2=='null'||item.no2==null){
+        	      			item.no2='-';
+        	      		}
+        	      		if(item.pm2_5=='null'||item.pm2_5==null){
+        	      			item.pm2_5='-';
+        	      		}
+        	      		if(item.pm10=='null'||item.pm10==null){
+        	      			item.pm10='-';
+        	      		}
+        	      		if(item.co=='null'||item.co==null){
+        	      			item.co='-';
+        	      		}
+        	      		if(item.o3=='null'||item.o3==null){
+        	      			item.o3='-';
+        	      		}
+        	      	}
+        	      	for (var i = 0; i < vm.header_left.length; i++) {
+        	      		var item=vm.header_left[i];
+        	      		if(item.code==type){
+							vm.header_left[i]['list']=list;
+        	      		}
+        	      	}
+        	    }
+        	  }
+        	});
+        },
+
+        fnChangeRankShowStatus:function(){
+        	vm.rankShowStatus=!vm.rankShowStatus;
+        	renderRankingTable();
+        },
+
+        fnChangeSiteShow:function(item, index){
+        	try {
+        		layer.closeAll();
+        	} catch(e) {
+        		
+        	}
+        	
+        	//按钮样式
+        	for (var i = 0; i < vm.header_left.length; i++) {
+        		if(vm.header_left[i].code==item.code){
+        			vm.header_left[i].selected=!item.selected;
+        		}
+        	}
+        	vm.fnAddMarker();
+        },
+
+        // 切换curItem
+        fnChangeMainShow:function(item, index){
+        	try {
+        		layer.closeAll();
+        	} catch(e) {
+        		
+        	}
+
+        	for (var i = 0; i < vm.header_right.length; i++) {
+        		vm.header_right[i].selected=false;
+        		if(vm.header_right[i].name==item.name){
+        			vm.header_right[i].selected=true;
+        		}
+        	}
+
+			//清除marker
+			vm.marker_list.forEach(function(item) {
+				var json = item;
+	    		var p0 = json.lng;
+	    		var p1 = json.lat;
+	    		var point = new BMap.Point(p0,p1);
+				// 移除marker
+				var allOverlay = map.getOverlays();
+				for (var j = 0; j < allOverlay.length; j++) {
+					try{
+			            if (allOverlay[j].getPosition().lng ==p0 && allOverlay[j].getPosition().lat==p1 ) {
+						    map.removeOverlay(allOverlay[j]);
+						}
+			        }catch(error){
+
+			        }
+				}
+			});
+
+        	vm.$nextTick(function(){
+        		vm.fnAddMarker();
+        	});
+        },
+
+        
+
+        fnMarkerMore:function(type,value,icon_y){
+        	var result={
+        		color:'',
+        		icon_x:1,
+        		icon_y:icon_y
+        	};
+        	switch (type) {
+        		case 'aqi':
+        			if(value<=50){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+						result.level='优';
+					}else if(50<value&&value<=100){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+						result.level='良';
+					}else if(100<value&&value<=150){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+						result.level='轻度污染';
+					}else if(150<value&&value<=200){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+						result.level='中度污染';
+					}else if(200<value&&value<=300){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+						result.level='重度污染';
+					}else if(300<value&&value<=500){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+						result.level='严重污染';
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+						result.level='优';
+					}
+        			break;
+        		case 'so2':
+        			if(value<=150){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(150<value&&value<=500){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(500<value&&value<=650){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(650<value&&value<=800){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'no2':
+        			if(value<=100){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(100<value&&value<=200){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(200<value&&value<=700){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(700<value&&value<=1200){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(1200<value&&value<=2340){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(2340<value&&value<=3840){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'pm2_5':
+        			if(value<=35){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(35<value&&value<=75){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(75<value&&value<=115){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(115<value&&value<=150){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(150<value&&value<=250){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(250<value&&value<=500){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'pm10':
+        			if(value<=50){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(50<value&&value<=150){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(150<value&&value<=250){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(250<value&&value<=350){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(350<value&&value<=420){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(420<value&&value<=600){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'co':
+        			if(value<=5){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(5<value&&value<=10){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(10<value&&value<=35){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(35<value&&value<=60){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(60<value&&value<=90){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(90<value&&value<=150){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+        		case 'o3':
+        			if(value<=160){
+						result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}else if(160<value&&value<=200){
+						result.bgcolor='rgb(255,255,0)';
+						result.color='black';
+						result.icon_x=2;
+					}else if(200<value&&value<=300){
+						result.bgcolor='rgb(255,126,0)';
+						result.color='white';
+						result.icon_x=3;
+					}else if(300<value&&value<=400){
+						result.bgcolor='rgb(255,0,0)';
+						result.color='white';
+						result.icon_x=4;
+					}else if(400<value&&value<=800){
+						result.bgcolor='rgb(153,0,76)';
+						result.color='white';
+						result.icon_x=5;
+					}else if(800<value&&value<=1200){
+						result.bgcolor='rgb(126,0,35)';
+						result.color='white';
+						result.icon_x=6;
+					}else{
+	        			result.bgcolor='rgb(0,228,0)';
+						result.color='white';
+						result.icon_x=1;
+					}
+        			break;
+
+        	}
+        	return result;
+        },
+
+        fnAddMarker:function(){
+        	layui.use(['form'], function () {
+    	        var $ = layui.jquery;
+    	        var form = layui.form;
+	        	if('代码区域'){
+		        	var iconSize=28;//图标大小
+		        	vm.marker_list=[];
+		        	for (var i = 0; i < vm.header_left.length; i++) {
+		        		var item=vm.header_left[i];
+		        		if(item.selected){
+		        			for (var j = 0; j < item.list.length; j++) {
+		        				vm.marker_list.push(item.list[j]);
+		        			}
+		        		}
+		        	}
+
+		        	if('清除所有marker覆盖物'){
+						var allOverlay = map.getOverlays();
+						for (var i = 0; i < vm.screen_marker_list.length; i++){
+			            	for (var j = 0; j < allOverlay.length; j++) {
+		    					var json = vm.screen_marker_list[i];
+			            		try{
+			                        if (allOverlay[j].getPosition().lng ==json.lng && allOverlay[j].getPosition().lat==json.lat ) {
+			            			    map.removeOverlay(allOverlay[j]);
+			            			}
+			                    }catch(error){
+
+			                    }
+			            	}
+		    	        }
+		    	    }
+		        	
+		        	vm.screen_marker_list=[];
+		        	vm.screenCircle_marker_list=[];
+		        	//预备markers
+		        	var markers=[];
+		        	for(var i=0;i<vm.marker_list.length;i++){
+		        		var json = vm.marker_list[i];
+						var point = new BMap.Point(json.lng, json.lat);
+						var imageOffset_x=0;
+						var imageOffset_y=0;
+						switch (vm.curItem.toLowerCase()) {
+							case 'aqi':
+								imageOffset_x=0-json.aqi_more.icon_x*iconSize;
+								imageOffset_y=0-json.aqi_more.icon_y*iconSize;
+								break;
+							case 'pm2.5':
+								imageOffset_x=0-json.pm2_5_more.icon_x*iconSize;
+								imageOffset_y=0-json.pm2_5_more.icon_y*iconSize;
+								break;
+							case 'pm10':
+								imageOffset_x=0-json.pm10_more.icon_x*iconSize;
+								imageOffset_y=0-json.pm10_more.icon_y*iconSize;
+								break;
+							case 'so2':
+								imageOffset_x=0-json.so2_more.icon_x*iconSize;
+								imageOffset_y=0-json.so2_more.icon_y*iconSize;
+								break;
+							case 'no2':
+								imageOffset_x=0-json.no2_more.icon_x*iconSize;
+								imageOffset_y=0-json.no2_more.icon_y*iconSize;
+								break;
+							case 'o3':
+								imageOffset_x=0-json.o3_more.icon_x*iconSize;
+								imageOffset_y=0-json.o3_more.icon_y*iconSize;
+								break;
+							case 'co':
+								imageOffset_x=0-json.co_more.icon_x*iconSize;
+								imageOffset_y=0-json.co_more.icon_y*iconSize;
+								break;
+						}
+						var iconImg = new BMap.Icon("../../images/tools/icons_1.png", 
+							new BMap.Size(iconSize, iconSize), {
+				                offset: new BMap.Size(0, 0),
+				                imageOffset: new BMap.Size(imageOffset_x, imageOffset_y)   
+				            }
+			            );
+						var marker = new BMap.Marker(point,{icon:iconImg});
+						var iw = createInfoWindow(i);
+						var label = new BMap.Label(json.pointName,{"offset":new BMap.Size(15, -15)});
+						label.setStyle({
+							borderColor:"#808080",
+							color:"#333",
+							cursor:"pointer",
+							display:"none"
+						});
+						marker.setLabel(label);
+						markers.push(marker);
+		        	}
+
+		        	//重新添加marker
+		        	for(var i=0;i<markers.length;i++){
+		    	        var result = BMapLib.GeoUtils.isPointInRect(markers[i].point, map.getBounds());//是否在视野范围内
+		    	        if(result == true){
+		    	        	vm.marker_list[i].curItem=vm.curItem;
+		    	        	vm.marker_list[i].sort=vm.marker_list[i].aqi=='-'?0:vm.marker_list[i].aqi;
+		    	        	vm.screen_marker_list.push(vm.marker_list[i]);
+		    		        if(vm.circleConfig.banjing>0){
+		    		        	var circle_o = new BMap.Point(vm.circleConfig.lng, vm.circleConfig.lat); //圆心
+			    	            var circle_ok = new BMap.Circle(circle_o, vm.circleConfig.banjing);//圆
+			    	            var circle_result = BMapLib.GeoUtils.isPointInCircle(markers[i].point, circle_ok);
+			    	            if(circle_result == true){
+			    	                vm.screenCircle_marker_list.push(vm.marker_list[i]);
+			    	            }
+		    		        }
+		    	        	
+		    	        	map.addOverlay(markers[i]);
+		    	        	(function(){
+		    	        		var marker=markers[i];
+		    	        		var index = i;
+		    	        		var _iw = createInfoWindow(index);
+		    	        		var _marker = marker;
+		    	        		_marker.addEventListener("click",function(){
+		    	        			if(vm.curIndex!=index){
+		    	        				layer.closeAll();
+		    	        			}
+		    	        			vm.curIndex=index;
+		    	        			this.openInfoWindow(_iw);
+		    	        			setTimeout(function(){
+		    	        				openRightPopup(index);
+		    	        			},200);
+		    	        		});
+		    	        		_marker.addEventListener("mouseover",function(){
+		    	        			this.openInfoWindow(_iw);
+		    	        		});
+		    	        		_iw.addEventListener("open",function(){
+		    	        			// _marker.getLabel().hide();
+		    	        		})
+		    	        		_iw.addEventListener("close",function(){
+		    	        			// _marker.getLabel().show();
+		    	        		})
+		    	        		label.addEventListener("click",function(){
+		    	        			_marker.openInfoWindow(_iw);
+		    	        		})
+		    	        	})()
+		    	        }else{
+		    	        	map.removeOverlay(markers[i]);
+		    	        }
+		    	    }
+
+		    	    console.log(vm.screen_marker_list,777)
+
+		    	    vm.screen_marker_list.sort(function (a, b) {
+		    	    	if (Number(a.sort) > Number(b.sort)) {
+		    	    		return -1;
+		    	    	} else if (Number(a.sort) == Number(b.sort)) {
+		    	    		return 0;
+		    	    	} else {
+		    	    		return 1;
+		    	    	}
+		    	    });
+		    	    vm.screenCircle_marker_list.sort(function (a, b) {
+		    	    	if (Number(a.sort) > Number(b.sort)) {
+		    	    		return -1;
+		    	    	} else if (Number(a.sort) == Number(b.sort)) {
+		    	    		return 0;
+		    	    	} else {
+		    	    		return 1;
+		    	    	}
+		    	    });
+		    	    if(!vm.labelShow){
+						$('#allmap .BMap_Marker label').show();
+					}else{
+						$('#allmap .BMap_Marker label').hide();
+					}
+			    	renderRankingTable();
+	        	}
+
+	        	form.on('select(siteFilter)', function(data){
+		    	    console.log(data.value);//得到被选中的值
+		    	    console.log(data.elem); //得到select原始DOM对象
+
+		    	    for (var i = 0; i < vm.marker_list.length; i++) {
+		    	    	var pointItem = vm.marker_list[i];
+		    	    	if(pointItem.pointName==data.value){
+		    	    		console.log(pointItem,"----------->>")
+		    	    		map.setCenter(new BMap.Point(pointItem.lng, pointItem.lat))
+		    	    		// setTimeout(function(){
+		    	    		// 	createInfoWindow(i);
+		    	    		// },3500);
+
+		    	    		var point = new BMap.Point(pointItem.lng, pointItem.lat);
+	    	    			var marker = new BMap.Marker(point);  // 创建标注
+	    	    			map.addOverlay(marker);               // 将标注添加到地图中
+	    	    			marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+		    	    	}
+		    	    }
+		    	})
+		    	vm.$nextTick(function(){
+		    		setTimeout(function(){
+		    			form.render();
+		    		},500);
+		    	});
+	        });
+        },
+      }
+    });
+
+
+	function renderRankingTable(){
+		var dataList=[];
+		if(vm.drawingCircle){
+			var dataList=vm.screenCircle_marker_list;
+		}else{
+			var dataList=vm.screen_marker_list;
+		}
+    	layui.use(['layer', 'table', 'admin'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var admin = layui.admin;
+    		var table = layui.table;
+
+    	    //展示已知数据
+    	    var rankingTable=table.render({
+    	        elem: '#rankingTable'
+    	        ,cols: [[ 
+    	          {field: 'index', title: '排名', width: 50, type:"numbers"}
+    	          ,{field: 'pointName', title: '点位名称'}
+    	          ,{field: 'aqi', title: '监测值', width: 100, templet: '#rankingTpl', align:'center', sort:true}
+    	        ]]
+    	        ,data: dataList
+    	        ,skin: 'line'
+    	        ,even: true
+    	        ,page: false
+    	        ,width:300
+    	        ,height: window.screen.height-250-90
+    	        ,limit: 100
+    	    });
+
+    	    //监听行单击事件（双击事件为：rowDouble）
+    	    table.on('row(rankingTable)', function(obj){
+    	        var item = obj.data;
+    	        vm.screen_marker_list.forEach(function(value, index) {
+    	        	if (value.lng ==item.lng && value.lat==item.lat ) {
+    	        	    for (var i = 0; i < vm.marker_list.length; i++) {
+    	        	    	if (vm.marker_list[i].lng ==item.lng && vm.marker_list[i].lat==item.lat ) {
+    	        	    		var infoWindow=createInfoWindow(i); 
+		    	        	    var point = new BMap.Point(item.lng, item.lat);
+		    	        	    map.openInfoWindow(infoWindow, point);
+    	        	    	}
+    	        	    }
+    	        	}
+    	        });
+    	        //标注选中样式
+    	        obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+    	    });
+	    });
+	}
+
+	//初始化百度地图
+	function initBaiDuMap() {
+		map = new BMap.Map("allmap"); // 创建Map实例
+		map.centerAndZoom(new BMap.Point(117.008826,39.141152), 12);
+		map.enableScrollWheelZoom();//开启滚动缩放
+    	map.enableContinuousZoom();//开启缩放平滑
+		map.setMapStyleV2({styleJson:styleJsonYour});
+
+
+	    if('行政区域轮廓'){
+    	    var bdary = new BMap.Boundary();
+    	    bdary.get("西青区", function(rs){       //获取行政区域
+    	        var count = rs.boundaries.length; //行政区域的点有多少个
+    	        if (count === 0) {
+    	            alert('未能获取当前输入行政区域');
+    	            return ;
+    	        }
+    	        var pointArray = [];
+    	        for (var i = 0; i < count; i++) {
+    	            var ply = new BMap.Polygon(
+    		            rs.boundaries[i], 
+    		            {
+    		            	strokeColor:"#35eaff", 
+    		            	fillColor:"none", 
+    		            	fillColorOpacity:"0.9",  
+    		            	strokeWeight:BmapConfig.strokeWeight, 
+    		            	strokeOpacity:0.8
+    		            }
+    	            ); //建立多边形覆盖物
+    	            ply.disableMassClear();
+    	            map.addOverlay(ply);  //添加覆盖物
+    	            pointArray = pointArray.concat(ply.getPath());
+    	        }    
+    	        map.setViewport(pointArray);    //调整视野  
+    	        // addlabel();               
+    	    });   
+	    }
+
+
+		if('测距'){
+			myDis = new BMapLib.DistanceTool(map);//测距
+			myDis.addEventListener("drawend", function(e) {  
+				vm.dis=false;
+			});
+		}
+		
+		setTimeout(function(){
+			// vm.header_left[3]['selected']=true;
+			vm.fnAddMarker();
+
+			// map.addEventListener("tilesloaded", function(){
+			// 	console.log('tilesloaded>>>')
+			// 	vm.fnAddMarker()
+			// });
+			map.addEventListener("zoomend", function(){
+				// if(!vm.drawingCircle){
+					console.log('zoomend>>>')
+					vm.fnAddMarker()
+				// }
+			});
+			map.addEventListener("moveend", function(){
+				// if(!vm.drawingCircle){
+					console.log('moveend>>>')
+					vm.fnAddMarker()
+				// }
+			});
+		}, 500)
+
+
+
+	}
+</script>
+<script type="text/javascript" src="./js/daqi_zonghefenxi.js"></script>
+<script>
+layui.use(['index'], function(){
+    var $ = layui.$
+    ,admin = layui.admin
+    ,element = layui.element
+    ,router = layui.router();
+
+    element.render();
+    
+    var active = {
+      popupRight: function(){
+        top.layui.admin.popupRight({
+          id: 'LAY_adminPopupLayerTest',
+          shadeClose:false,
+          closeBtn:true,
+          shade: 0,
+          success: function(){
+            $('#'+ this.id).html('<div style="padding: 20px;">放入内容</div>');
+            // layui.view(this.id).render('system/about')
+          }
+        });
+      }
+    };
+    
+    $('.layui-btn').on('click', function(){
+      var type = $(this).data('type');
+      active[type] && active[type].call(this);
+    });
+  });
+</script>
+<script>
+
+	layui.use(['layer', 'table', 'admin', 'form', 'laydate', 'fileChoose', 'dropdown', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var admin = layui.admin;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var fileChoose = layui.fileChoose;
+        var xmSelect = layui.xmSelect;
+		var table = layui.table;
+
+        // 站点管理
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.popupRight({
+                title: '站点列表',
+                url: 'site_list.html',
+                area: '600px',
+                data: { user: 1 },     // 传递数据到表单页面
+                end: function () {
+                    if (admin.getLayerData(layIndex, 'formOk')) {  // 判断表单操作成功标识
+                        // insTb.reload();  // 成功刷新表格
+                    } 
+                },
+                success: function (layero, dIndex) {
+                    // 弹窗超出范围不出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+        });
+
+    });
+</script>

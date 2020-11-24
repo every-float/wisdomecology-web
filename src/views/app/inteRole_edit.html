@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>数据权限</title>
+	<style type="text/css">
+	.layui-form-select dl{
+		max-height: 260px;
+	}
+	</style>
+</head>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">编辑权限</div>
+		<div class="layui-card-body">
+		<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="id" name="id" value=""/>
+			<input type="hidden" id="inteId" name="inteId" value=""/>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">角色名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select id="roleId" name="roleId" lay-verify="required" lay-search="">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">访问级别<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select name="accessLevel" lay-verify="required">
+						<option value="">---请选择---</option>
+						<option value="1">仅限本人</option>
+						<option value="2">仅限本部门及下部门</option>
+						<option value="3">本部门</option>
+						<option value="4">所有人</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<label class="control-label col-md-2" for=""></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var id = $.getUrlParam('id');
+		var inteId = $.getUrlParam('inteId');
+		var form;
+		$(function() {
+			layui.use(['form'], function() {
+				form = layui.form;
+				//初始化
+				$('#inteId').val(inteId);
+				initParamInfo();
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function checkForm(){
+			$('#btnSave').click();
+		}
+		
+		function initDataInfo(){
+			$.ajax({
+				url : URL_appinteRole_detailInfo,
+				data : {
+					id: id
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'roleId': res.data.roleId,
+							'inteId': res.data.inteId,
+							'accessLevel': res.data.accessLevel
+						});
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		function save(){
+			$.ajax({
+				url : URL_appinteRole_save,
+				data : $('#form1').serialize(),
+				type : 'post',
+				dataType : 'json',
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+
+		function initParamInfo(){
+			$.ajax({
+				url : URL_appinteRole_initParamInfo,
+				data : {
+					id : id
+				},
+				type : 'post',
+				dataType : 'json',
+				beforeSend : function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if (res.code==0) {
+						var list_role = res.data.list_role;
+						$('#roleId').empty();
+						var option_role = '<option value="">无</option>';
+						for ( var i = 0; i < list_role.length; i++) {
+							option_role += '<option value="'+list_role[i].role_id+'">'+list_role[i].role_name+'</option>';
+						}
+						$('#roleId').html(option_role);
+						form.render('select');
+						if(id!=null&&id!=''){
+							$('#id').val(id);
+							initDataInfo();
+						}
+					} else {
+						layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

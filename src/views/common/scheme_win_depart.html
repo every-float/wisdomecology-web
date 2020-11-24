@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>选择部门</title>
+	<style>
+		.layui-form-select dl { max-height:147px; }
+	</style>
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-body">
+			<form id="form1" class="layui-form" lay-filter="form1">
+				<div class="layui-form-item">
+					<label class="layui-form-label">选择部门<font color='red'>*</font></label>
+					<div class="layui-input-block">
+						<input type="hidden" id="selDeptId">
+						<input type="text" class="layui-input" id="selDeptName" name="selDeptName" required lay-verify="required" onclick="selDept()">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">附件条件</label>
+					<div class="layui-input-block">
+						<select id="departFlag" name="departFlag" lay-search>
+						<option value="0">无</option>
+						<option value="1">本部门人员</option>
+						<option value="2">本部门及以下人员</option>
+						</select>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script>
+		layui.use(['form'], function() {
+			
+		});
+		function selDept(){
+			top.layer.open({
+				type : 2,
+				title : '选择部门',
+				shadeClose : true,
+				shade : 0.6,
+				maxmin : true,
+				area : [ '300px', '500px' ],
+				content: pageUrl+'views/common/tree_depart.html',
+				btn: ['确定', '关闭'],
+				yes: function(index, layero){
+					var body = top.layer.getChildFrame('body', index);
+					var iframeWin = window[layero.find('iframe')[0]['name']];
+					//获取选中的部门信息
+					var selDeptId = body.find('#selDeptId').val();
+					var selDeptName = body.find('#selDeptName').val();
+					if(selDeptId==''){
+						top.layer.msg('请选择部门');
+						return;
+					}
+					//赋值
+					$('#selDeptId').val(selDeptId);
+					$('#selDeptName').val(selDeptName);
+					//layer.getChildFrame('body', la).find('#selDeptId').val(selDeptId);
+					//layer.getChildFrame('body', la).find('#selDeptName').val(selDeptName);
+					
+					top.layer.close(index);
+				},
+				btn2: function(index, layero){
+					top.layer.close(index);
+				}
+			});
+		}
+	</script>
+</body>
+</html>

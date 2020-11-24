@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>人员管理</title>
+	<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-row layui-col-space15">
+		<div class="layui-col-xs3">
+		<div class="layui-card">
+		<div class="layui-card-header">部门信息</div>
+		<div class="layui-card-body">
+			<input type="hidden" id="departId" name="departId" value="">
+			<input type="hidden" id="orgId" name="orgId" value="">
+			<form class="layui-form">
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<select id="orgList" name="orgList" lay-filter="orgList" lay-verify="required">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			</form>
+			<div class="well" style="margin-top: 15px">
+			<ul id="departTree" class="ztree" style="margin-top:0; width:100%;"></ul>
+			</div>
+		</div>
+		</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div class="layui-card">
+			<div class="layui-card-header">人员管理</div>
+			<div class="layui-card-body">
+				<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_name" placeholder="请输入用户账号或姓名">
+					</div>
+					<button type="button" class="layui-btn" onclick="search()">查询</button>
+					<div style="float: right;">
+					<input type="checkbox" id="isChecked" name="isChecked" lay-filter="isChecked" title="只看已选" lay-skin="primary">
+					</div>
+				</div>
+				</form>
+				<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+				<script type="text/html" id="checkTpl">
+					<input type="checkbox" name="userCheck" value="{{d.user_id}}" lay-skin="switch" lay-text="是|否" lay-filter="checkTpl" {{ d.user_check != null  ? 'checked' : '' }}>
+				</script>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="js/role_users.js"></script>
+</body>
+</html>

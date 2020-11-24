@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>报警值设定</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+			.well{overflow:auto;}
+			#monitorTime{
+				height: 30px;
+				line-height: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">断面信息</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="sectionList" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">报警值限界</div>
+						<div class="layui-card-body">
+							<table id="dataList" lay-filter="dataList" class="layui-table"></table>
+							<script type="text/html" id="operation">
+								<a class="layui-btn layui-btn-xs" lay-event="editDataInfo">编辑</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="editDataInfo" class="layui-card" style="display:none;">
+			<div class="layui-card-body">
+				<form id="infoForm" class="layui-form">
+					<input id="warningValueId" type="hidden" name="id" />
+					<div class="layui-form-item">
+						<label class="layui-form-label">上限值<span style="color:red;">*</span></label>
+						<div class="layui-input-inline">
+							<input type="number" name="upperVal" class="layui-input" lay-verify="required" />
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">下限值<span style="color:red;">*</span></label>
+						<div class="layui-input-inline">
+							<input type="number" name="lowerVal" class="layui-input" lay-verify="required" />
+						</div>
+					</div>
+					<div class="layui-form-item" style="display:none;">
+						<div class="layui-input-inline">
+							<button id="saveBtn" class="layui-btn" lay-submit lay-filter="saveInfo"></button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript">
+		var layer, pageIndex, table, form;
+		var sectionList, dataList, tableHeight;
+		var dataInfo = [], sectionCode = "";
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs9").height($("body").height()-30);
+			$(".well").height($(".layui-col-xs3").height()-103);
+			tableHeight = $(".layui-col-xs3").height()-63;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs9").height($("body").height()-30);
+				$(".well").height($(".layui-col-xs3").height()-103);
+				tableHeight = $(".layui-col-xs3").height()-63;
+				renderDataList();
+			}
+            layui.use(['table', 'form', 'layer'], function(){
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+                
+				initTree();
+				
+				table.on("tool(dataList)", function(obj){
+					if(obj.event == "editDataInfo"){
+						$("#warningValueId").val(obj.data.id);
+						pageIndex = layer.open({
+							type:1,
+							title: obj.data.indexName+"上下限界修改",
+							shade: 0.6,
+							maxmin: true,
+							area: ['360px', '280px'],
+							content:$("#editDataInfo"),
+							btn: ['修改', '取消'],
+							yes: function(index, layero){
+								$("#saveBtn").trigger("click");
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						})
+					}
+				})
+				
+				// 保存监听
+				form.on('submit(saveInfo)', function(){
+					saveInfo();
+					return false;
+				})
+            })
+		});
+
+		// 区县及断面列表
+		function initTree(){
+			$.ajax({
+				type:"get",
+				url:URL_cross_section_list,
+				dataType:"json",
+				success:function(ret){
+					if(ret.code == 0){
+						var treeNodes = ret.data;
+						var setting = {
+							check : {
+								enable: false
+							},
+							data : {
+								simpleData : {
+									enable : true,
+									idKey : 'id',
+									pIdKey : 'parentId'
+								},
+								key : {
+									name : 'name',
+									title : 'name'
+								}
+							},
+							callback: {
+								onClick: treeOnClick
+							}
+						};
+						sectionList = $.fn.zTree.init($('#sectionList'), setting, treeNodes);
+						sectionCode = treeNodes.id;
+						getDataList(treeNodes.id);
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，未能获取到信息！");
+				}
+			})
+		}
+
+		function treeOnClick(event, treeId, treeNode){
+			sectionCode = treeNode.id;
+			renderDataList();
+		}
+		
+		// 报警值列表
+		function getDataList(sectionCode){
+			var index = layer.load(2,{shade:0.6});
+			dataList = table.render({
+				elem: '#dataList',
+				url: URL_warning_value_list,
+				page: false,
+				height:tableHeight,
+				where:{
+					page:1,
+					limit:99999,
+					sectionCode:sectionCode
+				},
+				toolbar: false,
+				defaultToolbar: false,
+				cols: [[
+					{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{field: 'indexName', title: '指标名称', minWidth:180, align: 'center'},
+					{field: 'upperVal', title: '上限值', width:140, align: 'center'},
+					{field: 'lowerVal', title: '下限值', width:140, align: 'center'},
+					{title: '操作', width:120, toolbar:'#operation', align: 'center', fixed:'right'}
+				]],
+				done:function(ret){
+					layer.close(index);
+				}
+			})
+		};
+
+		// 搜索
+		function renderDataList(){
+			var index = layer.load(2,{shade:0.6});
+			dataList.reload({
+				height:tableHeight,
+				page: false,
+				where:{
+					page:1,
+					limit:9999,
+					sectionCode:sectionCode
+				},
+				done:function(ret){
+					layer.close(index);
+				},
+				page: {curr: 1}
+			});
+		}
+
+		// 编辑保存
+		function saveInfo(){
+			$.ajax({
+				type:"post",
+				url:URL_warning_value_set,
+				dataType:"json",
+				data:$("#infoForm").serialize(),
+				beforeSend:function(){
+					layer.load(2,{shade:0.5});
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						layer.close(pageIndex);
+						layer.msg("保存成功！");
+						renderDataList();
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，保存失败！");
+				},
+				complete:function(){
+					layer.close("loading");
+				}
+			})
+		}
+	</script>
+</html>

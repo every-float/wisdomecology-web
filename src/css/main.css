@@ -1,0 +1,81 @@
+@charset "utf-8";
+/*自定义样式*/
+body,* {
+	margin: 0;
+	padding: 0;
+	font-family: "微软雅黑";
+}
+a{color: #606060;}
+.layui-btn-group{margin-bottom: 10px;}
+.layui-layer-page .layui-layer-content {overflow: inherit !important;}
+.text-right{text-align: right}
+/*静态文本*/
+.form-control-static {
+	display: block;
+	width: 100%;
+	min-height: 38px;
+	word-break:break-all;
+	padding-top: 7px;
+	padding-left: 5px;
+}
+/*表格*/
+.biaoge{
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 0;
+}
+.biaoge th,.biaoge td{
+	border: 1px solid #ddd;
+}
+.biaoge th{
+	width: 20%;
+	text-align: center;
+	background: #f5f5f5;
+	padding: 10px 0;
+}
+.biaoge td{
+	padding: 5px;
+}
+
+.well {
+  min-height: 20px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+
+/*表格紧凑*/
+/*.layui-table-cell{
+    height:22px!important;
+    line-height: 22px!important;
+    padding: 0px 3px;
+}
+.layui-table-view .layui-table td, .layui-table-view .layui-table th{
+	padding: 2px 0px;
+}*/
+
+
+.layui-table tbody tr:hover,.layui-table-click,.layui-table-hover,.layui-table-mend,.layui-table-patch,.layui-table-total,.layui-table-total tr,.layui-table[lay-even] tr:nth-child(even) {
+    background-color: transparent;
+}
+.layui-table-click {
+    background-color: #ddf2e9 !important;
+}
+
+.layui-table .layui-btn-xs {
+    height: 18px;
+    line-height: 17px;
+}
+
+.footer_bottom_0{
+	bottom: 1px!important;
+}
+.footer_bottom_10{
+	bottom: 10px!important;
+}
+.footer_bottom_20{
+	bottom: 30px!important;
+}

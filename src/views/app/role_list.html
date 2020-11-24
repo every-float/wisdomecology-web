@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>角色管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">角色列表</div>
+		<div class="layui-card-body">
+				<form class="layui-form">
+				<div class="layui-form-item">
+					<label class="layui-form-label" for="">角色名称</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="search_roleName">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" for=""></label>
+					<div class="layui-input-inline">
+						<button type="button" class="layui-btn" onclick="search()">查询</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+				</form>
+			<script type="text/html" id="toolbar">
+				{{#if (configjson.GRANT.match('AJSGL_02')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="add()">新增</button>
+				{{# } }}
+				{{#if (configjson.GRANT.match('AJSGL_04')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+				{{# } }}
+			</script>
+			<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+			<script type="text/html" id="barOpt">
+			{{#if (configjson.GRANT.match('AJSGL_03')) { }}
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			{{# } }}
+			</script>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/role_list.js"></script>
+</body>
+</html>

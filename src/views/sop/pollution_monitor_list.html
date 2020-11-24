@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>废气监控</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+			.well{overflow:auto;}
+			.tabItem{
+				width: 42px;
+				height: 24px;
+				line-height: 24px;
+				border: 1px solid #DDD;
+				text-align: center;
+				float:right;
+				margin:9px 0;
+			}
+			.activeItem{
+				background:#009688;
+				color:#FFF;
+				border: 1px solid #FFF;
+			}
+			.layui-form-label{width:63px;}
+			.layui-table-page{display: none;}	/*隐藏分页条*/
+		</style>
+	</head>
+	<body>
+		<div id="webPage" class="layui-fluid" v-cloak>
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<span>污染源信息</span>
+							<div class="tabItem" :class="tabIndex==2?'activeItem':''" @click="stypeChange(2)">废水</div>
+							<div class="tabItem" :class="tabIndex==1?'activeItem':''" @click="stypeChange(1)">废气</div>
+							<div class="tabItem" :class="tabIndex==0?'activeItem':''" @click="stypeChange(0)">全部</div>
+						</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="pollutionList" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">数据信息 【{{ PSName }} => {{ OutPutName }}】</div>
+						<div class="layui-card-body">
+							<form id="search-form" class="layui-form" lay-filter="search-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">数据类型<span style="color:red;">*</span></label>
+										<div class="layui-input-inline">
+											<select id="dateType" lay-filter="dateType" lay-verify="required">
+												<option value="hour">小时数据</option>
+												<option value="day">日数据</option>
+											</select>
+										</div>
+									</div>
+									<div class="layui-inline">
+										<label class="layui-form-label">时间<span style="color:red;">*</span></label>
+										<div class="layui-input-inline">
+											<input type="text" id="monitorTime" v-model="monitorTime" class="layui-input" placeholder="请选择监测日期" readonly="readonly" lay-verify="required" />
+										</div>
+									</div>
+									<div class="layui-inline" style="width:60px;">
+										<div class="layui-input-inline">
+											<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+										</div>
+									</div>
+								</div>
+							</form>
+							<table id="dataList" lay-filter="dataList" class="layui-table"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var pollutionList, dataList;
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs9").height($("body").height()-30);
+			$(".well").height($(".layui-col-xs3").height()-103);
+			vm.tableHeight = $(".layui-col-xs9").height()-131;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs9").height($("body").height()-30);
+				$(".well").height($(".layui-col-xs3").height()-103);
+				vm.tableHeight = $(".layui-col-xs9").height()-131;
+				vm.getDataList();
+			}
+            layui.use(['table', 'form', 'layer', 'laydate'], function(){
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				
+				layui.laydate.render({
+					elem:'#monitorTime',
+					value:getOneWeek().previousTime +" ~ "+getOneWeek().currentTime,
+					trigger:'click',
+					range:"~",
+                    done:function(value, date, endDate){
+						console.log(value);
+						vm.monitorTime = value;
+                    }
+                })
+                
+				vm.initTree();
+				
+				// 查询监听
+				form.on('submit(toSearch)', function(){
+					vm.getDataList();
+					return false;
+				})
+            })
+		});
+
+		var vm = new Vue({
+			el:"#webPage",
+			data:{
+				tabIndex:0,		// tree类型切换
+				stype:"",
+				PSCode:"",		// 污染源编码
+				PSName:"",
+				OutputCode:"",		// 排放口编码
+				OutPutName:"",
+				monitorTime:getOneWeek().previousTime +" ~ "+getOneWeek().currentTime,		// 查询时间
+				tableHeight:0,		// 表格高度
+				dataInfo:[],
+			},
+			methods:{
+				// 污染源&排放口列表
+				initTree:function(){
+					if(vm.tabIndex == 0){
+						var wrytype = "fs,fq";
+					}else if(vm.tabIndex == 1){
+						var wrytype = "fq";
+					}else{
+						var wrytype = "fs";
+					}
+					$.ajax({
+						type:"get",
+						url:URL_pollution_company_list,
+						dataType:"json",
+						data:{
+							wrytype:wrytype
+						},
+						success:function(ret){
+							if(ret.code == 0){
+								var treeNodes = ret.data;
+								if(vm.tabIndex != 0){
+									for(var i in treeNodes){
+										if(treeNodes[i].children.length && treeNodes[i].stype == "fs,fq"){
+											var treeNode = treeNodes[i].children;
+											var arr = [];
+											for(var j in treeNode){
+												if(vm.tabIndex == 1){
+													if(treeNode[j].stype == "fq"){
+														arr.push(treeNode[j]);
+													}
+												}else{
+													if(treeNode[j].stype == "fs"){
+														arr.push(treeNode[j]);
+													}
+												}
+											}
+											treeNodes[i].children = arr;
+										}
+									}
+								}
+								var setting = {
+									check: {
+										enable: false
+									},
+									data: {
+										simpleData: {
+											enable: true,
+											idKey: 'id',
+											pIdKey: 'parentId'
+										},
+										key: {
+											name: 'name',
+											title: 'name'
+										}
+									},
+									callback: {
+										onClick: vm.treeOnClick
+									}
+								};
+								pollutionList = $.fn.zTree.init($('#pollutionList'), setting, treeNodes);
+								if(treeNodes[0].children && treeNodes[0].children.length){
+									vm.stype = treeNodes[0].children[0].stype;
+									vm.PSCode = treeNodes[0].id;
+									vm.PSName = treeNodes[0].name;
+									vm.OutputCode = treeNodes[0].children[0].id;
+									vm.OutPutName = treeNodes[0].children[0].name;
+								}else{
+									vm.stype = treeNodes[1].children[0].stype;
+									vm.PSCode = treeNodes[1].id;
+									vm.PSName = treeNodes[1].name;
+									vm.OutputCode = treeNodes[1].children[0].id;
+									vm.OutPutName = treeNodes[1].children[0].name;
+								}
+								vm.getDataList();
+							}else{
+								layer.msg(ret.msg);
+							}
+						},
+						error:function(){
+							layer.msg("网络访问出错，未能获取到信息！");
+						}
+					})
+				},
+				// 树形图类型切换
+				stypeChange:function(tabIndex){
+					if(vm.tabIndex == tabIndex){
+						return false;
+					}else{
+						vm.tabIndex = tabIndex;
+						vm.initTree();
+					}
+				},
+
+				treeOnClick:function(event, treeId, treeNode){
+					if(!treeNode.isParent){
+						vm.PSCode = treeNode.parentId;
+						vm.OutputCode = treeNode.id;
+						vm.PSName = treeNode.getParentNode().name;
+						vm.OutPutName = treeNode.name;
+						vm.stype = treeNode.stype;
+						vm.getDataList();
+					}
+				},
+				
+				// 废气信息列表
+				getDataList:function(){
+					var index = layer.load(2,{shade:0.6});
+					if(vm.stype == "fq"){
+						var url = URL_waste_gas_list;
+						var cols = [[
+							{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+								return d.LAY_TABLE_INDEX+1;
+							}},
+							{title: '监测时间', width:175, align: 'center', fixed:"left", templet:function(d){
+								if(d.mt){
+									return gettingTimeYYYMMddhhmmss(d.mt);
+								}else{
+									return "-";
+								}
+							}},
+							{title: '废气监控点排放量(m3)', minWidth:180, align: 'center', fixed:"left", templet:function(d){
+								if(d.pfl){
+									return d.pfl;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '烟尘实测修正浓度(mg/L)', width:190, align: 'center', templet:function(d){
+								if(d.yanchen){
+									return d.yanchen;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '烟尘折算修正浓度(mg/L)', width:190, align: 'center', templet:function(d){
+								if(d.yanchenzs){
+									return d.yanchenzs;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '二氧化硫实测修正浓度(mg/L)', width:220, align: 'center', templet:function(d){
+								if(d.so2){
+									return d.so2;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '二氧化硫折算修正浓度(mg/L)', width:220, align: 'center', templet:function(d){
+								if(d.so2zs){
+									return d.so2zs;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '氮氧化物实测修正浓度(mg/L)', width:220, align: 'center', templet:function(d){
+								if(d.no2){
+									return d.no2;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '氮氧化物折算修正浓度(mg/L)', width:220, align: 'center', templet:function(d){
+								if(d.no2zs){
+									return d.no2zs;
+								}else{
+									return "-";
+								}
+							}}
+						]];
+					}else{
+						var url = URL_waste_water_list;
+						var cols = [[
+							{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+								return d.LAY_TABLE_INDEX+1;
+							}},
+							{title: '监测时间', width:175, align: 'center', fixed:"left", templet:function(d){
+								if(d.mt){
+									return gettingTimeYYYMMddhhmmss(d.mt);
+								}else{
+									return "-";
+								}
+							}},
+							{title: '污水排口监控点排放量(kg)', minWidth:200, align: 'center', fixed:"left", templet:function(d){
+								if(d.pfl){
+									return d.pfl;
+								}else{
+									return "-";
+								}
+							}},
+							{title: 'pH值', width:120, align: 'center', templet:function(d){
+								if(d.ph){
+									return d.ph;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '化学需氧量(mg/L)', width:160, align: 'center', templet:function(d){
+								if(d.cod){
+									return d.cod;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '氨氮(mg/L)', width:120, align: 'center', templet:function(d){
+								if(d.andan){
+									return d.andan;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '总氮(mg/L)', width:120, align: 'center', templet:function(d){
+								if(d.zongdan){
+									return d.zongdan;
+								}else{
+									return "-";
+								}
+							}},
+							{title: '总磷(mg/L)', width:120, align: 'center', templet:function(d){
+								if(d.zonglin){
+									return d.zonglin;
+								}else{
+									return "-";
+								}
+							}}
+						]];
+					}
+					dataList = table.render({
+						elem: '#dataList',
+						url: url,
+						page: false,
+						height:vm.tableHeight,
+						where:{
+							page:1,
+							limit:99999,
+							PSCode:vm.PSCode,
+							OutputCode:vm.OutputCode,
+							dateType:$("#dateType option:selected").val(),
+							startDate:vm.monitorTime.split("~")[0].replace(" ", ""),
+							endDate:vm.monitorTime.split("~")[1].replace(" ", "")
+						},
+						toolbar: false,
+						defaultToolbar: false,
+						cols: cols,
+						done:function(ret){
+							layer.close(index);
+						}
+					})
+				},
+
+				// 搜索
+				renderDataList:function(){
+					var index = layer.load(2,{shade:0.6});
+					dataList.reload({
+						height:vm.tableHeight,
+						page: false,
+						where:{
+							page:1,
+							limit:9999,
+							PSCode:vm.PSCode,
+							OutputCode:vm.OutputCode,
+							dateType:$("#dateType option:selected").val(),
+							startDate:vm.monitorTime.split("~")[0].replace(" ", ""),
+							endDate:vm.monitorTime.split("~")[1].replace(" ", "")
+						},
+						done:function(ret){
+							layer.close(index);
+						},
+						page: {curr: 1}
+					});
+				},
+			}
+		})
+
+		// 获取以当前时间为截止时间的一个星期的时间段
+		function getOneWeek(){
+			var currentTime = new Date().getTime();
+			var previousTime = currentTime - 24*60*60*1000*6;
+			var weekTime = {
+				"previousTime":gettingTime(previousTime).split(" ")[0],
+				"currentTime":gettingTime(currentTime).split(" ")[0]
+			}
+			return weekTime;
+		}
+	</script>
+</html>

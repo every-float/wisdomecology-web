@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <script type="text/javascript" src="../../common/commonCss.js"></script>
+        <script type="text/javascript" src="../../common/commonUrl.js"></script>
+        <script type="text/javascript" src="../../common/commonJs.js"></script>
+        <style>
+            [v-cloak]{
+                display: none;
+            }
+            td{
+                text-align:center;
+                cursor: pointer;
+            }
+            td.active{
+                background: red;
+            }
+
+            /* 横向滚动 */
+           #demoMw2 {
+               white-space: nowrap;
+               overflow: auto;
+               padding: 47px 15px;
+           }
+        </style>
+        <title>统计</title>
+    </head>
+    <body>
+        <div id="app" v-cloak>
+            <div class="layui-fluid">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div id="fnSure">确定</div>
+                    </div>
+                    <div class="layui-card-body" id="demoMw2">
+                        <table width="5920px" border="1">
+                          <tr align="center" valign="middle">
+                            <td width="100" rowspan="2" class="item" title="company_name" :class="company_name.checked?'active':''">单位名称</td>
+                            <td width="100" rowspan="2" class="item" title="address" :class="address.checked?'active':''">地址</td>
+                            <td width="100" rowspan="2" class="item" title="legal_representative" :class="legal_representative.checked?'active':''">法定代表人</td>
+                            <td width="100" rowspan="2" class="item" title="contact" :class="contact.checked?'active':''">联系人</td>
+                            <td width="100" rowspan="2" class="item" title="phone" :class="phone.checked?'active':''">联系电话</td>
+                            <td width="100" rowspan="2" class="item" title="credit_code" :class="credit_code.checked?'active':''">社会统一信用代码（营业执照、组织机构代码）</td>
+                            <td width="100" rowspan="2" class="item" title="industry_type" :class="industry_type.checked?'active':''">行业类别</td>
+                            <td height="55" colspan="2">报告书或报告表</td>
+                            <td width="100">登记表或现状环评</td>
+                            <td colspan="4">主要污染物类别</td>
+                            <td width="100" rowspan="2">是否为重点排污单位（年度）</td>
+                            <td width="100" rowspan="2">主要生产工艺</td>
+                            <td width="100" rowspan="2">主要产品</td>
+                            <td width="150" rowspan="2">主要原料</td>
+                            <td colspan="4">废水</td>
+                            <td colspan="3">废气</td>
+                            <td colspan="3">危险废物</td>
+                            <td colspan="3">自动监测设施</td>
+                            <td colspan="2">工况用电监测装置</td>
+                            <td colspan="2">环境信息公开方式</td>
+                            <td colspan="2">环境风险源</td>
+                            <td colspan="4">放射源</td>
+                            <td colspan="3">射线装置</td>
+                            <td width="100" rowspan="2">排污许可证编号</td>
+                            <td colspan="3">重污染天气应急</td>
+                          </tr>
+                          <tr>
+                            <td width="100" height="103" align="center" valign="middle" 
+                                class="item" title="bgs_pfwh" :class="bgs.children[0].checked?'active':''">批复文号</td>
+                            <td width="100" align="center" valign="middle"
+                                class="item" title="bgs_yswh" :class="bgs.children[1].checked?'active':''">验收文号</td>
+                            <td width="100" align="center" valign="middle"
+                                class="item" title="djb_bawh" :class="djb.children[0].checked?'active':''">备案文号</td>
+                            <td width="100" title="bgs_pfwh" :class="bgs.children[0].checked?'active':''">废水</td>
+                            <td width="100">废气</td>
+                            <td width="100">固体废物</td>
+                            <td width="100">噪声</td>
+                            <td width="100">废水治理工艺</td>
+                            <td width="100">废水排放口数量</td>
+                            <td width="100">是否设置规范化废水排放口</td>
+                            <td width="100">废水排放去向</td>
+                            <td width="100">废气治理工艺</td>
+                            <td width="100">废气排放口数量</td>
+                            <td width="100">是否设置规范化废气排放口</td>
+                            <td width="100">是否有危废标志</td>
+                            <td width="100">储存场所是否规范</td>
+                            <td width="100">是否分类存放</td>
+                            <td width="100">废水（监测因子）</td>
+                            <td width="100">废气（监测因子）</td>
+                            <td width="100">联网情况</td>
+                            <td width="100">是否安装工况用电监测装置</td>
+                            <td width="100">工况用电监测装置数量</td>
+                            <td width="100">公示栏或电子屏</td>
+                            <td width="100">网站</td>
+                            <td width="100">是否编制突发环境事件应急预案</td>
+                            <td width="100">应急预案是否备案</td>
+                            <td width="100">放射源种类</td>
+                            <td width="100">放射性同位素名称</td>
+                            <td width="100">放射源数量</td>
+                            <td width="100">辐射安全许可证编号</td>
+                            <td width="100">射线装置种类</td>
+                            <td width="100">射线装置名称</td>
+                            <td width="100">射线装置数量</td>
+                            <td width="100">是否属于重污染天气应急减排单位</td>
+                            <td width="100">是否制订重污染天气应急预案并备案</td>
+                            <td width="100">是否属于豁免名单内企业</td>
+                          </tr>
+                        </table>
+
+
+                        <!-- <span class="layui-badge layui-bg-gray">很有想法的</span>
+                        <span class="layui-badge layui-bg-gray">专注设计</span>
+                        <span class="layui-badge layui-bg-gray">辣~</span>
+                        <span class="layui-badge layui-bg-gray">大长腿</span>
+                        <span class="layui-badge layui-bg-gray">川妹子</span>
+                        <span class="layui-badge layui-bg-gray">海纳百川</span>
+                        <span class="layui-badge layui-bg-gray">萌萌哒</span>
+                        <span class="layui-badge layui-bg-gray">萝莉</span>
+                        <span class="layui-badge layui-bg-gray">宅男拯救世界</span>
+                        <span class="layui-badge layui-bg-gray">我这么美我不能死</span>
+                        <span class="layui-badge layui-bg-gray">小清新</span>
+                        <span class="layui-badge layui-bg-gray">萌新求带</span>
+                        <span class="layui-badge layui-bg-gray">吃饱了才有力气减肥</span>
+                        <span class="layui-badge layui-bg-gray">穷游党</span>
+                        <span class="layui-badge layui-bg-gray">夜猫子</span>
+                        <span class="layui-badge layui-bg-gray">做一个开心的吃货</span>
+                        <span class="layui-badge layui-bg-gray">铲屎官</span>
+                        <span class="layui-badge layui-bg-gray">逗比</span>
+                        <span class="layui-badge layui-bg-gray">为了联盟</span>
+                        <span class="layui-badge layui-bg-gray">选择恐惧症</span>
+                        <span class="layui-badge layui-bg-gray">玄不救非，氪不改命</span>
+                        <span class="layui-badge layui-bg-gray">背包客</span>
+                        <span class="layui-badge layui-bg-gray">追剧是种坚持</span>
+                        <span class="layui-badge layui-bg-gray">懒癌患者</span> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    var insTb=null;
+    layui.use(['layer', 'form', 'admin',  'table', 'util', 'dropdown', 'laydate', 'mousewheel'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+
+        // 实现横向滚动
+        $('#demoMw2').on('mousewheel', function (event) {
+            $(this).stop();
+            $(this).animate({'scrollLeft': $(this).scrollLeft() - event.deltaFactor * event.deltaY * 2}, 80);
+            event.stopPropagation();
+            event.preventDefault();
+        });
+
+        var vm = new Vue({
+          el:"#app",
+          data:{
+              company_name:{
+                  "key": "company_name",
+                  "name": "单位名称",
+                  "checked":false
+              },
+              address:{
+                  "key": "address",
+                  "name": "地址",
+                  "checked":false
+              },
+              legal_representative:{
+                  "key": "legal_representative",
+                  "name": "法定代表人",
+                  "checked":false
+              },
+              contact:{
+                  "key": "contact",
+                  "name": "联系人",
+                  "checked":false
+              },
+              phone:{
+                  "key": "phone",
+                  "name": "联系电话",
+                  "checked":false
+              },
+              credit_code:{
+                  "key": "credit_code",
+                  "name": "社会统一信用代码（营业执照、组织机构代码）",
+                  "checked":false
+              },
+              industry_type:{
+                  "key": "industry_type",
+                  "name": "行业类别",
+                  "checked":false
+              },
+              bgs:{
+                  "key":"bgs",
+                  "name": "报告书或报告表",
+                  "children": [
+                      {
+                          "key": "bgs_pfwh",
+                          "name": "批复文号",
+                          "checked":false
+                      },
+                      {
+                          "key": "bgs_yswh",
+                          "name": "验收文号",
+                          "checked":false
+                      }
+                  ]
+              },
+              djb:{
+                  "key":"djb",
+                  "name": "登记表或现状环评 ",
+                  "children": [
+                      {
+                          "key": "djb_bawh",
+                          "name": "备案文号",
+                          "checked":false
+                      }
+                  ]
+              },
+              wrw:{   
+                  "key":"wrw",
+                  "name": "主要污染物类别",
+                  "children": [
+                      {
+                          "key": "wrw_fs",
+                          "name": "废水",
+                          "checked":false
+                      },
+                      {
+                          "key": "wrw_fq",
+                          "name": "废气",
+                          "checked":false
+                      },
+                      {
+                          "key": "wrw_fw",
+                          "name": "固体废物",
+                          "checked":false
+                      },
+                      {
+                          "key": "wrw_zs",
+                          "name": "噪声",
+                          "checked":false
+                      }
+                  ]
+              },
+              is_zdpwdw:{
+                  "key": "is_zdpwdw",
+                  "name": "是否为重点排污单位（年度）",
+                  "checked":false
+              },
+              zyscgy:{
+                  "key": "zyscgy",
+                  "name": "主要生产工艺",
+                  "checked":false
+              },
+              zycp:{
+                  "key": "zycp",
+                  "name": "主要产品",
+                  "checked":false
+              },
+              zyyl:{
+                  "key": "zyyl",
+                  "name": "主要原料",
+                  "checked":false
+              },
+              fs:{   
+                  "key": "fs",
+                  "name": "废水 ",
+                  "children": [
+                      {
+                          "key": "fs_zlgy",
+                          "name": "废水治理工艺",
+                          "checked":false
+                      },{
+                          "key": "fs_pfksl",
+                          "name": "废水排放口数量",
+                          "checked":false
+                      },{
+                          "key": "fs_sfgf",
+                          "name": "是否设置规范化废水排放口",
+                          "checked":false
+                      },{
+                          "key": "fs_pfqs",
+                          "name": "废水排放去向",
+                          "checked":false
+                      }
+                  ]
+              },
+              fq:{
+                  "key": "fq",
+                  "name": "废气",
+                  "children": [
+                      {
+                          "key": "fq_zlgy",
+                          "name": "废气治理工艺",
+                          "checked":false
+                      },{
+                          "key": "fq_pfksl",
+                          "name": "废气排放口数量",
+                          "checked":false
+                      },{
+                          "key": "fq_sfgf",
+                          "name": "是否设置规范化废气排放口",
+                          "checked":false
+                      }
+                  ]
+              },
+              fw:{
+                  "key": "fw",
+                  "name": "危险废物",
+                  "children": [
+                      {
+                          "key": "fw_sfywfbz",
+                          "name": "是否有危废标志",
+                          "checked":false
+                      },{
+                          "key": "fw_sfgf",
+                          "name": "储存场所是否规范",
+                          "checked":false
+                      },{
+                          "key": "fw_sfflcf",
+                          "name": "是否分类存放",
+                          "checked":false
+                      }
+                  ]
+              },
+              zd:{
+                  "key": "zd",
+                  "name": "自动监测设施",
+                  "children": [
+                      {
+                          "key": "zd_jcfs",
+                          "name": "废水（监测因子）",
+                          "checked":false
+                      },{
+                          "key": "zd_jcfq",
+                          "name": "废气（监测因子）",
+                          "checked":false
+                      },{
+                          "key": "zd_lwqk",
+                          "name": "联网情况",
+                          "checked":false
+                      }
+                  ]
+              },
+              gk1:{
+                  "key": "gk",
+                  "name": "工况用电监测装置",
+                  "children": [
+                      {
+                          "key": "gk_sfaz",
+                          "name": "是否安装工况用电监测装置",
+                          "checked":false
+                      },{
+                          "key": "gk_azsl",
+                          "name": "工况用电监测装置数量",
+                          "checked":false
+                      }
+                  ]
+              },
+              gk2:{
+                  "key": "gk",
+                  "name": "环境信息公开方式",
+                  "children": [
+                      {
+                          "key": "gk_gkfs",
+                          "name": "公示栏或电子屏",
+                          "checked":false
+                      },{
+                          "key": "gk_gkwz",
+                          "name": "网站",
+                          "checked":false
+                      }
+                  ]
+              },
+              fx:{
+                  "key": "fx",
+                  "name": "环境风险源",
+                  "children": [
+                      {
+                          "key": "fx_sfyjya",
+                          "name": "是否编制突发环境事件应急预案",
+                          "checked":false
+                      },{
+                          "key": "fx_sfyaba",
+                          "name": "应急预案是否备案",
+                          "checked":false
+                      }
+                  ]
+              },
+              fsy:{
+                  "key": "fsy",
+                  "name": "放射源",
+                  "children": [
+                      {
+                          "key": "fsy_fsyzl",
+                          "name": "放射源种类",
+                          "checked":false
+                      },{
+                          "key": "fsy_twsmc",
+                          "name": "放射性同位素名称",
+                          "checked":false
+                      },{
+                          "key": "fsy_fsysl",
+                          "name": "放射源数量",
+                          "checked":false
+                      },{
+                          "key": "fsy_xkzbh",
+                          "name": "辐射安全许可证编号",
+                          "checked":false
+                      }
+                  ]
+              },
+              sx:{
+                  "key": "sx",
+                  "name": "射线装置",
+                  "children": [
+                      {
+                          "key": "sx_zzzl",
+                          "name": "射线装置种类",
+                          "checked":false
+                      },{
+                          "key": "sx_zzmc",
+                          "name": "射线装置名称",
+                          "checked":false
+                      },{
+                          "key": "sx_zzsl",
+                          "name": "射线装置数量",
+                          "checked":false
+                      }
+                  ]
+              },
+              pwxkzbh:{
+                  "key": "pwxkzbh",
+                  "name": "排污许可证编号",
+                  "checked":false
+              },
+              tqyj:{
+                  "key": "tqyj",
+                  "name": "重污染天气应急",
+                  "children": [
+                      {
+                          "key": "tqyj_sfsyyjdw",
+                          "name": "是否属于重污染天气应急减排单位",
+                          "checked":false
+                      },{
+                          "key": "tqyj_sfyjya",
+                          "name": "是否制订重污染天气应急预案并备案",
+                          "checked":false
+                      },{
+                          "key": "tqyj_sfhmqy",
+                          "name": "是否属于豁免名单内企业",
+                          "checked":false
+                      }
+                  ]
+              },
+          },
+          methods:{
+            fnSelect:function(item, index){
+                vm.curItem=item;
+                fn_initTable();
+            },
+          }
+        });
+
+        $('table td.item').click(function(){
+            switch ($(this).attr('title')) {
+              case 'company_name':
+                  vm.company_name.checked=!vm.company_name.checked;
+                break;
+              case 'address':
+                  vm.address.checked=!vm.address.checked;
+                break;
+              case 'legal_representative':
+                  vm.legal_representative.checked=!vm.legal_representative.checked;
+                break;
+              case 'contact':
+                  vm.contact.checked=!vm.contact.checked;
+                break;
+              case 'phone':
+                  vm.phone.checked=!vm.phone.checked;
+                break;
+              case 'credit_code':
+                  vm.credit_code.checked=!vm.credit_code.checked;
+                break;
+              case 'industry_type':
+                  vm.industry_type.checked=!vm.industry_type.checked;
+                break;
+              case 'bgs_pfwh':
+                  vm.bgs.children[0].checked=!vm.bgs.children[0].checked;
+                break;
+              case 'bgs_yswh':
+                  vm.bgs.children[1].checked=!vm.bgs.children[1].checked;
+                break;
+            }
+        });
+
+        $('#fnSure').click(function(){
+            var data=[];
+            if(vm.company_name.checked){
+                data.push({
+                  "key": "company_name",
+                  "name": "单位名称",
+                });
+            }
+            if(vm.address.checked){
+                data.push({
+                  "key": "address",
+                  "name": "地址",
+                });
+            }
+            if(vm.legal_representative.checked){
+                data.push({
+                    "key": "legal_representative",
+                    "name": "法定代表人",
+                })
+            }
+            if(vm.contact.checked){
+                data.push({
+                    "key": "contact",
+                    "name": "联系人",
+                })
+            }
+            if(vm.phone.checked){
+                data.push({
+                    "key": "phone",
+                    "name": "联系电话",
+                })
+            }
+
+            if(vm.credit_code.checked){
+                data.push({
+                    "key": "credit_code",
+                    "name": "社会统一信用代码（营业执照、组织机构代码）",
+                })
+            }
+
+            if(vm.industry_type.checked){
+                data.push({
+                    "key": "industry_type",
+                    "name": "社会统一信用代码（营业执照、组织机构代码）",
+                })
+            }
+
+            if(vm.industry_type.checked){
+                data.push({
+                    "key": "industry_type",
+                    "name": "社会统一信用代码（营业执照、组织机构代码）",
+                })
+            }
+
+            if(vm.bgs.children[0].checked||vm.bgs.children[1].checked){
+                var list=[];
+                if(vm.bgs.children[0].checked){
+                    list.push({
+                        "key": "bgs_pfwh",
+                        "name": "批复文号",
+                    })
+                }
+                if(vm.bgs.children[1].checked){
+                    list.push({
+                        "key": "bgs_yswh",
+                        "name": "验收文号",
+                    })
+                }
+                data.push({
+                  "key":"bgs",
+                  "name": "报告书或报告表",
+                  "children": list
+                })
+            }
+
+            console.log(JSON.stringify(data));
+           
+          //     bgs:{
+          //         "key":"bgs",
+          //         "name": "报告书或报告表",
+          //         "children": [
+          //             {
+          //                 "key": "bgs_pfwh",
+          //                 "name": "批复文号",
+          //                 "checked":false
+          //             },
+          //             {
+          //                 "key": "bgs_yswh",
+          //                 "name": "验收文号",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     djb:{
+          //         "key":"djb",
+          //         "name": "登记表或现状环评 ",
+          //         "children": [
+          //             {
+          //                 "key": "djb_bawh",
+          //                 "name": "备案文号",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     wrw:{   
+          //         "key":"wrw",
+          //         "name": "主要污染物类别",
+          //         "children": [
+          //             {
+          //                 "key": "wrw_fs",
+          //                 "name": "废水",
+          //                 "checked":false
+          //             },
+          //             {
+          //                 "key": "wrw_fq",
+          //                 "name": "废气",
+          //                 "checked":false
+          //             },
+          //             {
+          //                 "key": "wrw_fw",
+          //                 "name": "固体废物",
+          //                 "checked":false
+          //             },
+          //             {
+          //                 "key": "wrw_zs",
+          //                 "name": "噪声",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     is_zdpwdw:{
+          //         "key": "is_zdpwdw",
+          //         "name": "是否为重点排污单位（年度）",
+          //         "checked":false
+          //     },
+          //     zyscgy:{
+          //         "key": "zyscgy",
+          //         "name": "主要生产工艺",
+          //         "checked":false
+          //     },
+          //     zycp:{
+          //         "key": "zycp",
+          //         "name": "主要产品",
+          //         "checked":false
+          //     },
+          //     zyyl:{
+          //         "key": "zyyl",
+          //         "name": "主要原料",
+          //         "checked":false
+          //     },
+          //     fs:{   
+          //         "key": "fs",
+          //         "name": "废水 ",
+          //         "children": [
+          //             {
+          //                 "key": "fs_zlgy",
+          //                 "name": "废水治理工艺",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fs_pfksl",
+          //                 "name": "废水排放口数量",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fs_sfgf",
+          //                 "name": "是否设置规范化废水排放口",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fs_pfqs",
+          //                 "name": "废水排放去向",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     fq:{
+          //         "key": "fq",
+          //         "name": "废气",
+          //         "children": [
+          //             {
+          //                 "key": "fq_zlgy",
+          //                 "name": "废气治理工艺",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fq_pfksl",
+          //                 "name": "废气排放口数量",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fq_sfgf",
+          //                 "name": "是否设置规范化废气排放口",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     fw:{
+          //         "key": "fw",
+          //         "name": "危险废物",
+          //         "children": [
+          //             {
+          //                 "key": "fw_sfywfbz",
+          //                 "name": "是否有危废标志",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fw_sfgf",
+          //                 "name": "储存场所是否规范",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fw_sfflcf",
+          //                 "name": "是否分类存放",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     zd:{
+          //         "key": "zd",
+          //         "name": "自动监测设施",
+          //         "children": [
+          //             {
+          //                 "key": "zd_jcfs",
+          //                 "name": "废水（监测因子）",
+          //                 "checked":false
+          //             },{
+          //                 "key": "zd_jcfq",
+          //                 "name": "废气（监测因子）",
+          //                 "checked":false
+          //             },{
+          //                 "key": "zd_lwqk",
+          //                 "name": "联网情况",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     gk1:{
+          //         "key": "gk",
+          //         "name": "工况用电监测装置",
+          //         "children": [
+          //             {
+          //                 "key": "gk_sfaz",
+          //                 "name": "是否安装工况用电监测装置",
+          //                 "checked":false
+          //             },{
+          //                 "key": "gk_azsl",
+          //                 "name": "工况用电监测装置数量",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     gk2:{
+          //         "key": "gk",
+          //         "name": "环境信息公开方式",
+          //         "children": [
+          //             {
+          //                 "key": "gk_gkfs",
+          //                 "name": "公示栏或电子屏",
+          //                 "checked":false
+          //             },{
+          //                 "key": "gk_gkwz",
+          //                 "name": "网站",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     fx:{
+          //         "key": "fx",
+          //         "name": "环境风险源",
+          //         "children": [
+          //             {
+          //                 "key": "fx_sfyjya",
+          //                 "name": "是否编制突发环境事件应急预案",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fx_sfyaba",
+          //                 "name": "应急预案是否备案",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     fsy:{
+          //         "key": "fsy",
+          //         "name": "放射源",
+          //         "children": [
+          //             {
+          //                 "key": "fsy_fsyzl",
+          //                 "name": "放射源种类",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fsy_twsmc",
+          //                 "name": "放射性同位素名称",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fsy_fsysl",
+          //                 "name": "放射源数量",
+          //                 "checked":false
+          //             },{
+          //                 "key": "fsy_xkzbh",
+          //                 "name": "辐射安全许可证编号",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     sx:{
+          //         "key": "sx",
+          //         "name": "射线装置",
+          //         "children": [
+          //             {
+          //                 "key": "sx_zzzl",
+          //                 "name": "射线装置种类",
+          //                 "checked":false
+          //             },{
+          //                 "key": "sx_zzmc",
+          //                 "name": "射线装置名称",
+          //                 "checked":false
+          //             },{
+          //                 "key": "sx_zzsl",
+          //                 "name": "射线装置数量",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+          //     pwxkzbh:{
+          //         "key": "pwxkzbh",
+          //         "name": "排污许可证编号",
+          //         "checked":false
+          //     },
+          //     tqyj:{
+          //         "key": "tqyj",
+          //         "name": "重污染天气应急",
+          //         "children": [
+          //             {
+          //                 "key": "tqyj_sfsyyjdw",
+          //                 "name": "是否属于重污染天气应急减排单位",
+          //                 "checked":false
+          //             },{
+          //                 "key": "tqyj_sfyjya",
+          //                 "name": "是否制订重污染天气应急预案并备案",
+          //                 "checked":false
+          //             },{
+          //                 "key": "tqyj_sfhmqy",
+          //                 "name": "是否属于豁免名单内企业",
+          //                 "checked":false
+          //             }
+          //         ]
+          //     },
+        }); 
+    });
+</script>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>报警清单</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-card">
+				<div class="layui-card-header">数据信息</div>
+				<div class="layui-card-body">
+					<form id="searchForm" class="layui-form">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">区域编号</label>
+								<div class="layui-input-inline">
+									<input type="text" id="sectionCode" class="layui-input" name="sectionCode" onclick="getTreeList()" />
+									<div id="sectionInfo" style="background:#fff;border:1px solid #c9c9c9;display: none;position: absolute;z-index: 999"> 
+										<ul id="sectionList" class="ztree" style="width:300px;max-height:320px;overflow:auto"></ul> 
+									</div>
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">区域名称</label>
+								<div class="layui-input-inline">
+									<input type="text" id="sectionName" name="sectionName" class="layui-input" />
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">指标名称</label>
+								<div class="layui-input-inline">
+									<input type="text" id="indexName" name="indexName" class="layui-input" />
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-inline">
+								<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+								<button type="reset" class="layui-btn layui-btn-primary" onclick="toReset()">重置</button>
+							</div>
+						</div>
+					</form>
+					<div class="layui-tab" lay-filter="listType">
+						<ul class="layui-tab-title">
+							<li class="layui-this">待处理</li>
+							<li>已处理</li>
+						</ul>
+						<div class="layui-tab-content">
+							<div class="layui-tab-item layui-show">
+								<table id="warningDealingList" lay-filter="warningDealingList" class="layui-table"></table>
+								<script type="text/html" id="operation">
+									<a class="layui-btn layui-btn-xs" lay-event="dealIt">处理</a>
+								</script>
+							</div>
+							<div class="layui-tab-item">
+								<table id="warningDealtList" lay-filter="warningDealtList" class="layui-table"></table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="dealInfo" class="layui-card" style="display:none;">
+			<div class="layui-card-body">
+				<form id="dealForm" class="layui-form">
+					<input type="hidden" id="riverWarningMsgId" name="riverWarningMsgId" />
+					<label class="layui-form-label" style="padding-left:0;text-align:left;">处理意见<span style="color:red;">*</span></label>
+					<div class="layui-form-item">
+						<div class="layui-input-block" style="margin-left:0;">
+							<textarea id="warningProcessMsg" class="layui-textarea" name="warningProcessMsg" style="resize:none;" lay-verify="required"></textarea>
+						</div>
+					</div>
+					<div class="layui-form-item" style="display:none;">
+						<div class="layui-input-inline">
+							<button id="saveBtn" class="layui-btn" lay-submit lay-filter="saveInfo"></button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript">
+		var layer, table, form, pageIndex;
+		var sectionList, dataList, dealType = "dealing";
+		var dataInfo = [], sectionCode = "";
+        $(function(){
+            layui.use(['table', 'form', 'element', 'layer'], function(){
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				var element = layui.element;
+                
+				initTree();
+				getWarningTable("dealing");
+
+				element.on("tab(listType)", function(data){
+					if(data.index == 0){
+						dealType = "dealing";
+					}else{
+						dealType = "dealt";
+					}
+					getWarningTable(dealType);
+				})
+
+				table.on('tool(warningDealingList)', function(obj){
+					if(obj.event == "dealIt"){
+						$("#riverWarningMsgId").val(obj.data.id);
+						pageIndex = layer.open({
+							type:1,
+							title: "报警处理",
+							shade: 0.6,
+							maxmin: true,
+							area: ['350px', '270px'],
+							content:$("#dealInfo"),
+							btn: ['确定', '取消'],
+							yes: function(index, layero){
+								$("#saveBtn").trigger("click");
+							},
+							btn2: function(index, layero){
+								layer.close(index);
+							}
+						})
+					}
+				})
+				
+				// form监听
+				form.on('submit(toSearch)', function(){
+					getWarningTable(dealType);
+					return false;
+				});
+				form.on('submit(saveInfo)', function(){
+					dealIt();
+					return false;
+				})
+            })
+		});
+
+		// 区县及断面列表
+		function initTree(){
+			$.ajax({
+				type:"get",
+				url:URL_cross_section_list,
+				dataType:"json",
+				success:function(ret){
+					if(ret.code == 0){
+						var treeNodes = ret.data;
+						var setting = {
+							check : {
+								enable: false
+							},
+							data : {
+								simpleData : {
+									enable : true,
+									idKey : 'id',
+									pIdKey : 'parentId'
+								},
+								key : {
+									name : 'name',
+									title : 'name'
+								}
+							},
+							callback: {
+								onClick: treeOnClick
+							}
+						};
+						sectionList = $.fn.zTree.init($('#sectionList'), setting, treeNodes);
+						sectionCode = treeNodes.id;
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，未能获取到信息！");
+				}
+			})
+		}
+
+		function treeOnClick(event, treeId, treeNode){
+			sectionCode = treeNode.id;
+			$("#sectionCode").val(sectionCode);
+			$("#sectionName").val(treeNode.name);
+			$('#sectionInfo').fadeOut('fast');
+		}
+
+		// 显示查询树状图
+		function getTreeList(){
+			$('#sectionInfo').slideDown('fast');
+			$('body').bind('mousedown', function(event, callback) {
+				if (!(event.target.id == 'sectionInfo' || $(event.target).parents('#sectionInfo').length > 0)) {
+					$('#sectionInfo').fadeOut('fast');
+					$('body').unbind('mousedown', callback);
+				}
+			});
+		}
+		
+		// 报警列表
+		function getWarningTable(type){
+			var index = layer.load(2,{shade:0.6});
+			if(type == "dealing"){
+				var url = URL_warning_dealing_list;
+				var cols = [[
+					{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{field: 'sectionName', title: '区域名称', minWidth:180, align: 'center', fixed:"left"},
+					{field: 'indexName', title: '指标名称', width:160, align: 'center', fixed:"left"},
+					{title: '上限值', width:180, align: 'center', templet:function(d){
+						if(d.upperVal){
+							return d.upperVal;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '下限值', width:100, align: 'center', templet:function(d){
+						if(d.lowerVal){
+							return d.lowerVal;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '警告值', width:100, align: 'center', templet:function(d){
+						if(d.warningVal){
+							return d.warningVal;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '预警时间', width:170, align: 'center', templet:function(d){
+						if(d.warningTime){
+							return d.warningTime;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '操作', width:100, toolbar:'#operation', align: 'center', fixed:'right'}
+				]];
+			}else{
+				var url = URL_warning_dealt_list;
+				var cols = [[
+					{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+						return d.LAY_TABLE_INDEX+1;
+					}},
+					{field: 'sectionName', title: '区域名称', width:180, align: 'center', fixed:"left"},
+					{field: 'indexName', title: '指标名称', width:160, align: 'center', fixed:"left"},
+					{title: '上限值', width:100, align: 'center', templet:function(d){
+						if(d.upperVal){
+							return d.upperVal;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '下限值', width:100, align: 'center', templet:function(d){
+						if(d.lowerVal){
+							return d.lowerVal;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '警告值', width:100, align: 'center', templet:function(d){
+						if(d.warningVal){
+							return d.warningVal;
+						}else{
+							return "暂无";
+						}
+					}},
+					{title: '预警时间', width:170, align: 'center', templet:function(d){
+						if(d.warningTime){
+							return d.warningTime;
+						}else{
+							return "暂无";
+						}
+					}},
+					{field:'warningProcessMsg', title: '处理信息', minWidth:180, align: 'center'},
+					{field:'warningProcessTime', title: '处理时间', width:170, align: 'center'},
+					{field:'warningProcessUserName', title: '处理人', width:140, align: 'center'}
+				]];
+			}
+			dataList = table.render({
+				elem: type=='dealing'?'#warningDealingList':'#warningDealtList',
+				url: url,
+				page: true,
+				where:{
+					sectionCode:$("#sectionCode").val(),
+					sectionName:$("#sectionName").val(),
+					indexName:$("#indexName").val()
+				},
+				toolbar: false,
+				defaultToolbar: false,
+				cols: cols,
+				done:function(ret){
+					layer.close(index);
+				}
+			})
+		};
+
+		// 重置
+		function toReset(){
+			$("#sectionCode").val("");
+			$("#sectionName").val("");
+			$("#indexName").val("");
+		}
+
+		// 处理报警信息
+		function dealIt(){
+			layer.confirm("确定要处理该条警报信息？！", function(index){
+				$.ajax({
+					type:"post",
+					url:URL_warning_deal,
+					dataType:"json",
+					data:$("#dealForm").serialize(),
+					beforeSend:function(){
+						layer.load(2,{shade:0.6});
+					},
+					success:function(ret){
+						if(ret.code == 0){
+							layer.close(pageIndex);
+							getWarningTable(dealType);
+							layer.msg("处理成功！");
+						}else{
+							layer.msg(ret.msg);
+						}
+					},
+					error:function(){
+						layer.msg("网络访问出错，处理信息提交失败！");
+					},
+					complete:function(){
+						layer.close(index);
+						layer.close("loading");
+					}
+				})
+			},function(index){
+				layer.close(index);
+			});
+		}
+	</script>
+</html>

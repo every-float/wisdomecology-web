@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>选择人员</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>选择人员-单选</title>
+	<link rel="stylesheet" href="../../scripts/ztree/bootstrapStyle/bootstrapStyle.css" type="text/css">
+	<style>
+	.ztree li span.button.userIcon_ico_docu{margin-left:2px; background: url(images/user.png) no-repeat scroll 0 0 transparent; *vertical-align:middle}
+	</style>
+</head>
+<body>
+	<input type="hidden" id="orgId" name="orgId" value="">
+	<div id="zTreeDiv" style="padding: 10px">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<select id="orgList" name="orgList" lay-filter="orgList" lay-verify="required">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+		</form>
+		<div class="well" style="margin-top: 15px">
+		<ul id="zTreeList" class="ztree" style="margin-top:0; width:100%;"></ul>
+		</div>
+	</div>
+	<input type="hidden" id="selDeptUserId">
+	<input type="hidden" id="selDeptUserName">
+	<!-- 部门信息 -->
+	<input type="hidden" id="selDeptId">
+	<input type="hidden" id="selDeptName">
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="js/tree_departUser.js"></script>
+</body>
+</html>

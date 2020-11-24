@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<script type="text/javascript" src="../../common/commonUrl.js"></script>
+		<script type="text/javascript" src="../../common/commonJs.js"></script>
+
+        <link rel="stylesheet" href="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css">
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-datepicker@1.8.0/dist/css/bootstrap-datepicker.standalone.min.css">
+        <script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.js"></script>
+        <script src="./js/js-year-calendar.zh-CN.js"></script>
+        <script src="https://unpkg.com/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+        <style>
+            body {
+                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+				background-color: #f5f7f9;
+            }
+            .layui-form-label{
+                width:110px;
+                padding: 8px 8px 0px 8px;
+            }
+            .calendar{
+                overflow: hidden;
+            }
+            .calendar .months-container .month-container{
+                height: 312px;
+                margin-top: 20px;
+            }
+            .calendar .months-container .month-container .month{
+                height: 257px;
+            }
+            .list-group-item{
+                padding: 0px 5px;
+            }
+            .month-container{
+                position: relative;
+            }
+            .month-container .footer-tip{
+                width: 100%;
+                box-sizing: border-box;
+                margin: 0px auto;
+                padding: 10px 0px;
+            }
+            .month-container .footer-tip .grid-demo{
+                font-size: 12px;
+                text-align: right;
+            }
+            .day{
+                box-shadow: none!important;
+            }
+        </style>
+		<title>统计</title>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="layui-fluid">
+			    <div class="layui-card">
+			        <div class="layui-card-body">
+			            <!-- 表格工具栏 -->
+			            <form class="layui-form toolbar">
+			                <div class="layui-form-item">
+			                    <div class="layui-inline">
+			                        <label class="layui-form-label">污染指标:</label>
+			                        <div class="layui-input-inline">
+			                            <select name="index" lay-filter="index">
+		                                    <option v-for="(item, index) in index_list" :key="index" :value="item.value">{{item.key}}</option>
+		                                </select>
+			                        </div>
+			                    </div>
+								<div class="layui-inline">
+			                        <div class="layui-input-inline">
+			                            <span id="dialogBtn13" class="layui-btn layui-btn-primary icon-btn">
+		                                    &nbsp;站点 <i class="layui-icon layui-icon-drop"></i>
+		                                </span>
+			                        </div>
+			                    </div>
+			                </div>
+			            </form>
+						<div id="calendar"></div>
+			        </div>
+			    </div>
+
+<!--                <div class="layui-card">-->
+<!--                    <div class="layui-card-body">-->
+<!--                        <div id="calendar"></div>-->
+<!--                    </div>-->
+<!--                </div>-->
+			</div>
+		</div>
+	</body>
+</html>
+<script>
+    if('vue'){
+    	var vm = new Vue({
+	      el:"#app",
+	      data:{
+			list:[],
+			index_list:[],
+
+            calendar_list:[],
+            currentYear:'',
+            currentIndex:'aqi',
+	      },
+          methods:{
+            fnIndexMore:function(type, value){
+                var result={
+                    bgcolor:'',
+                };
+                switch (type) {
+                    case 'aqi':
+                        if(value<=50){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(50<value&&value<=100){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(100<value&&value<=150){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(150<value&&value<=200){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(200<value&&value<=300){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(300<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+                    case 'so2':
+                        if(value<=150){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(150<value&&value<=500){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(500<value&&value<=650){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(650<value&&value<=800){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else{
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='重度';
+                        }
+                        break;
+                    case 'no2':
+                        if(value<=100){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(100<value&&value<=200){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(200<value&&value<=700){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(700<value&&value<=1200){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(1200<value&&value<=2340){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(2340<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+                    case 'pm25':
+                        if(value<=35){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(35<value&&value<=75){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(75<value&&value<=115){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(115<value&&value<=150){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(150<value&&value<=250){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(250<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+                    case 'pm10':
+                        if(value<=50){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(50<value&&value<=150){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(150<value&&value<=250){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(250<value&&value<=350){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(350<value&&value<=420){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(420<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+                    case 'co':
+                        if(value<=5){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(5<value&&value<=10){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(10<value&&value<=35){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(35<value&&value<=60){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(60<value&&value<=90){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(90<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+                    case 'o3':
+                        if(value<=160){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(160<value&&value<=200){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(200<value&&value<=300){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(300<value&&value<=400){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(400<value&&value<=800){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(800<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+                    case 'o38h':
+                        if(value<=160){
+                            result.bgcolor='rgb(0,228,0)';
+                            result.color='white';
+                            result.level='优';
+                        }else if(160<value&&value<=200){
+                            result.bgcolor='rgb(255,255,0)';
+                            result.color='black';
+                            result.level='良';
+                        }else if(200<value&&value<=300){
+                            result.bgcolor='rgb(255,126,0)';
+                            result.color='white';
+                            result.level='轻度';
+                        }else if(300<value&&value<=400){
+                            result.bgcolor='rgb(255,0,0)';
+                            result.color='white';
+                            result.level='中度';
+                        }else if(400<value&&value<=800){
+                            result.bgcolor='rgb(153,0,76)';
+                            result.color='white';
+                            result.level='重度';
+                        }else if(800<value){
+                            result.bgcolor='rgb(126,0,35)';
+                            result.color='white';
+                            result.level='严重';
+                        }
+                        break;
+
+                }
+                return result;
+            },
+          }
+	    });
+    }
+	var insTb=null;
+    var calendar=null;
+    vm.currentYear=new Date().getFullYear();
+    layui.use(['layer', 'form', 'admin',  'table', 'util', 'dropdown', 'laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+
+        form.on('select(index)', function(data){
+             initCalendar(data.value.toLowerCase());
+        })
+
+        axios.all([fnGetSiteList(), fnGetIndexList()])
+            .then(axios.spread(function(res1, res2) {
+            	if(res1.status==200){
+            		vm.index_list=res1.data;
+            	}
+            	if(res2.status==200){
+            		var site_list=res2.data;
+            		for (var i = 0; i < site_list.length; i++) {
+	        	        if(site_list[i].pid==0){
+	        	            vm.list.push(site_list[i]);
+	        	        }
+	        	    }
+	        	    for (var i = 0; i < vm.list.length; i++) {
+	        	        var children=[];
+	        	        for (var j = 0; j < site_list.length; j++) {
+	        	            if(vm.list[i].sid==site_list[j].pid){
+	        	                var item=site_list[j];
+	        	                if(i==0&&j==0){
+	        	                	item.LAY_CHECKED=true;
+	        	                }else{
+	        	                	item.LAY_CHECKED=false;
+	        	                }
+	        	                children.push(item);
+	        	            }
+	        	        }
+	        	        vm.list[i]['children']=children;
+	        	    }
+            	}
+	            vm.$nextTick(function(){
+	            	form.render();
+	               	fn_getCalendarData();
+	            });
+            })
+        );
+
+
+
+        function initCalendar(indexType){
+            console.log(vm.calendar_list,99111119)
+            document.querySelector('#calendar').addEventListener('yearChanged', function(e) {
+                console.log('yearChanged----------------', e.currentYear)
+                if(vm.currentYear!=e.currentYear){
+                    vm.currentYear=e.currentYear;
+                    vm.calendar_list=[];
+                    fn_getCalendarData()
+                }
+            })
+
+            document.querySelector('#calendar').addEventListener('renderEnd', function(e) {
+                $('.footer-tip').remove();
+                $("#calendar .months-container .month-container").each(function(index, item) {
+                   var month=$(item).attr('data-month-id')*1-1;
+                   month+=2;//正常月份
+					// console.info("月份="+month);
+                   var itemCount=[
+                        {
+                            "level":'优',
+                            "count":0,
+                            "color":'white',
+                            "bgcolor":'rgb(0,228,0)'
+                        },
+                        {
+                            "level":'良',
+                            "count":0,
+                            "color":'black',
+                            "bgcolor":'rgb(255,255,0)'
+                        },
+                        {
+                            "level":'轻度',
+                            "count":0,
+                            "color":'white',
+                            "bgcolor":'rgb(255,126,0)'
+                        },
+                        {
+                            "level":'中度',
+                            "count":0,
+                            "color":'white',
+                            "bgcolor":'rgb(255,0,0)'
+                        },
+                        {
+                            "level":'重度',
+                            "count":0,
+                            "color":'white',
+                            "bgcolor":'rgb(153,0,76)'
+                        },
+                        {
+                            "level":'严重',
+                            "count":0,
+                            "color":'white',
+                            "bgcolor":'rgb(126,0,35)'
+                        }
+                   ];
+
+                   var totalCount=0;
+                   $(item).find('td .day-content').each(function(index2, item2) {
+                        var day=$(item2).html()*1;
+                        $.each(vm.calendar_list, function(index3, item3){     
+                            if( item3.mm==month && item3.dd==day ){
+                                totalCount++;
+
+                                switch (indexType) {
+                                    case 'aqi':
+                                        var itemMore=item3.aqi_more;
+                                        break;
+                                    case 'pm25':
+                                        var itemMore=item3.pm25_more;
+                                        break;
+                                    case 'pm10':
+                                        var itemMore=item3.pm10_more;
+                                        break;
+                                    case 'so2':
+                                        var itemMore=item3.so2_more;
+                                        break;
+                                    case 'no2':
+                                        var itemMore=item3.no2_more;
+                                        break;
+                                    case 'co':
+                                        var itemMore=item3.co_more;
+                                        break;
+                                    case 'o3':
+                                        var itemMore=item3.o3_more;
+                                        break;
+                                    case 'o38h':
+                                        var itemMore=item3.o38h_more;
+                                        break;
+                                }
+                                
+                                switch (itemMore.level) {
+                                    case "优":
+                                        itemCount[0].count++;
+                                        break;
+                                    case "良":
+                                        itemCount[1].count++;
+                                        break;
+                                    case "轻度":
+                                        itemCount[2].count++;
+                                        break;
+                                    case "中度":
+                                        itemCount[3].count++;
+                                        break;
+                                    case "重度":
+                                        itemCount[4].count++;
+                                        break;
+                                    case "严重":
+                                        itemCount[5].count++;
+                                        break;
+                                }
+                                $(item2).css({
+                                    background:itemMore.bgcolor,
+                                    color:itemMore.color,
+									margin: '0 1px',
+									padding: '3px 5px'
+                                })
+                            }    
+                        });  
+                   })
+
+                   if(totalCount>0){
+                      console.log(index+"-----")
+                      var tipArr=[];
+                      tipArr.push('<div class="layui-row footer-tip" style="width:'+$('.month').width()+'px">');
+
+                      for (var i = 0; i < itemCount.length; i++) {
+                          tipArr.push('<div class="layui-col-xs4 layui-col-sm4 layui-col-md4">');
+                                tipArr.push('<div class="grid-demo">');
+                                    tipArr.push(itemCount[i].level+'：');
+                                    tipArr.push('<span class="layui-badge" style="color: '+itemCount[i].color+';background-color: '+itemCount[i].bgcolor+';">'+itemCount[i].count+'</span>');
+                                tipArr.push('</div>');
+                          tipArr.push('</div>');
+                      }
+
+                      tipArr.push('</div>');
+                      $(item).append(tipArr.join(''));
+                   }
+                })
+            })
+            
+            calendar = new Calendar('#calendar', {
+                enableContextMenu: true,
+                enableRangeSelection: true,
+                language: 'zh-CN',
+                mouseOnDay: function(e) {
+                    if (e.events.length > 0) {
+                        var content = '';
+                        console.log(e.events)
+                        for (var i in e.events) {
+                            // console.log("e.events[i]="+JSON.stringify(e.events[i]));
+                            content +=  '<div class="event-tooltip-content">' +
+                                            '<div class="event-name" style="color:black;font-weight:bold;">' + e.events[i].name + '</div>' +
+                                            '<div class="event-location">' + e.events[i].location + '</div>' +
+                                        '</div>';
+                        }
+
+                        $(e.element).popover({
+                            trigger: 'manual',
+                            container: 'body',
+                            html: true,
+                            content: content
+                        });
+
+                        $(e.element).popover('show');
+                    }
+                },
+                mouseOutDay: function(e) {
+                    if (e.events.length > 0) {
+                        $(e.element).popover('hide');
+                    }
+                },
+                dataSource: vm.calendar_list
+            });
+        }
+
+        function fnGetSiteList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getIndex',
+            });
+        }
+
+        function fnGetIndexList(){
+        	return axios({
+                method: 'get',
+                url: baseUrl + 'dq/point/getPointTree',
+            });
+        }
+        
+        function fn_getCalendarData(){
+        	if('准备查询参数'){
+        		var ids=[];
+        		for (var i = 0; i < vm.list.length; i++) {
+        			var itemI=vm.list[i];
+                    for (var j = 0; j < itemI['children'].length; j++) {
+                    	var itemJ=itemI['children'][j];
+                        if(itemJ.LAY_CHECKED){
+                            ids.push(itemJ.sid);
+                        }
+                    }
+                }
+        	}
+
+            let param = new URLSearchParams()
+            param.append('id', ids.join(','));
+            param.append('time', vm.currentYear);
+            axios({
+                method: 'post',
+                url: baseUrl + 'dq/statistic/getDataByYear',
+                headers: {
+                    'Authorization': 'Bearer ' + $.cookie('login_sid_t_we'),
+                },
+                data: param
+            }).then(function(res) {
+                if ( res.data.code == 0 ) {
+                    var list=res.data.data;
+                    if(list.length>0){
+                        for (var i = 0; i < list.length; i++) {
+                            var item=list[i];
+                            // console.info('item='+JSON.stringify(item));
+                            item.name=dateFormat(item.time, 'yyyy-MM-dd');
+                            item.startDate=new Date(vm.currentYear, item.mm-1, item.dd);
+                            item.endDate=new Date(vm.currentYear, item.mm-1, item.dd);
+
+                            item.aqi_more=vm.fnIndexMore('aqi', item.aqi);
+                            item.so2_more=vm.fnIndexMore('so2', item.so2);
+                            item.no2_more=vm.fnIndexMore('no2', item.no2);
+                            item.pm25_more=vm.fnIndexMore('pm25', item.pm25);
+                            item.pm10_more=vm.fnIndexMore('pm10', item.pm10);
+                            item.co_more=vm.fnIndexMore('co', item.co);
+                            item.o3_more=vm.fnIndexMore('o3', item.o3);
+                            item.o38h_more=vm.fnIndexMore('o38h', item.o38h);
+
+                            if(item.aqi==''){
+                                item.aqi='-';
+                            }
+                            if(item.so2==''){
+                                item.so2='-';
+                            }
+                            if(item.no2==''){
+                                item.no2='-';
+                            }
+                            if(item.pm25==''){
+                                item.pm25='-';
+                            }
+                            if(item.pm10==''){
+                                item.pm10='-';
+                            }
+                            if(item.co==''){
+                                item.co='-';
+                            }
+                            if(item.o3==''){
+                                item.o3='-';
+                            }
+                            if(item.o38h==''){
+                                item.o38h='-';
+                            }
+
+                            console.log(item,888)
+
+                            var locationArr=[
+                                             '<div class="list-group">',
+                                               '<a href="#" class="list-group-item disabled">',
+                                                 'API：'+item.aqi+'<span style="padding:0px 5px;margin-left:10px;background:'+item.aqi_more.bgcolor+';color:'+item.aqi_more.color+'">'+item.aqi_more.level+'</span>',
+                                               '</a>',
+                                               '<a href="#" class="list-group-item">O3：'+(item.o3?item.o3:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">O3H8：'+(item.o3h8?item.o3h8:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">NO2：'+(item.no2?item.no2:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">SO2：'+(item.so2?item.so2:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">CO：'+(item.co?item.co:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">PM2.5：'+(item.pm25?item.pm25:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">PM10：'+(item.pm10?item.pm10:'-')+'</a>',
+                                               '<a href="#" class="list-group-item">首要污染物：'+(item.prime?item.prime:'-')+'</a>',
+                                             '</div>'
+                                            ];
+                            item.location= locationArr.join('');
+                        }
+
+                        vm.calendar_list=list;
+                        vm.$nextTick(function(){
+                            initCalendar(vm.currentIndex);
+                        });
+                    }
+                }
+            });
+        }
+
+        /* 渲染时间选择 */
+        laydate.render({
+            elem: 'input[name="time"]',
+            type: 'year',
+            value: new Date(),
+            trigger: 'click'
+        });
+
+        // iframe形式弹窗传值
+        $('#dialogBtn13').click(function () {
+            var layIndex = admin.open({
+                type: 2,
+                title: '站点选择',
+                content: 'site_select.html',
+                fixed: true,
+                offset: 'auto',
+                area: ['800px', '90%'],
+                data: {
+                    list:vm.list,
+                    type:'radio'
+                },
+                end: function () {  // 监听弹窗关闭
+                    if(admin.getLayerData(layIndex, 'optionType')=='sure'){
+                        if (admin.getLayerData(layIndex, 'list')) {  // 判断表单操作成功标识
+                            vm.list=admin.getLayerData(layIndex, 'list');
+                            fn_getCalendarData();
+                        }
+                    }
+                }
+            });
+        });
+
+        fn_getCalendarData();
+    });
+</script>

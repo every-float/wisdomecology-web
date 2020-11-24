@@ -1,0 +1,121 @@
+// 文本超出样式统一处理
+@mixin text-beyond {
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// 两侧背景色
+$asideBgColor: rgba(6, 9, 41, 0.34);
+
+
+*{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+html,body{
+    height: 100%;
+    background-color: #030D2E;
+}
+#app{
+    height: 100%;
+    overflow: hidden;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    // background-color: #2c3e50;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #c1c1c121;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+@media screen and (max-width: 768px){
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 0;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+        background-color: #C1C1C1;
+    }
+}
+
+// 以下样式专为百度地图弹框服务
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+}
+blockquote, body, button, dd, div, dl, dt, form, h1, h2, h3, h4, h5, h6, input, li, ol, p, pre, td, textarea, th, ul {
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.layui-col-lg1, .layui-col-lg10, .layui-col-lg11, .layui-col-lg12, .layui-col-lg2, .layui-col-lg3, .layui-col-lg4, .layui-col-lg5, .layui-col-lg6, .layui-col-lg7, .layui-col-lg8, .layui-col-lg9, .layui-col-md1, .layui-col-md10, .layui-col-md11, .layui-col-md12, .layui-col-md2, .layui-col-md3, .layui-col-md4, .layui-col-md5, .layui-col-md6, .layui-col-md7, .layui-col-md8, .layui-col-md9, .layui-col-sm1, .layui-col-sm10, .layui-col-sm11, .layui-col-sm12, .layui-col-sm2, .layui-col-sm3, .layui-col-sm4, .layui-col-sm5, .layui-col-sm6, .layui-col-sm7, .layui-col-sm8, .layui-col-sm9, .layui-col-xs1, .layui-col-xs10, .layui-col-xs11, .layui-col-xs12, .layui-col-xs2, .layui-col-xs3, .layui-col-xs4, .layui-col-xs5, .layui-col-xs6, .layui-col-xs7, .layui-col-xs8, .layui-col-xs9 {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+}
+.layui-col-xs1, .layui-col-xs10, .layui-col-xs11, .layui-col-xs12, .layui-col-xs2, .layui-col-xs3, .layui-col-xs4, .layui-col-xs5, .layui-col-xs6, .layui-col-xs7, .layui-col-xs8, .layui-col-xs9 {
+    float: left;
+}
+.layui-col-xs4 {
+    width: 33.33333333%;
+}
+.layui-col-xs8 {
+    width: 66.66666667%;
+}
+.layui-col-space5 {
+    margin: -2.5px;
+}
+.layui-col-space5>* {
+    padding: 2.5px;
+}
+.layui-col-space10 {
+    margin: -5px;
+}
+.layui-col-space10>* {
+    padding: 5px;
+}
+.layui-row:after, .layui-row:before {
+    content: '';
+    display: block;
+    clear: both;
+}
+.layui-badge, .layui-badge-dot, .layui-badge-rim {
+    position: relative;
+    display: inline-block;
+    padding: 0 6px;
+    font-size: 12px;
+    text-align: center;
+    background-color: #FF5722;
+    color: #fff;
+    border-radius: 2px;
+}
+h4, h5, h6 {
+    font-size: 100%;
+}

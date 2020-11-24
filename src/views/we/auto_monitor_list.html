@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>自动监测</title>
+		<script type="text/javascript" src="../../common/commonCss.js"></script>
+		<link rel="stylesheet" href="../../scripts/ztree/metroStyle/metroStyle.css" type="text/css">
+		<style>
+			html, body, .layui-card{
+				height: 100%;
+			}
+			body{overflow: hidden;}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-xs3">
+					<div class="layui-card">
+						<div class="layui-card-header">断面信息</div>
+						<div class="layui-card-body">
+							<div class="well">
+								<ul id="sectionList" class="ztree" style="margin-top:0; width:100%;"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-xs9">
+					<div class="layui-card">
+						<div class="layui-card-header">自动监测</div>
+						<div class="layui-card-body">
+							<form id="search-form" class="layui-form" lay-filter="search-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<label class="layui-form-label">时间</label>
+										<div class="layui-input-inline">
+											<input type="text" id="monitorTime" class="layui-input" placeholder="请选择日期" readonly="readonly" />
+										</div>
+										<div class="layui-input-inline">
+											<button class="layui-btn" lay-submit lay-filter="toSearch">查询</button>
+											<button type="reset" class="layui-btn layui-btn-primary" onclick="toReset()">重置</button>
+										</div>
+									</div>
+								</div>
+							</form>
+							<table id="dataList" lay-filter="dataList" class="layui-table"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript">
+		var layer, table, form;
+		var sectionList, dataList, tableHeight;
+		var dataInfo = [], pointId = "";
+        $(function(){
+			$(".layui-col-xs3").height($("body").height()-30);
+			$(".layui-col-xs9").height($("body").height()-30);
+			$(".well").height($(".layui-col-xs3").height()-103);
+			tableHeight = $(".layui-col-xs9").height()-131;
+			window.onresize = function(){
+				$(".layui-col-xs3").height($("body").height()-30);
+				$(".layui-col-xs9").height($("body").height()-30);
+				$(".well").height($(".layui-col-xs3").height()-103);
+				tableHeight = $(".layui-col-xs9").height()-131;
+				renderDataList();
+			}
+            layui.use(['table', 'form', 'layer', 'laydate'], function(){
+				table = layui.table,
+				form = layui.form,
+				layer = layui.layer;
+				
+				layui.laydate.render({
+					elem:'#monitorTime',
+					trigger:'click',
+					range:"~",
+                    done:function(value, date, endDate){
+						$("#monitorTime").val(value);
+                    }
+                })
+                
+                initTree();
+				
+				// 搜索监听
+				form.on('submit(toSearch)', function(){
+					getDataList();
+					return false;
+				})
+            })
+		});
+
+		// 区县及断面列表
+		function initTree(){
+			$.ajax({
+				type:"get",
+				url:URL_river_section_list,
+				dataType:"json",
+				success:function(ret){
+					if(ret.code == 0){
+						var treeNodes = ret.data;
+						var setting = {
+							check : {
+								enable: false,
+								chkStyle: "checkbox"
+							},
+							data : {
+								simpleData : {
+									enable : true,
+									idKey : 'id',
+									pIdKey : 'parentId'
+								},
+								key : {
+									name : 'name',
+									title : 'name'
+								}
+							},
+							callback: {
+								onClick: treeOnClick
+							}
+						};
+						sectionList = $.fn.zTree.init($('#sectionList'), setting, treeNodes);
+						pointId = treeNodes.id;
+						getDataList();
+					}else{
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.msg("网络访问出错，未能获取到信息！");
+				}
+			})
+		}
+
+		function treeOnClick(event, treeId, treeNode){
+			pointId = treeNode.id;
+			getDataList();
+		}
+		
+		// 自动监测列表
+		function getDataList(){
+			var index = layer.load(2,{shade:0.6});
+			$.ajax({
+				type:"get",
+				url:URL_river_section_data,
+				dataType:"json",
+				data:{
+					pointId:pointId,
+					startDate:$("#monitorTime").val()?($("#monitorTime").val().split("~")[0].replace(" ", "")):"",
+					endDate:$("#monitorTime").val()?($("#monitorTime").val().split("~")[1].replace(" ", "")):"",
+					page:1,
+					limit:9999
+				},
+				success:function(ret){
+					if(ret.code == 0){
+						dataList = table.render({
+							elem: '#dataList',
+							data: ret.data,
+							page: true,
+							height:tableHeight,
+							toolbar: false,
+							defaultToolbar: false,
+							cols: [[
+								{title: '序号', align: 'center', width:60, fixed:"left", templet:function(d){
+									return d.LAY_TABLE_INDEX+1;
+								}},
+								{field: 'area_name', title: '区县', minWidth:180, align: 'center'},
+								{field: 'code', title: '断面编码', minWidth:140, align: 'center'},
+								{field: 'name', title: '断面名称', minWidth:220, align: 'center'},
+								{field: 'datatime', title: '数据时间', minWidth:200, align: 'center'},
+								{title: '化学需氧量(mg/L)', minWidth:160, align: 'center', templet:function(d){
+									if(d.cod || d.cod == 0){
+										return d.cod;
+									}else{
+										return "-";
+									}
+								}},
+								{field: 'ad', title: '氨氮(mg/L)', minWidth:140, align: 'center', templet:function(d){
+									if(d.ad || d.ad == 0){
+										return d.ad;
+									}else{
+										return "-";
+									}
+								}},
+								{field: 'zl', title: '总磷(mg/L)', minWidth:140, align: 'center', templet:function(d){
+									if(d.zl || d.zl == 0){
+										return d.zl;
+									}else{
+										return "-";
+									}
+								}}
+							]],
+							done:function(ret){
+								layer.close(index);
+							}
+						})
+					}else{
+						layer.close(index);
+						layer.msg(ret.msg);
+					}
+				},
+				error:function(){
+					layer.close(index);
+					layer.msg("获取数据失败！");
+				}
+			})
+		};
+
+		// 搜索
+		function renderDataList(){
+			var index = layer.load(2,{shade:0.6});
+			dataList.reload({
+				height:tableHeight,
+				page: true,
+				done:function(ret){
+					layer.close(index);
+				},
+				page: {curr: 1}
+			});
+		}
+
+		// 重置
+		function toReset(){
+			$("#monitorTime").val("");
+		}
+	</script>
+</html>

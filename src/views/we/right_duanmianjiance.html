@@ -1,0 +1,485 @@
+<!-- <link href="../../layuiadmin/layui/css/layui.css" rel="stylesheet" type="text/css"> -->
+<style>
+    .rightBox {
+        position: relative;
+        width: 560px;
+        height: 255px;
+        margin: 0 auto;
+        text-align: center;
+        background: url('../../images/tools/rightPopup-bg.png');
+        background-size: auto auto;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .top_title {
+        position: relative;
+        background: url(../../images/tools/location.png) #007BD9;
+        background-size: 16px auto;
+        background-repeat: no-repeat;
+        background-position: 9px 8px;
+    }
+    .top_title>img.close{
+        position: absolute;
+        right: 9px;
+        top: 7px;
+        cursor: pointer;
+    }
+
+    .top_title_2 {
+        background: url(../../images/tools/title_bg.png);
+        background-size: auto auto;
+        background-repeat: no-repeat;
+        padding: 7px;
+        color: #3677fb;
+        background-position: 7px bottom;
+    }
+
+
+    .rightBox .grid-demo-left {
+        height: 156px;
+    }
+
+    .rightBox .grid-demo-right {
+        height: 25px;
+        line-height: 25px;
+        padding: 6px;
+    }
+    .aqi-info{
+    	width: 100%;
+    	height: 100%;
+        border-radius: 5px;
+    }
+    .aqi-info .data{
+    	width: 100%;
+    	height: 50%;
+    	/*background: green;*/
+    }
+    .aqi-info .data .name{
+    	float: left;
+        width: 30%;
+        height: 100%;
+        padding-top: 9px;
+        /*background: yellow;*/
+        box-sizing: border-box;
+        padding-left: 18px;
+    }
+    .aqi-info .data .value{
+    	float: left;
+    	width: 70%;
+    	height: 100%;
+        overflow: hidden;
+    	font-size: 36px;
+        padding-top: 10px;
+        text-align: center;
+    }
+    .layui-card > .layui-tab-brief > .layui-tab-title li{
+        padding: 0px;
+        margin: 0px;
+    }
+    .layui-input, .layui-textarea{
+        width: 105%;
+    }
+
+
+    /* 用户信息 */
+   .user-info-head {
+       width: 110px;
+       height: 110px;
+       line-height: 110px;
+       position: relative;
+       display: inline-block;
+       border: 2px solid #eee;
+       border-radius: 50%;
+       overflow: hidden;
+       cursor: pointer;
+       margin: 0 auto;
+   }
+
+   .user-info-head:hover:after {
+       content: '\e681';
+       position: absolute;
+       top: 0;
+       left: 0;
+       right: 0;
+       bottom: 0;
+       color: #fff;
+       background-color: rgba(0, 0, 0, 0.3);
+       font-size: 28px;
+       padding-top: 2px;
+       font-style: normal;
+       font-family: layui-icon;
+       -webkit-font-smoothing: antialiased;
+       -moz-osx-font-smoothing: grayscale;
+   }
+
+   .user-info-head img {
+       width: 110px;
+       height: 110px;
+   }
+
+   .user-info-list-item {
+       position: relative;
+       padding-bottom: 8px;
+   }
+
+   .user-info-list-item > .layui-icon {
+       position: absolute;
+   }
+
+   .user-info-list-item > p {
+       padding-left: 30px;
+   }
+
+   .layui-line-dash {
+       border-bottom: 1px dashed #ccc;
+       margin: 15px 0;
+   }
+
+   /* 基本信息 */
+   #userInfoForm .layui-form-item {
+       margin-bottom: 25px;
+   }
+
+   /* 账号绑定 */
+   .user-bd-list-item {
+       padding: 14px 60px 14px 10px;
+       border-bottom: 1px solid #e8e8e8;
+       position: relative;
+   }
+
+   .user-bd-list-item .user-bd-list-lable {
+       color: #333;
+       margin-bottom: 4px;
+   }
+
+   .user-bd-list-item .user-bd-list-oper {
+       position: absolute;
+       top: 50%;
+       right: 10px;
+       margin-top: -8px;
+       cursor: pointer;
+   }
+
+   .user-bd-list-item .user-bd-list-img {
+       width: 48px;
+       height: 48px;
+       line-height: 48px;
+       position: absolute;
+       top: 50%;
+       left: 10px;
+       margin-top: -24px;
+   }
+
+   .user-bd-list-item .user-bd-list-img + .user-bd-list-content {
+       margin-left: 68px;
+   }
+
+   .right_info .layui-icon-circle-dot {
+       padding-left: 7px;
+       font-size: 12px;
+   }
+</style>
+<div class="layui-row layui-col-space1">
+    <div class="layui-col-xs12 top_title" style="font-size: 18px;
+                                        font-weight: bold;
+                                        padding: 7px 10px;
+                                        padding-left: 33px;
+                                        line-height: 22px;
+                                        color: white;">
+        {{d.name}}
+        <img ew-event="closeDialog" class="close fnClosePoputRight" src="../../images/tools/close.png" alt="">
+    </div>
+</div>
+<div class="layui-row layui-col-space1" style="padding: 10px 0px;font-size: 15px;font-weight: bold;">
+    <div class="layui-col-xs12 top_title_2">
+        实时数据
+    </div>
+</div>
+<div class="layui-row layui-col-space5 right_info">
+    <div id="companyInfoBox"></div>
+</div>
+
+<script id="riverInfoDemo" type="text/html">
+
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>化学需氧量COD：{{d.riverData.cod}}</p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>氨氮：{{d.riverData.andan}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>总磷：{{d.riverData.zonglin}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>总氮：{{d.riverData.zongdan}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>高猛酸盐指数：{{d.riverData.gaomengsuanyan}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>水温：{{d.riverData.shuiwen}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>PH：{{d.riverData.ph}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>溶解氧：{{d.riverData.rongjieyang}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>浊度：{{d.riverData.zhuodu}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>电导率：{{d.riverData.diandaolv}} </p>
+      </div>
+  </div>
+</script>
+<script id="arountInfoDemo" type="text/html">
+
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>村名称：{{d.villageName}}</p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>企业名称：{{d.companyName}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>所属区域：{{d.areaName}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>企业分类：{{d.companyType}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>排污情况：{{d.sewageDischarge}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>相关科室：{{d.relevantDepartments}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>备注：{{d.remark}} </p>
+      </div>
+  </div>
+</script>
+<script id="gateInfoDemo" type="text/html">
+
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>所属区域：{{d.areaName}}</p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>入河排污（水）：{{d.intoRiver}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>排入水体名称：{{d.waterName}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>闸口分类：{{d.gateType}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>河长姓名：{{d.riverLeaderName?d.riverLeaderName:''}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>河长电话：{{d.riverLeaderPhone?d.riverLeaderPhone:''}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>岸别：{{d.shore}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>入河方式：{{d.intoWay}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>入河排污（水）口类型：{{d.intoType}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>收水范围：{{d.receivingRange}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>覆盖管网：{{d.overlayPipe}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>责任主体：{{d.legalDuty}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>治理计划：{{d.governancePlan}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>是否计划封堵：{{d.pluggingFlag}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>详细地址：{{d.address}} </p>
+      </div>
+  </div>
+  <div class="layui-col-xs6 layui-col-sm6 layui-col-md6 layui-text">
+      <div class="user-info-list-item">
+          <i class="layui-icon layui-icon-circle-dot"></i>
+          <p>备注：{{d.remark}} </p>
+      </div>
+  </div>
+</script>
+<script>
+    layui.use(['layer', 'admin', 'laytpl'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var admin = layui.admin;
+        var laytpl = layui.laytpl;
+        console.log(vm.curMarker,890)
+        switch (vm.curMarker.code) {
+          case 'river':
+            $.ajax({
+              url : baseUrl + "we/river/getNewDataByRiverId",
+              type : "post",
+              data:{
+                riverId:vm.curMarker.riverId
+              },
+              dataType : "json",
+              success : function(res) {
+                if(res.code==0){
+                    var data = res.data;
+                    if(data.riverData){
+                      console.log(data,999)
+                      var getTpl = riverInfoDemo.innerHTML
+                      ,view = document.getElementById('companyInfoBox');
+                      laytpl(getTpl).render(data, function(html){
+                        view.innerHTML = html;
+                      });
+                    }
+                }
+              }
+            });
+            break;
+          case 'around':
+            $.ajax({
+              url : baseUrl + "we/company/getCompanyInfoById",
+              type : "post",
+              data:{
+                companyId:vm.curMarker.companyId
+              },
+              dataType : "json",
+              success : function(res) {
+                if(res.code==0){
+                    var data = res.data;
+                    console.log(data,999)
+                    var getTpl = arountInfoDemo.innerHTML
+                    ,view = document.getElementById('companyInfoBox');
+                    laytpl(getTpl).render(data, function(html){
+                      view.innerHTML = html;
+                    });
+                }
+              }
+            });
+            break;
+          case 'gate':
+            $.ajax({
+              url : baseUrl + "we/gate/getGateInfoById",
+              type : "post",
+              data:{
+                gateId:vm.curMarker.gateId
+              },
+              dataType : "json",
+              success : function(res) {
+                if(res.code==0){
+                    var data = res.data;
+                    console.log(data,999)
+                    var getTpl = gateInfoDemo.innerHTML
+                    ,view = document.getElementById('companyInfoBox');
+                    laytpl(getTpl).render(data, function(html){
+                      view.innerHTML = html;
+                    });
+                }
+              }
+            });
+            break;
+        }
+    });
+</script>

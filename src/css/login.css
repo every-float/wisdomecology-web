@@ -1,0 +1,204 @@
+*{
+	margin: 0; padding: 0; box-sizing: border-box;
+}	
+body{
+	-webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+html,body{
+	height: 100%;
+	min-width: 1200px;
+	overflow: hidden;
+}
+input:-webkit-autofill , textarea:-webkit-autofill, select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px rgba(0,0,0,0) inset;
+    border: none !important;
+    /*background: transparent;*/
+}
+canvas{
+	display: block;
+}
+.custom-bg{
+	position: relative;
+	height: 100%;
+	background: url(../images/login-bg1.png) no-repeat center;
+	background-size: cover;
+	overflow: hidden;
+	box-shadow: 0px 0px 60px 0px #103136 inset;
+}
+.custom-logo{
+	width: 3rem;
+    height: 3rem;
+    /*border: 1px solid #fff;*/
+   	/*border-radius: 50%;
+    box-shadow: 0 0 20px 0 #5DBEFB inset;*/
+    position: absolute;
+    top: 0.66rem;
+    left: 0.66rem;
+}
+.custom-login-main{
+	position: absolute;
+	width: 7.74rem;
+	height: 6.13rem;
+	background: url(../images/login-01.png) no-repeat center;
+	background-size: cover;
+	top: 50%; left: 50%; margin-left: -3.87rem; margin-top: -3.065rem;
+	overflow: hidden;
+	z-index: 20;
+}
+.custom-login-title{
+	width: 4.25rem;
+	height: 0.65rem;
+	background: url(../images/login-05.png) no-repeat center;
+	background-size: cover;
+	margin: 0 auto; margin-top: 0.65rem;
+	animation-delay: .9s;
+	-webkit-animation-delay: .9s;
+	-moz-animation-delay: .9s;
+	-ms-animation-delay: .9s;
+	-o-animation-delay: .9s;
+}
+.custom-login{
+	width: 4.42rem;
+	margin: 0 auto;
+	margin-top: 0.38rem;
+}
+.custom-login:nth-child(2){
+	animation-delay: .7s;
+	-webkit-animation-delay: .7s;
+	-moz-animation-delay: .7s;
+	-ms-animation-delay: .7s;
+	-o-animation-delay: .7s;
+}
+.custom-login:nth-child(3){
+	animation-delay: .5s;
+	-webkit-animation-delay: .5s;
+	-moz-animation-delay: .5s;
+	-ms-animation-delay: .5s;
+	-o-animation-delay: .5s;
+}
+.custom-submit-btn{
+	width: 4.42rem;
+	height: 0.68rem;
+	background: url(../images/login-btn.png) no-repeat center;
+	background-size: cover;
+	margin: 0 auto; margin-top: 0.68rem;
+	font-size: 0.24rem;
+	color: #FFFFFF;
+	text-align: center; line-height: 0.68rem;
+	letter-spacing: 2px;
+	cursor: pointer;
+	animation-delay: .3s;
+	-webkit-animation-delay: .3s;
+	-moz-animation-delay: .3s;
+	-ms-animation-delay: .3s;
+	-o-animation-delay: .3s;
+}
+.custom-login p{
+	font-size: 0.20rem; color: #FFFFFD; letter-spacing: 0.02rem;
+}
+.custom-login-inner{
+	width: 4.42rem;
+	height: 0.56rem;
+	border: 0.01rem solid #0DAACB;
+	background-color: rgba(7,28,59,0.7);
+	margin-top: 0.13rem;
+	position: relative;
+	border-radius: 0.03rem;
+}
+.custom-login-inner i{
+	position: absolute;
+	width: 0.56rem; height: 0.56rem;
+	top: 0; left: 0;
+	    z-index: 9;
+}
+.custom-login-inner .custom-user{
+	background: url(../images/login-03.png) no-repeat center;
+	background-size: 0.24rem 0.24rem;
+}
+.custom-login-inner .custom-pass{
+	background: url(../images/login-04.png) no-repeat center;
+	background-size: 0.24rem 0.26rem;
+}
+.custom-login-inner input{
+	display: block;
+	border: none !important;
+	background: none !important;
+	outline: none !important;
+	position: absolute;
+    z-index: 9;
+    left: 0;
+    top: 0;
+	height: 100%; width: 100%;
+	font-size: 0.2rem;
+	color: #FEFEFE;
+	letter-spacing: 0.03rem;
+	padding: 0 0.1rem;
+	padding-left: 0.66rem;
+	text-shadow: 0 0 0.03rem #FFFFFF;
+}
+.custom-login-inner input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #005F71;
+    font-size: 0.16rem;
+    text-shadow: none;
+    letter-spacing: 0.01rem;
+}
+.custom-login-inner input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color: #005F71;
+   font-size: 0.16rem;
+   text-shadow: none;
+   letter-spacing: 0.01rem;
+}
+.custom-login-inner input::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color: #005F71;
+   font-size: 0.16rem;
+   text-shadow: none;
+   letter-spacing: 0.01rem;
+}
+.custom-login-inner input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: #005F71;
+   font-size: 0.16rem;
+   text-shadow: none;
+   letter-spacing: 0.01rem;
+}
+
+
+
+.custom-loading{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #080915;
+	box-shadow: 0px 0px 120px 0px #103136 inset;
+	top: 0; left: 0;
+	z-index: 30;
+	overflow: hidden;
+}
+.custom-loading-1{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #080915;
+	box-shadow: 0px 0px 120px 0px #103136 inset;
+	top: 0; left: 0;
+	z-index: 29;
+	overflow: hidden;
+}
+
+#thewaves{
+	position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    background: rgba(0,0,0,0);
+}
+
+.ie8-logo{
+	position: absolute;
+	width: 120px;
+	height: 120px;
+	top: 100px; left: 100px;
+	z-index: 99;
+}

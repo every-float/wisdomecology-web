@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>预警设置</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">预警列表</div>
+		<div class="layui-card-body">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<table id="dataGrid" lay-filter="dataGrid" class="layui-hide"></table>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			layui.use(['form', 'table'], function(){
+				var form = layui.form;
+				var table = layui.table;
+				table.render({
+					elem : '#dataGrid',
+					url : baseUrl+'dq/warn/getWarnList',
+					page : true,
+					cols : [ [
+					{
+						type : 'checkbox',
+						fixed: 'left'
+					}, {
+						field : 'name',
+						title : '名称',
+						align : 'center'
+					}, {
+						field : 'value',
+						title : '预警值',
+						align : 'center',
+						edit: 'text'
+					}] ]
+				});
+
+				//监听单元格编辑
+				table.on('edit(dataGrid)', function(obj){
+				    $.ajax({
+				    	url : baseUrl+'dq/warn/setWarnValue',
+				    	data : JSON.stringify({
+				    		'id':obj.data.id,
+				    		'value':obj.data.value
+				    	}),
+				    	type : 'post',
+				    	contentType:"application/json; charset=utf-8",
+				    	dataType : 'json',
+				    	beforeSend: function() {
+				    		layer.load(2, {shade: 0.6});
+				    	},
+				    	success : function(res) {
+				    		if(res.code==0){
+				    			layer.msg(res.msg);
+				    		}else{
+				    			layer.msg(res.msg);
+				    		}
+				    	},
+				    	complete: function () {
+				    		layer.closeAll('loading');
+				    	}
+				    });
+				});
+			});
+			initDatagrid();
+		});
+	</script>
+</body>
+</html>

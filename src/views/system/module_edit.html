@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>模块管理</title>
+</head>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-body">
+			<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="moduleId" name="moduleId">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">模块名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="moduleName" name="moduleName" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">模块编码<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="moduleCode" name="moduleCode" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">接口路径<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="modulePath" name="modulePath" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">访问地址<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="moduleUrl" name="moduleUrl" lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">类型<font color="red">*</font></label>
+				<div class="layui-input-block">
+					<select name="accessType" id="accessType" lay-verify="required">
+					<option value=""></option>
+					<option value="1">系统内</option>
+					<option value="2">重定向外网</option>
+					<option value="3">SSO校验</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">图标<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<textarea class="layui-textarea" id="moduleIcon" name="moduleIcon" lay-verify="required"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">排序</label>
+				<div class="layui-input-block">
+					<input type="number" class="layui-input" id="sortNum" name="sortNum" placeholder="请输入数字" lay-verify="number">
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+			</form>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var moduleId = $.getUrlParam('moduleId');
+		var form;
+		$(function() {
+			layui.use(['form'], function() {
+				form = layui.form;
+				//初始化
+				if(moduleId!=null&&moduleId!=''){
+					$('#moduleId').val(moduleId);
+					initDataInfo();
+				}
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function checkForm(){
+			$('#btnSave').click();
+		}
+		
+		function initDataInfo(){
+			$.ajax({
+				url : URL_module_detailInfo,
+				data : {
+					moduleId: moduleId
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'moduleId': res.data.moduleId,
+							'moduleName': res.data.moduleName,
+							'moduleCode': res.data.moduleCode,
+							'modulePath': res.data.modulePath,
+							'moduleUrl': res.data.moduleUrl,
+							'moduleIcon': res.data.moduleIcon,
+							'accessType': res.data.accessType,
+							'sortNum': res.data.sortNum
+						});
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		function save(){
+			$.ajax({
+				url : URL_module_save,
+				data : $('#form1').serialize(),
+				type : 'post',
+				dataType : 'json',
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

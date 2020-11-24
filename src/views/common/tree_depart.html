@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>选择部门</title>
+	<link rel="stylesheet" href="../../scripts/ztree/bootstrapStyle/bootstrapStyle.css" type="text/css">
+</head>
+<body>
+	<input type="hidden" id="orgId" name="orgId" value="">
+	<div id="zTreeDiv" style="padding: 10px">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<select id="orgList" name="orgList" lay-filter="orgList" lay-verify="required">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+		</form>
+		<div class="well" style="margin-top: 15px">
+		<ul id="zTreeList" class="ztree" style="margin-top:0; width:100%;"></ul>
+		</div>
+	</div>
+	<input type="hidden" id="selDeptId">
+	<input type="hidden" id="selDeptName">
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/tree_depart.js"></script>
+</body>
+</html>

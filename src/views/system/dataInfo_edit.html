@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>数据信息</title>
+</head>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">编辑数据</div>
+		<div class="layui-card-body">
+		<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="dataId" name="dataId"/>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">数据名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="dataName" name="dataName" required lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">数据值<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="dataVal" name="dataVal" required lay-verify="required">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">所属类型<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select name="dataType" id="dataType" lay-verify="required" lay-search>
+						<option value="">---请选择---</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">排序</label>
+				<div class="layui-input-block">
+					<input type="number" class="layui-input" id="sortNum" name="sortNum" placeholder="请输入数字" lay-verify="number">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">其他属性1</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="attribute1" name="attribute1">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">其他属性2</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="attribute2" name="attribute2">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">其他属性3</label>
+				<div class="layui-input-block">
+					<input type="text" class="layui-input" id="attribute3" name="attribute3">
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<label class="control-label col-md-2" for=""></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript">
+		var dataId = $.getUrlParam('dataId');
+		var typeCode = $.getUrlParam('typeCode');
+		var form;
+		$(function() {
+			layui.use(['form'], function() {
+				form = layui.form;
+				//初始化
+				initParamInfo();
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function checkForm(){
+			$('#btnSave').click();
+		}
+		
+		function initDataInfo(){
+			$.ajax({
+				url : URL_dataInfo_detailInfo,
+				data : {
+					dataId: dataId
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'dataId': res.data.dataId,
+							'dataName': res.data.dataName,
+							'dataVal': res.data.dataVal,
+							'dataType': res.data.dataType,
+							'sortNum': res.data.sortNum,
+							'attribute1': res.data.attribute1,
+							'attribute2': res.data.attribute2,
+							'attribute3': res.data.attribute3
+						});
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+		function save(){
+			$.ajax({
+				url : URL_dataInfo_save,
+				data : $('#form1').serialize(),
+				type : 'post',
+				dataType : 'json',
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+
+		function initParamInfo(departId, prival){
+			$.ajax({
+				url : URL_dataInfo_initParamInfo,
+				data : {
+					dataId : dataId
+				},
+				type : 'post',
+				dataType : 'json',
+				beforeSend : function() {
+					// loading show
+					layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if (res.code==0) {
+						var list_type = res.data.list_type;
+						$('#dataType').empty();
+						var option_type = '<option value="">无</option>';
+						for ( var i = 0; i < list_type.length; i++) {
+							option_type += '<option value="'+list_type[i].value+'">'+list_type[i].name+'</option>';
+						}
+						$('#dataType').html(option_type);
+						if(typeCode!=null&&typeCode!=''){
+							$('#dataType').val(typeCode);
+						}
+						form.render('select');
+						if(dataId!=null&&dataId!=''){
+							$('#dataId').val(dataId);
+							initDataInfo();
+						}
+					} else {
+						layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					layer.closeAll('loading');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

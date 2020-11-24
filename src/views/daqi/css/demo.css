@@ -1,0 +1,20 @@
+body,html {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+a {
+    color: #3388ff;
+}
+
+#map {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #333;
+}
+
+.leaflet-canvas-layer {
+    opacity: 0.55;
+}

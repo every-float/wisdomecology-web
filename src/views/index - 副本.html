@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  	<link href="../layuiadmin/layui/css/layui.css" rel="stylesheet" type="text/css">
+  	<link href="../layuiadmin/style/admin.css" rel="stylesheet" type="text/css">
+  	<link href="../css/theme.css" rel="stylesheet" type="text/css">
+  	<title>西青区智慧生态环境大数据分析及指挥调度平台</title>
+    <link href="../css/message.css" rel="stylesheet" type="text/css">
+    <link href="../scripts/jqueryiviewer/jquery.iviewer.css" rel="stylesheet" type="text/css">
+    <link href="../layuiadmin/style/layPhoto.css" rel="stylesheet" type="text/css">
+    <link href="../layuiadmin/style/dropdown.css" rel="stylesheet" type="text/css">
+  	<style type="text/css">
+      .layui-layout-admin .layui-header .layui-nav .layui-this:after, .layui-layout-admin .layui-header .layui-nav-bar{
+        background: none;
+      }
+      .message_box .layui-nav-more{
+        display: none!important;
+      }
+      .layui-side.layui-side-menu{
+        overflow-x: visible;
+      }
+      .layui-side .layui-side-scroll{
+        overflow-x: visible;
+      }
+      .layui-nav-tree .layui-nav-item a{
+        overflow: visible;
+      }
+      .menuIcon{
+        width: 100%;
+        text-align: center;
+      }
+      .menuTitle{
+        text-align: center;
+        font-size: 12px;
+      }
+      .menuIcon img{
+        width:35px;
+        margin: 0 auto;
+      }
+      .layui-side-menu .layui-nav .layui-nav-item a{
+        padding-left: 0px;
+        padding-right: 0px;
+        height: 58px;
+        line-height: 28px;
+      }
+      .menuLevel2 a{
+        height: auto!important;
+        line-height: auto!important;
+        color: #333!important;
+      }
+
+      .menuLevel2 a.active{
+        background: red;
+      }
+
+      .layui-side-menu .layui-nav .layui-nav-item .layui-icon{
+        position: static;
+        font-size: 30px;
+      }
+      .layui-side-menu .layui-nav{
+        width: 80px;
+      }
+      .layui-layout-admin .layui-logo{
+        width: auto!important;
+      }
+      .layui-side-menu .layui-side-scroll{
+        width: 80px;
+      }
+      .layui-layout-admin .layui-side{
+        width: 80px;
+      }
+      .layui-dropdown-menu{
+        width: 150px;
+      }
+      .layadmin-pagetabs, .layui-layout-admin .layui-body, .layui-layout-admin .layui-footer, .layui-layout-admin .layui-layout-left{
+        left: 80px;
+      }
+      .layui-layout-admin .layui-body{
+        top: 50px;
+      }
+    	</style>
+    	<link href="../scripts/toastr/css/toastr.css" rel="stylesheet" type="text/css">
+  </head>
+  <body class="layui-layout-body">
+    
+    <div id="LAY_app" v-cloak>
+      <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+          <!-- 头部区域 -->
+          <ul class="layui-nav layui-layout-left">
+            <!-- <li class="layui-nav-item layadmin-flexible" lay-unselect>
+              <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+              </a>
+            </li> -->
+            <li style="margin-left: 130px;"  class="layui-nav-item" lay-unselect>
+              <a href="javascript:;" layadmin-event="refresh" title="刷新">
+                <i class="layui-icon layui-icon-refresh-3"></i></a>
+            </li>
+             <li class="layui-nav-item" lay-unselect>
+              <a id="console" href="console.html" title="控制台">
+                <i class="layui-icon layui-icon-console" style="font-weight: bold"></i>
+              </a>
+            </li>
+          </ul>
+
+
+
+          
+
+
+          <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+            <!-- 如果有新消息，则显示小圆点 -->
+            <li class="layui-nav-item message_box" lay-unselect>
+              <!-- 一个容器 -->
+            </li>
+            <li class="layui-nav-item layui-hide-xs" lay-unselect>
+              <a href="javascript:;" layadmin-event="theme">
+                <i class="layui-icon layui-icon-theme"></i>
+              </a>
+            </li>
+
+
+            <li class="layui-nav-item layui-hide-xs" lay-unselect>
+              <a href="javascript:;" layadmin-event="fullscreen">
+                <i class="layui-icon layui-icon-screen-full"></i>
+              </a>
+            </li>
+            <li class="layui-nav-item" lay-unselect>
+              <a href="javascript:;">
+                <cite>{{ userInfo.realName }}</cite>
+              </a>
+              <dl class="layui-nav-child">
+                <dd><a lay-href="../views/common/pwd_edit.html">修改密码</a></dd>
+                <hr>
+                <dd style="text-align: center;" @click="toLogout()"><a href="javascript:;">退出</a></dd>
+              </dl>
+            </li>
+            
+            <li class="layui-nav-item layui-hide-xs" lay-unselect style="margin-right: 30px">
+            </li>
+          </ul>
+        </div>
+        
+        <!-- 侧边菜单 -->
+        <div class="layui-side layui-side-menu">
+          <div class="layui-side-scroll">
+            <div class="layui-logo" lay-href="../views/index.html">
+              <span>西青区智慧生态环境大数据分析及指挥调度平台</span>
+            </div>
+            
+            <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+
+            </ul>
+          </div>
+        </div>
+
+        <!-- 页面标签 -->
+        <div class="layadmin-pagetabs" id="LAY_app_tabs" style="display: none;">
+          <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+          <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+          <div class="layui-icon layadmin-tabs-control layui-icon-down">
+            <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+              <li class="layui-nav-item" lay-unselect>
+                <a href="javascript:;"></a>
+                <dl class="layui-nav-child layui-anim-fadein">
+                  <dd layadmin-event="closeThisTabs"><a href="javascript:;">关闭当前标签页</a></dd>
+                  <dd layadmin-event="closeOtherTabs"><a href="javascript:;">关闭其它标签页</a></dd>
+                  <dd layadmin-event="closeAllTabs"><a href="javascript:;">关闭全部标签页</a></dd>
+                </dl>
+              </li>
+            </ul>
+          </div>
+          <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+            <ul class="layui-tab-title" id="LAY_app_tabsheader">
+              <li lay-id="../views/index.html" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+            </ul>
+          </div>
+        </div>
+        
+        
+        <!-- 主体内容 -->
+        <div class="layui-body" id="LAY_app_body">
+          <div class="layadmin-tabsbody-item layui-show">
+            <iframe src="../views/welcome.html" frameborder="0" class="layadmin-iframe"></iframe>
+          </div>
+        </div>
+        
+        <!-- 辅助元素，一般用于移动设备下遮罩 -->
+        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+      </div>
+    </div>
+  </body>
+  <script id="menuScript" type="text/html">
+      {{#  layui.each(d, function(index, item){ }}
+
+            {{#  if(item.level==0){ }}
+                <li data-name="get" class="layui-nav-item {{# if( item.active ){ }}layui-this{{# } }}">
+
+                      <a id="example{{index}}" 
+                          onclick="fnOpenPage({{item.menuType}},'{{item.menuUrl}}','{{item.name}}','menu_{{item.id}}')" 
+                          class="layui-dropdown is-right" 
+                          href="#{{item.menuUrl}}" 
+                          data-type="{{item.menuType}}" 
+                          data-url="{{item.menuUrl}}" 
+                          data-title="{{item.name}}"
+                          lay-tips="{{item.name}}" 
+                          lay-direction="2">
+                        <div class="layui-dropdown-toggle menuTitle">
+                          <div class="menuIcon">
+                            <i class="layui-icon {{item.iconCls}}"></i>
+                          </div>
+                          {{item.name}}
+                        </div>
+                      </a>
+
+                </li>
+
+            {{#  } }}
+
+
+            {{#  if(item.level==1){ }}
+                <li data-name="get" class="layui-nav-item {{# if( item.active ){ }}layui-this{{# } }}">
+
+                  {{# if( item.menuType==1 ){ }}
+                      <a id="example{{index}}" class="layui-dropdown is-right" href="javascript:;" lay-tips="{{item.name}}" lay-direction="2">
+                        
+                        <div class="layui-dropdown-toggle menuTitle">
+                          <div class="menuIcon">
+                            <i class="layui-icon {{item.iconCls}}"></i>
+                          </div>
+                          {{item.name}}
+                        </div>
+                         <!-- 下拉框 -->
+                        <div class="layui-dropdown-menu">
+                            <table class="layui-table menuLevel2">
+                              {{#  layui.each(item.children, function(index_1, item_1){ }}
+                              <tr>
+                                <td>
+                                    <a onclick="fnOpenPage({{item_1.menuType}},'{{item_1.menuUrl}}','{{item_1.name}}','menu_{{item_1.id}}')" 
+                                        class="{{# if( item_1.active ){ }}active{{# } }} menu_{{item_1.id}}" 
+                                        href="#{{item_1.menuUrl}}" 
+                                        data-type="{{item_1.menuType}}" 
+                                        data-url="{{item_1.menuUrl}}" 
+                                        data-title="{{item_1.name}}">
+                                      {{item_1.name}}
+                                    </a>
+                                </td>
+                              </tr>
+                              {{#  }); }}
+                            </table>
+                        </div>
+                      </a>
+                  {{# } }}
+
+
+                </li>
+
+            {{#  } }}
+
+
+
+
+            <!-- {{#  if(item.level==1){ }}
+                <li data-name="home" class="layui-nav-item {{# if( item.spread ){ }}layui-nav-itemed{{# } }} ">
+                  <a href="javascript:;" lay-tips="{{item.name}}" lay-direction="2">
+                    <i class="layui-icon {{item.iconCls}}"></i>
+                    <cite class="left_menu_icon_1">{{item.name}}</cite>
+                  </a>
+                  {{#  if(item.children&&item.children.length){ }}
+                  <dl class="layui-nav-child">
+                    {{#  layui.each(item.children, function(index_1, item_1){ }}
+                    <dd data-name="console">
+                        <a class="{{# if( item_1.active ){ }}layui-this{{# } }}" href="#{{item_1.menuUrl}}" lay-href="{{pageUrl+item_1.menuUrl}}">{{item_1.name}}</a>
+                    </dd>
+                    {{#  }); }}
+                  </dl>
+                  {{#  } }} 
+                </li>
+            {{#  } }} 
+
+            {{#  if(item.level==2){ }}
+                <li data-name="home" class="layui-nav-item {{# if( item.spread ){ }}layui-nav-itemed{{# } }} ">
+                  <a href="javascript:;" lay-tips="{{item.name}}" lay-direction="2">
+                    <i class="layui-icon {{item.iconCls}}"></i>
+                    <cite class="left_menu_icon_1">{{item.name}}</cite>
+                  </a>
+                  {{#  if(item.children){ }}
+                  <dl class="layui-nav-child">
+                    {{#  layui.each(item.children, function(index_1, item_1){ }}
+                    <dd data-name="console" class="{{# if( item_1.spread ){ }}layui-nav-itemed{{# } }}">
+                      {{#  if(item_1.children){ }}
+                        <a href="javascript:;">{{item_1.name}}</a>
+                        <dl class="layui-nav-child">
+                          {{#  layui.each(item_1.children, function(index_2, item_2){ }}
+                          <dd><a class="{{# if( item_2.active ){ }}layui-this{{# } }}" href="#{{item_2.menuUrl}}" lay-href="{{pageUrl+item_2.menuUrl}}">{{item_2.name}}</a></dd>
+                          {{#  }); }}
+                        </dl>
+                      {{#  }else{ }} 
+                        <a href="#{{item_1.menuUrl}}" lay-href="{{pageUrl+item_1.menuUrl}}">{{item_1.name}}</a>
+                      {{#  } }} 
+                    </dd>
+                    {{#  }); }}
+                  </dl>
+                  {{#  } }} 
+                </li>
+            {{#  } }}  -->
+
+      
+      {{#  }); }}
+  </script>
+  <script type="text/javascript" src="../common/commonUrl.js"></script>
+  <script type="text/javascript" src="../scripts/jquery/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript" src="../scripts/jquery/jquery.cookie.js"></script>
+  <script type="text/javascript" src="../scripts/jquery/jquery-ui-1.12.1.custom.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="../scripts/jquery/jquery.jqprint.js" type="text/javascript"></script>
+  <script type="text/javascript" src="../scripts/jqueryiviewer/jquery.mousewheel.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="../scripts/jqueryiviewer/jquery.iviewer.js" type="text/javascript"></script>
+  <script type="text/javascript" src="../layuiadmin/layui/layui.js"></script>
+  <script type="text/javascript" src="../scripts/vue/vue.js"></script>
+  <script type="text/javascript" src="../scripts/toastr/toastr.min.js"></script>
+  <script type="text/javascript" src="../common/common.js"></script>
+  <script type="text/javascript" src="../common/tool.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      vm.initLeftMenu();
+      vm.initUserInfo();
+      vm.initUnreadCnt();
+      initWebsocketServerStatus();
+
+    });
+
+    function getQueryVariable(variable){
+      var query = window.location.search.substring(1);
+      console.log(decodeURIComponent(query));//js解码（超链接中的中文获取时可能存在编码的情况）
+      var vars = query.split("&");
+      for (var i=0;i<vars.length;i++) {
+      var pair = vars[i].split("=");
+      if(pair[0] == variable){return decodeURIComponent(pair[1]);}
+      }
+      return(false);
+    }
+
+    function reload(){
+      //默认保留方法
+    }
+
+    function getTargetHost() {
+      var host = wsUrl;
+      return host;
+    }
+    
+    function initWebsocketServerStatus() {
+      //验证浏览器是否支持WebSocket协议
+      if (!window.WebSocket) {
+        //alert("这个浏览器不支持websocket!");
+        return;
+      }
+      var wsAddress = "ws://"+getTargetHost()+"websocket/onlineUser/token="+getUserToken();
+      var online_ws = new WebSocket(wsAddress);
+      //监听消息
+      online_ws.onmessage = function(event) {
+        //console.info(event.data);
+        //判断是消息类型
+        var res = JSON.parse(event.data);
+        if (res.type == 'count') {
+          //未读消息数量
+        }else if(res.type == 'logout'){
+          alert(res.msg);
+          window.location.href = pageUrl+"views/login.html";
+        }else if(res.type == 'goout'){
+          alert(res.msg);
+          window.location.href = pageUrl+"views/login.html";
+        }else if(res.type == 'notice'){
+          toastr.options = {
+            "closeButton" : false,
+            "debug" : false,
+            "positionClass" : "toast-top-right",
+            "onclick" : null,
+            "showDuration" : "300",
+            "hideDuration" : "1000",
+            "timeOut" : "5000",
+            "extendedTimeOut" : "1000",
+            "showEasing" : "swing",
+            "hideEasing" : "linear",
+            "showMethod" : "fadeIn",
+            "hideMethod" : "fadeOut"
+          };
+          toastr["success"]('', res.msg);
+          //更新通知列表
+          vm.initUnreadCnt();
+        }
+      };
+      // 关闭WebSocket
+      online_ws.onclose = function(event) {
+        //WebSocket Status:: Socket Closed
+      };
+      // 打开WebSocket
+      online_ws.onopen = function(event) {
+        //WebSocket Status:: Socket Open
+        online_ws.send('上线啦');
+      };
+      online_ws.onerror = function(event) {
+        //WebSocket Status:: Error was reported
+      };
+    }
+
+    var vm = new Vue({
+      el:"#LAY_app",
+      data:{
+        menuList:[],
+        userInfo: {},
+        msgCnt:0,
+        list:[],
+      },
+      methods:{
+        initLeftMenu:function(){
+
+          layui.use(['dropdown'], function (dropdown) {
+            dropdown.render() // 当前页面如果只存在一个，可以不用传入参数
+          })   
+
+
+          var menuId = getQueryVariable("menuId");
+          $.ajax({
+            url : baseUrl+"index/getHomeInfo",
+            data : {
+              menuId: menuId
+            },
+            type : "post",
+            dataType : "json",
+            beforeSend: function() {
+              // loading show
+            },
+            success : function(res) {
+              if(res.code==0){
+                //权限
+                layui.data('layuiAdmin', {key: 'configjson_000' ,value: res.data.configjson});
+                vm.hostUrl = pageUrl;
+                var _menus = res.data.menujson;
+                vm.menuList = _menus.menus;
+                console.info(_menus.menus);
+                vm.$nextTick(function(){
+                  layui.use(['index','layer', 'laytpl', 'element', 'dropdown'], function(){
+                    var dropdown = layui.dropdown;
+                    var pageUrl_maodian=location.href.split("#")[1];
+                    console.log(pageUrl_maodian)
+                    var tabName='';
+                    var menuType=1;
+                    if(true){
+                        console.log('111')
+                        vm.menuList.forEach((item,index)=>{
+                            vm.menuList[index]['spread']=false;
+                            if(item.children!=null&&item.children.length>0){
+                                item.children.forEach((item_1,index_1)=>{
+                                    if(item_1.children && item_1.children.length>0){
+                                        vm.menuList[index]['children'][index_1]['spread']=false;
+                                        item_1.children.forEach((item_2,index_2)=>{
+                                            vm.menuList[index]['level']=2;
+                                            if(item_2.menuUrl==pageUrl_maodian){
+                                                vm.menuList[index]['active']=true;
+                                                vm.menuList[index]['children'][index_1]['active']=true;
+                                                vm.menuList[index]['children'][index_1]['children'][index_2]['active']=true;
+                                                vm.menuList[index]['children'][index_1]['spread']=true;
+                                                vm.menuList[index]['spread']=true;
+                                                tabName=item_2.name;
+                                                menuType=item_2.menuType;
+                                            }else{
+                                                vm.menuList[index]['children'][index_1]['children'][index_2]['active']=false;
+                                            }
+                                        })
+                                    }else{
+                                        vm.menuList[index]['level']=1;
+                                        if(item_1.menuUrl==pageUrl_maodian){
+                                            console.log("相等--》")
+                                            vm.menuList[index]['active']=true;
+                                            vm.menuList[index]['children'][index_1]['active']=true;
+                                            vm.menuList[index]['spread']=true;
+                                            tabName=item_1.name;
+                                            menuType=item_1.menuType;
+                                        }else{
+                                            vm.menuList[index]['children'][index_1]['active']=false;
+                                        }
+                                    }
+                                })
+                            }else{
+                                vm.menuList[index]['level']=0;
+                                if(item.menuUrl==pageUrl_maodian){
+                                  vm.menuList[index]['active']=true;
+                                  tabName=item.name;
+                                  menuType=item.menuType;
+                                }else{
+                                  vm.menuList[index]['active']=false;
+                                }
+                            }
+                        })
+                    }else{
+                        console.log('222')
+                    }
+
+                    if(pageUrl_maodian){
+                        switch (menuType) {
+                          case 1:
+                            var url=pageUrl+pageUrl_maodian;
+                            break;
+                          case 2:
+                            var url=pageUrl_maodian;
+                            break;
+                          case 3:
+                            var url=pageUrl_maodian;
+                            break;
+                        }
+
+                        switch (menuType) {
+                          case 1:
+                            layui.index.openTabsPage(url, tabName);
+                            break;
+                          case 2:
+                            layui.index.openTabsPage(url, tabName);
+                            break;
+                          case 3:
+                            window.open(url,"_blank")
+                            break;
+                        }
+                    }
+
+                    
+
+                    var laytpl = layui.laytpl;
+                    var element = layui.element;
+
+                    var getTpl = menuScript.innerHTML
+                    ,view = document.getElementById('LAY-system-side-menu');
+                    laytpl(getTpl).render(vm.menuList, function(html){
+                      view.innerHTML = html;
+                      element.init();
+
+                      if('dropdown'){
+                          var i = 0;
+                          console.log(vm.menuList.length,'=====')
+                          while (i < vm.menuList.length) {
+                              dropdown.render({
+                                  dropdown: '#example' + i,
+                                  trigger: 'hover'
+                              });
+                              i++;
+                          }
+                      }
+                    });
+                  });
+                });
+
+                
+              }
+            },
+            complete: function () {
+            }
+          });
+        },
+
+        
+
+        initUserInfo:function(){
+          $.ajax({
+            url : baseUrl+"index/getUserInfo",
+            data : {},
+            type : "post",
+            dataType : "json",
+            beforeSend: function() {
+              // loading show
+            },
+            success : function(res) {
+              if(res.code==0){
+                vm.userInfo = res.data;
+                layui.data('layuiAdmin', {key: 'userInfo' ,value: res.data});
+              }
+            },
+            complete: function () {
+            }
+          });
+        },
+
+        initUnreadCnt:function(){
+          $.ajax({
+            url : baseUrl+"msg/message/getUnreadCnt",
+            data : {},
+            type : "post",
+            dataType : "json",
+            beforeSend: function() {
+              // loading show
+            },
+            success : function(res) {
+              if(res.code==0){
+                vm.msgCnt = res.data.msgCnt;
+                vm.list = res.data.list_msg;
+                for(var i = 0; i < vm.list.length; i++){
+                  vm.list[i].send_time = gettingTime(vm.list[i].send_time);
+                }
+              }else{
+              }
+            },
+            complete: function () {
+            }
+          });
+        },
+
+        detail:function(msgId, flowId,formType,stepId,shenpiRound){
+          var html = checkflowhtml(formType);
+          var cont = pageUrl + html + '?flowId='+flowId+'&formType='+formType+'&stepId='+stepId+"&shenpiRound="+shenpiRound;
+          laedit = layer.open({
+            type : 2,
+            title : '查看审批',
+            shadeClose : true,
+            shade : 0.6,
+            maxmin : true,
+            area : [ '90%', '90%' ],
+            content : cont,
+            // content : baseUrl+"/workflow/portal/detail?flowId="+flowId+"&formType="+formType+"&stepId="+stepId+"&shenpiRound="+shenpiRound,
+            success: function(layero, index){
+              var body = layer.getChildFrame('body', index);
+              body.find('#laedit').val(index);
+              
+              //更新已读
+              var ids = [];
+              ids[0]= msgId;
+              $.ajax({
+                url : baseUrl+"/msg/message/setRead",
+                data : {
+                  "ids":ids.toString()
+                },
+                type : "post",
+                dataType : "json",
+                beforeSend: function() {
+                  // loading show
+                  //layer.load(2, {shade: 0.6});
+                },
+                success : function(res) {
+                  if(res.code==0){
+                    //layer.msg(res.msg);
+                    //reload();
+                    //更新通知
+                    top.vm.initUnreadCnt();
+                  }else{
+                    //layer.msg(res.msg);
+                  }
+                },
+                complete: function () {
+                  //layer.closeAll('loading');
+                }
+              });
+            }
+          });
+        },
+
+        // 退出登录
+        toLogout:function(){
+            layui.use('layer',function(){
+              var layer = layui.layer;
+              var index;
+                $.ajax({
+                  type: "post",
+                  url: URL_logout,
+                  dataType: "json",
+                  beforeSend:function(){
+                    index = layer.load(1, {
+                      shade: [0.1,'#f5f5f5'] //0.1透明度的白色背景
+                    });
+                  },
+                  success:function(ret){
+                    console.log(ret);
+                    if(ret.code == 0){
+                      window.location.href = "login.html";
+                    }else{
+                      layer.msg(ret.msg);
+                    }
+                  },
+                  error:function(err){
+                    layer.msg("网络访问出错！");
+                  },
+                  complete:function(){
+                    layer.close(index);
+                  }
+                });
+            });
+          }
+      }
+    });
+  </script>
+  <script>
+    function fnOpenPage(menuType, url, tabName, className){
+        switch (menuType) {
+          case 1:
+            var url=pageUrl+url;
+            break;
+          case 2:
+            var url=url;
+            break;
+          case 3:
+            var url=url;
+            break;
+        }
+
+        console.log(className)
+        $('.menuLevel2 a').removeClass('active');
+        $('.'+className).addClass('active');
+        switch (menuType) {
+          case 1:
+            layui.index.openTabsPage(url, tabName);
+            break;
+          case 2:
+            layui.index.openTabsPage(url, tabName);
+            break;
+          case 3:
+            window.open(url,"_blank")
+            break;
+        }
+    }
+  </script>
+</html>

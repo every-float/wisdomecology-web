@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>子系统管理</title>
+</head>
+<body>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">列表信息</div>
+		<div class="layui-card-body">
+				<form class="layui-form">
+				</form>
+			<script type="text/html" id="toolbar">
+				{{#if (configjson.GRANT.match('ZXT_02')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="add()">新增</button>
+				{{# } }}
+				{{#if (configjson.GRANT.match('ZXT_04')) { }}
+				<button type="button" class="layui-btn layui-btn-primary" onclick="del()">删除</button>
+				{{# } }}
+			</script>
+			<table id="dataGrid" lay-filter="dataGrid"></table>
+			<script type="text/html" id="barOpt">
+			{{#if (configjson.GRANT.match('ZXT_03')) { }}
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			{{# } }}
+			</script>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="js/module_list.js"></script>
+</body>
+</html>

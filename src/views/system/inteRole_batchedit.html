@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="../../common/commonCss.js"></script>
+	<title>数据权限</title>
+	<link rel="stylesheet" href="../../scripts/ztree/zTreeStyle/zTreeStyle.css" type="text/css">
+	<style type="text/css">
+		ul.ztree li span.button.switch{margin-right:5px}
+		ul.ztree ul ul li{display:inline-block;white-space:normal}
+		ul.ztree>li>ul>li{padding:5px}
+		ul.ztree>li{background: #dae6f0}
+		ul.ztree>li:nth-child(even)>ul>li:nth-child(even){background: #eef5fa}
+		ul.ztree>li:nth-child(even)>ul>li:nth-child(odd){background: #f6fbff}
+		ul.ztree>li:nth-child(odd)>ul>li:nth-child(even){background: #eef5fa}
+		ul.ztree>li:nth-child(odd)>ul>li:nth-child(odd){background: #f6fbff}
+		ul.ztree>li>ul{margin-top:12px}
+		ul.ztree>li{padding:5px;padding-right:25px}
+		ul.ztree li{white-space:normal!important}
+		ul.ztree>li>a>span{font-size:15px;}
+	</style>
+	<style type="text/css">
+	.layui-form-select dl{
+		max-height: 260px;
+	}
+	</style>
+</head>
+<div class="layui-fluid">
+		<div class="layui-card">
+		<div class="layui-card-header">批量编辑权限</div>
+		<div class="layui-card-body">
+		<form id="form1" class="layui-form" lay-filter="form1">
+			<input type="hidden" id="id" name="id" value=""/>
+			<input type="hidden" id="inte_json" name="inte_json" value=""/>
+			<input type="hidden" id="contJson" name="contJson" value=""/>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">角色名称<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select id="roleId" name="roleId" lay-verify="required" lay-search="">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">访问级别<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<select id="accessLevel" name="accessLevel" lay-filter="accessLevel" lay-verify="required">
+						<option value="">---请选择---</option>
+						<option value="1">仅限本人</option>
+						<option value="2">仅限本部门及下部门</option>
+						<option value="3">本部门</option>
+						<option value="4">所有人</option>
+						<option value="5">指定部门</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item" id="accessContDiv" style="display: none">
+				<label class="layui-form-label" for="">指定部门<font color='red'>*</font></label>
+				<div class="layui-input-block">
+				<button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="addDept()">添加部门</button>
+				<table id="contList" class="layui-table">
+				<tr><th width="200px">部门名称</th><th width="">附加项</th><th width="80px">操作</th></tr>
+				
+				</table>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="">数据接口<font color='red'>*</font></label>
+				<div class="layui-input-block">
+					<div class="well">
+					<ul id="zTreeList" class="ztree" style="margin-top:0; width:100%;height: 380px;overflow: auto;"></ul>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item" style="display: none">
+				<label class="control-label col-md-2" for=""></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="btnSave" id="btnSave">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+</div>
+	<script type="text/javascript" src="../../common/commonUrl.js"></script>
+	<script type="text/javascript" src="../../common/commonJs.js"></script>
+	<script type="text/javascript" src="js/ajaxurl.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.core.min.js"></script>
+	<script type="text/javascript" src="../../scripts/ztree/jquery.ztree.excheck.min.js"></script>
+	<script type="text/javascript" src="js/select_win.js"></script>
+	<script type="text/javascript">
+		var id = $.getUrlParam('id');
+		var inteId = $.getUrlParam('inteId');
+		var form;
+		$(function() {
+			layui.use(['form'], function() {
+				form = layui.form;
+				//初始化
+				$('#inteId').val(inteId);
+				initParamInfo();
+				
+				form.on('select(accessLevel)', function(data){
+					changeAccessLevel(data);
+				});
+				
+				// 监听提交
+				form.on('submit(btnSave)', function(data) {
+					//layer.msg(JSON.stringify(data.field));
+					save();
+					return false;
+				});
+			});
+		});
+
+		function checkForm(){
+			$('#btnSave').click();
+		}
+		
+		function changeAccessLevel(data){
+			var val = data.value;
+			if(val=='5'){
+				$('#accessContDiv').css('display', 'block');
+			}else{
+				$('#accessContDiv').css('display', 'none');
+			}
+		}
+		
+		function initDataInfo(){
+			$.ajax({
+				url : URL_inteRole_detailInfo,
+				data : {
+					id: id
+				},
+				type : "post",
+				dataType : "json",
+				beforeSend: function() {
+					// loading show
+					this.layerIndex = layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if(res.code==0){
+						// 初始赋值
+						form.val('form1', {
+							'roleId': res.data.roleId,
+							'inteId': res.data.inteId,
+							'accessLevel': res.data.accessLevel
+						});
+						if(res.data.accessLevel=='5'){
+							$('#accessContDiv').css('display', 'block');
+							
+							var accessCont = res.data.accessCont;
+							if(accessCont!=''){
+								var json = JSON.parse(accessCont);
+								for (var i = 0; i < json.length; i++) {
+									var selDeptId = json[i].departId;
+									var selDeptName = json[i].departName;
+									var departFlag = json[i].departFlag;
+									if($('#contList #tr_seq_'+selDeptId).length==0){
+										var departFlagCN = checkFlag(departFlag);
+										var list = '<tr id="tr_seq_'+selDeptId+'"><td>'+selDeptName+'</td><td>'+departFlagCN+'</td>'+
+										'<td><a href="javascript:;" onclick="removeTr(\''+selDeptId+'\')">删除</a></td></tr>'+
+										'<input type="hidden" id="departName_'+selDeptId+'" value="'+selDeptName+'">'+
+										'<input type="hidden" id="departFlag_'+selDeptId+'" value="'+departFlag+'">';
+										$('#contList tr:last').after(list);
+									}
+								}
+							}
+						}
+					}else{
+						
+					}
+				},
+				complete: function () {
+					layer.close(this.layerIndex);
+				}
+			});
+		}
+		function save(){
+			
+			//指标
+			var n = $("#contList tr").length;
+			var content_json = "[";
+			for (var i=1;i < n;i++){
+				// 取到每一行的id中的seq号，用于取数据
+				var seqid = $("#contList tr").eq(i)[0].id.replace("tr_seq_","");
+				content_json += '{"departId":"'+seqid+'",'
+							+ '"departName":"'+$("#departName_"+seqid).val()+'",'
+							+ '"departFlag":"'+$("#departFlag_"+seqid).val()+'"';
+				content_json += "}";
+				if (i != n-1){
+					content_json = content_json + ",";
+				}
+			}
+			content_json += "]";
+			$('#contJson').val(content_json);
+			if($('#contJson').val()==''){
+				layer.msg('请选择指定部门');
+				return;
+			}
+			var intelist = getCheckValue();
+			$('#inte_json').val(intelist);
+			$.ajax({
+				url : URL_inteRole_savebatch,
+				data : $('#form1').serialize(),
+				type : 'post',
+				dataType : 'json',
+				beforeSend: function() {
+					// loading show
+					parent.layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					if(res.code==0){
+						parent.layer.msg(res.msg);
+						parent.reload();
+					}else{
+						parent.layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					parent.layer.closeAll('loading');
+				}
+			});
+		}
+
+		function initParamInfo(){
+			$.ajax({
+				url : URL_inteRole_initParamInfo,
+				data : {
+					id : id
+				},
+				type : 'post',
+				dataType : 'json',
+				beforeSend : function() {
+					// loading show
+					this.layerIndex = layer.load(2, {shade: 0.6});
+				},
+				success : function(res) {
+					//alert(JSON.stringify(res));
+					if (res.code==0) {
+						var list_role = res.data.list_role;
+						$('#roleId').empty();
+						var option_role = '<option value="">无</option>';
+						for ( var i = 0; i < list_role.length; i++) {
+							option_role += '<option value="'+list_role[i].role_id+'">'+list_role[i].role_name+'</option>';
+						}
+						$('#roleId').html(option_role);
+						form.render('select');
+						if(id!=null&&id!=''){
+							$('#id').val(id);
+							initDataInfo();
+						}
+					} else {
+						layer.msg(res.msg);
+					}
+				},
+				complete: function () {
+					layer.close(this.layerIndex);
+				}
+			});
+		}
+		//自定义部门
+		var datalist;
+		function initDatagrid() {
+			
+		};
+
+		function addDept(){
+			addDept1(id);
+		}
+
+		function removeTr(id){
+			if (!window.confirm('您是否要删除选中的项目？')){
+				return;
+			}
+			$('#contList #tr_seq_'+id).remove();
+
+		}
+		//初始化数据接口
+		function getCheckValue() {
+			var zTree = $.fn.zTree.getZTreeObj("zTreeList");
+			var nodes = zTree.getCheckedNodes(true);
+			var result = "[";
+			for ( var i = 0; i < nodes.length; i++) {
+				//var halfCheck = nodes[i].getCheckStatus();
+				//if (!halfCheck.half) {
+					result += "{'id':'"+nodes[i].id+"','type':'"+nodes[i].type+"'},";
+				//}
+			}
+			if(result!="[")
+				result = result.substring(0, result.lastIndexOf(","));
+			result += "]";
+			return result;
+		}
+		/////////////////////////////加载树形数据接口
+		var setting_inte = {
+			async: {
+				enable: true,
+				url: baseUrl+'/system/inte/getList',
+				dataFilter: filterInte
+			},
+			check: {
+				enable: true
+			},
+			data:{
+				simpleData: {
+					enable:true,
+					idKey: "id",
+					pIdKey: "pId",
+					rootPId: "1"
+				}
+			},
+			callback: {
+				onClick: onClickInte,
+				onAsyncSuccess: zTreeOnAsyncSuccessInte
+			}
+		};
+
+		function filterInte(treeId, parentNode, childNodes) {
+			if (!childNodes) return null;
+			for (var i=0, l=childNodes.length; i<l; i++) {
+				childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+			}
+			return childNodes;
+		}
+
+		function zTreeOnAsyncSuccessInte(event, treeId, treeNode, msg) {
+			//var treeObj = $.fn.zTree.getZTreeObj("zTreeList");
+			//$("#parentDepartName").val(node.name);
+		}
+
+		function onClickInte(event, treeId, treeNode, clickFlag) {
+			
+		}
+		var inteTree;
+		$(document).ready(function(){
+			inteTree = $.fn.zTree.init($("#zTreeList"), setting_inte);
+		});
+
+	</script>
+</body>
+</html>

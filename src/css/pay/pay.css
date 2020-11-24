@@ -1,0 +1,23 @@
+
+.money-span-font {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.color-red {
+    color: red !important;
+}
+
+.color-green {
+    color: #28c728 !important;
+}
+
+.oversize-word {
+    right: 9px;
+    width: 90px;
+}
+
+.oversize-word-input {
+    left: -10px;
+}

@@ -1,0 +1,193 @@
+<!-- 注意这里不需要写`<html><body>`这些东西，它是一个html片段，不是完整的html页面 -->
+<style type="text/css">
+    #select_location_box .left{float:left;width:100%;}
+    #select_location_box .right{float:right;}
+    #select_location_box .clearfix{clear: both;}
+    #select_location_box .hide{display: none;}
+    #select_location_box #map{height:500px;width: calc(100% - 387px);border: 1px solid #dadada;}
+    #select_location_box #result{height: 252px; font-size: 13px; line-height: 20px;overflow: auto;color: #666;}
+    #select_location_box #result ul {
+        list-style: outside none none;
+    }
+    #select_location_box #result ul li{
+        border-bottom: 1px solid #dadada;
+        padding: 10px;
+    }
+    #select_location_box #result ul li:hover{
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+    #select_location_box #result .res-data{
+        background: url(img/ico_marker.png) no-repeat -1px 15px;
+    }
+    #select_location_box #result .res-marker{
+        width: 30px; 
+        height: 58px; 
+        line-height: 58px; 
+        text-align: center; 
+        color: #d20a0a; 
+        font-weight: bold;
+    }
+    #select_location_box #result .res-address{
+        width: 235px;
+    }
+    #select_location_box #result .title{
+        font-size: 16px;
+        color: #000000;
+    }
+    #select_location_box .area-right{
+        width:385px;
+    }
+    #select_location_box .area-right .search{
+         border-bottom: 1px solid #dadada;
+        padding: 8px 0;
+        box-shadow: 8px 8px 8px #888888;
+        margin-bottom: 8px;
+    }
+    #select_location_box .area-right .search .s-address{
+        margin-bottom: 5px;position: relative;border-bottom: 1px solid #DADADA;padding: 0 10px;height: 32px;line-height: 32px;
+    }
+    #select_location_box .area-right .search .s-address .btn{
+        position: absolute;right: 10px;top: 2px;cursor: pointer;
+    }
+    #select_location_box .area-right .search .s-address .btn img{
+        width: 22px;
+    }
+    #select_location_box .area-right .search .address{
+        height: 28px;
+        line-height: 28px;
+        border: none;
+        outline: medium;/*去掉鼠标点击后的边框*/
+    }
+    
+    #select_location_box .area-right .search .cur_point{
+        color: #1E90FF;padding: 0 10px;font-size: 13px;
+    }
+    #select_location_box .area-right .search .point{
+        border:none;
+    }
+    #select_location_box .makeSure{
+        text-align: center;
+    }
+    .diy-class{
+        overflow: hidden;
+    }
+    .diy-class .layui-layer-content{
+        padding: 0px;
+    }
+    #select_location_box .area-right .search{
+        box-shadow:0 0 0 0px;
+    }
+</style>
+<div id="select_location_box">
+    <div class="left" id="map"></div>
+    <div class="left area-right">
+        <div class="search">
+            <div class="s-address">
+                搜索：<input type="text" class="address" id="address" placeholder="请输入关键字"/>
+                <div onclick="doSearch();" class="btn">
+                    <i class="layui-icon layui-icon-search"></i>
+                </div>
+            </div>
+            <div class="cur_point">
+                <blockquote class="layui-elem-quote layui-text">
+                    <i class="layui-icon layui-icon-location"></i>
+                    <span id="s-point">请选择坐标</span>
+                </blockquote>
+                <blockquote style="display: none;" class="layui-elem-quote layui-text">
+                    当前检索城市：<span id="s-city"></span>
+                </blockquote>
+            </div>
+            <div class="makeSure">
+                <button onclick="fnMakeSure()" type="button" class="layui-btn layui-btn-sm layui-btn-normal">确认此坐标</button>
+            </div>
+        </div>
+        <div id="result"></div>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<script>
+    
+</script>
+<script>
+        $(function(){
+            $("#address").val("");
+            $("#result").on("click","li",function(){
+                var point = $(this).find(".point").text();
+                $("#s-point").text(point);//赋值
+                $("#result li").css("background-color","#fff");
+                $(this).css("background-color","#f0f0f0");
+                
+            });
+            
+            //绑定input文本框回车事件
+            $('#address').bind('keypress',function(event){
+                if(event.keyCode == "13"){
+                   doSearch();//搜索
+                }
+            });
+        });
+
+        // 百度地图API功能
+        var map = new BMap.Map("map");        
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+        map.enableScrollWheelZoom();//启用滚轮放大缩小，默认禁用
+        
+        //单击获取点击的经纬度
+        map.addEventListener("click",function(e){
+            $("#s-point").text(e.point.lng+","+e.point.lat);
+            var marker = new BMap.Marker(e.point);
+            map.addOverlay(marker);
+        });
+        
+        //map展现结果的地图实例
+        //autoViewport检索结束后是否自动调整地图视野
+        var local = new BMap.LocalSearch(map,{renderOptions:{map:map,autoViewport:true}});
+        
+        //地址检索
+        function doSearch(){
+            var address = document.getElementById("address").value;
+            local.search(address);
+            
+            //检索结束后的回调方法
+            local.setSearchCompleteCallback(function(results){
+                // 判断状态是否正确
+                if (local.getStatus() == BMAP_STATUS_SUCCESS){
+                    var str = "<ul>";
+                    for (var i = 0; i < results.getCurrentNumPois(); i ++){
+                        var poi = results.getPoi(i);
+    //                    console.log(JSON.stringify(poi));
+                        str+='<li>';
+                            str+='<div class="res-data">';
+                                str+='<div class="left res-marker">';
+                                    str+='<span>'+String.fromCharCode(65+i)+'</span>';
+                                str+='</div>';
+                                str+='<div class="left res-address">';
+                                    str+='<div class="title">'+poi.title+'</div>';
+                                    str+='<div>地址：<span class="rout">'+poi.address+'</span></div>';
+                                    str+='<div>坐标：<span class="point">'+poi.point.lng+","+poi.point.lat+'</span></div>';
+                                str+='</div>';
+                                str+='<div class="clearfix"></div>';
+                            str+='</div>';
+                        str+='</li>';
+                    }
+                    str+='</ul>';
+                    $("#result").html(str);
+                    $("#s-city").text(results.province+results.city);
+                    $("#s-point").text(results.getPoi(0).point.lng+","+results.getPoi(0).point.lat);
+                }
+            });
+        }
+
+        function fnMakeSure(){
+            var pointStr=$("#s-point").html();
+            if(pointStr!='请选择坐标'){
+                $('#baidu_lng').val(pointStr.split(',')[0]);
+                $('#baidu_lat').val(pointStr.split(',')[1]);
+                layer.close(selectLocationDialog);
+            }else{
+                layer.msg('请选择坐标');
+            }
+        }
+</script>
