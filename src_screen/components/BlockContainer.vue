@@ -12,13 +12,27 @@
             </div>
         </el-header>
         <el-main>
-            <slot></slot>
+            <!-- 这是一个作用域插槽，将该组件内部的数据暴露出去了
+                调用它的父组件可以通过以下方式使用这个组件内部数据:
+                <block-container>
+                    <template v-slot:default="slotProps">
+                        {{ slotProps.totalHeight }}
+                        ....
+                    </template>
+                </block-container>
+             -->
+            <slot :totalHeight="totalHeight"></slot>
         </el-main>
     </el-container>
 </template>
 
 <script>
     export default {
+        data() {
+            return {
+                totalHeight: '',
+            }
+        },
         computed: {
             titleBgImg() {
                 return this.$attrs._title.length<=9 ? require('@/assets/image/title_bg_short.png') : require('@/assets/image/title_bg_long.png') 
