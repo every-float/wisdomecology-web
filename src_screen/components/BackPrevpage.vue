@@ -1,12 +1,21 @@
+// <a class="back_prev_page" href="javascript:history.back(-1)">
+//     <i class="el-icon-back"></i><span style="vertical-align: middle;">返回</span>
+// </a>
+
 <template>
-    <a class="back_prev_page" href="javascript:history.back(-1)">
+    <router-link class="back_prev_page" :to="to">
         <i class="el-icon-back"></i><span style="vertical-align: middle;">返回</span>
-    </a>
+    </router-link>
 </template>
 
 <script>
     export default {
-        
+        props: {
+            to: {
+                type: String,
+                required: true
+            }
+        },
     }
 </script>
 

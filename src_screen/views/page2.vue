@@ -6,7 +6,7 @@
             <!-- 头部 -->
             <el-header class="cus-header" :height="headerHeight">
                 <div class="cus-header-item1">
-                    <back-prevpage></back-prevpage>
+                    <back-prevpage to="/page1"></back-prevpage>
                     <div class="logo-img"></div>
                 </div>
                 <div class="cus-header-item2"></div>

@@ -25,57 +25,57 @@ export default {
         {
           title: "数据综合分析",
           name: "1",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_zonghefenxi.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_zonghefenxi.html`
         },
         {
           title: "微型空气站",
           name: "2",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_weizhan.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_weizhan.html`
         },
         {
           title: "颗粒物监测",
           name: "3",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_keliwu.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_keliwu.html`
         },
         // {
         //   title: "扬尘监测",
         //   name: "4",
-        //   menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#http://101.200.202.111:9000/login.aspx`
+        //   menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#http://101.200.202.111:9000/login.aspx`
         // },
         {
           title: "油烟监测",
           name: "5",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_youyan.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_youyan.html`
         },
         {
           title: "遥感尾气监测",
           name: "6",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/yaoganweiqi.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/yaoganweiqi.html`
         },
         {
           title: "污染源监测",
           name: "7",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_wuranyuan.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_wuranyuan.html`
         },
         {
           title: "工况用电监测",
           name: "8",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#http://111.33.57.10:8081/distb/#/login`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#http://111.33.57.10:8081/distb/#/login`
         },
         {
           title: "VOC监测",
           name: "90",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_voc.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/daqi/index_voc.html`
         },
         {
           title: "走航检测",
           name: "10",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/zouhang.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/zouhang.html`
         },
         {
           title: "高架视频",
           name: "11",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/overheadVideo_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755&menuName=大气环境监测#views/dq/overheadVideo_list.html`
         },
       ],
     };

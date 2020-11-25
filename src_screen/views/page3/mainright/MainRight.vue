@@ -90,7 +90,6 @@ import BlockContainer from "@/components/BlockContainer";
 import vueSeamlessScroll from "vue-seamless-scroll";
 import { mapActions, mapState } from 'vuex';
 import { Loading } from 'element-ui';
-import bus from  '@/bus/index';
 
 export default {
   components: {
@@ -166,12 +165,15 @@ export default {
     this.zbAutoSwitch_1();
 
     // 监听左边组件的站点切换
-    bus.$on('stationChange', ({currStation}) => {
+    this.$bus.$on('stationChange_page3', ({currStation}) => {
         this.currStation_1 = currStation;
     });
 
-    // this.moreUrl = `${this.$store.state.pageUrl}views/index2.html?menuId=c616b74328504b6085ac923c1e117755#views/dq/overheadVideo_list.html`;
-    this.moreUrl = `${this.$store.state.pageUrl}views/index2.html?menuId=26a6c508b37d465f910800d4e73f93d8&menuName=重点污染源管理#views/sop/companyVideo_list.html`;
+    // this.moreUrl = `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=c616b74328504b6085ac923c1e117755#views/dq/overheadVideo_list.html`;
+    this.moreUrl = `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=26a6c508b37d465f910800d4e73f93d8&menuName=重点污染源管理#views/sop/companyVideo_list.html`;
+  },
+  beforeDestroy () {
+    this.$bus.$off('stationChange_page3');
   },
   watch: {
     currStation_1(now, old) {
@@ -383,9 +385,9 @@ export default {
               }
           ]
       });
-　　    window.addEventListener("resize", function () {
+      window.addEventListener("resize", debounce(function () {
           myChart.resize();
-      });
+      }));
     },
   },
 };

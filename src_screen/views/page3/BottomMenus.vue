@@ -25,37 +25,37 @@ export default {
         {
           title: "河道断面图",
           name: "1",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/index_duanmianjiance.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/index_duanmianjiance.html`
         },
         {
           title: "河流检测数据",
           name: "2",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/riverData_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/riverData_list.html`
         },
         {
           title: "河道周边重点监管",
           name: "3",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/weCompanyInfo_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/weCompanyInfo_list.html`
         },
         {
           title: "河道闸口信息",
           name: "4",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/weGateInfo_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/weGateInfo_list.html`
         },
         {
           title: "水环境采集数据",
           name: "5",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/approval_data_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/approval_data_list.html`
         },
         {
           title: "区域监测数据",
           name: "6",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/areaData_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/areaData_list.html`
         },
         {
           title: "乡镇监测数据",
           name: "7",
-          menuUrl: `${this.$store.state.pageUrl}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/townData_list.html`
+          menuUrl: `${process.env.VUE_APP_PAGEURL}views/index2.html?menuId=9c48aa0ce0bb44b8b281773c7520d2ac&menuName=水环境监测#views/we/townData_list.html`
         }
       ],
     };

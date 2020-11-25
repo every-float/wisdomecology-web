@@ -9,7 +9,6 @@
 	import mapIconDong from '@/assets/image/icon_dong.gif';
 	import mapWinDown from '@/assets/image/down.png';
 	import { mapState } from 'vuex';
-	import bus from  '@/bus/index';
 	import riverLine from '@/mock/riverLine';
 
     let map;
@@ -31,7 +30,10 @@
 		},
         mounted () {
 			this.bmap_init();
-        },
+		},
+		beforeDestroy () {
+			this.$bus.$off('stationChange_page3');
+		},
         methods: {
 			
             // 地图相关
@@ -39,9 +41,9 @@
 				map = new BMap.Map("bmap");
 				map.centerAndZoom(new BMap.Point(mapCenterPoint.lng, mapCenterPoint.lat), mapLevel);
 				map.enableScrollWheelZoom();
-				window.addEventListener('resize', () => {
+				window.addEventListener('resize', debounce(() => {
 					map.setViewport();
-				});
+				}));
                 map.setMapStyleV2({
                     styleJson: mapStyle
                 });
@@ -107,8 +109,9 @@
 					pointerList[0].style.width = "14px";
 					pointerList[0].style.height = "14px";
 
-					bus.$on('stationChange', ({index}) => {
+					this.$bus.$on('stationChange_page3', ({index}) => {
 						for(let i=0; i<pointerList.length; i++){
+							console.log()
 							pointerList[i].classList.remove("mapicon_zoom");
 							pointerList[i].firstChild.src = mapIconDong;
 							pointerList[i].style.backgroundColor = "none";

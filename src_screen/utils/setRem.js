@@ -4,9 +4,9 @@ export default () => {
     const baseHtmlFontSize = 100;
 
     setHtmlFontSize();
-    window.addEventListener('resize', () => {
+    window.addEventListener('resize', debounce(() => {
         setHtmlFontSize();
-    });
+    }));
 
     function setHtmlFontSize() {
         const heightScale = Math.min(baseHeight, window.innerHeight) / baseHeight;

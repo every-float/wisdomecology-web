@@ -32,7 +32,7 @@
     import MainRight from '@/views/page1/mainright/MainRight'
     import CenterTop from '@/views/page1/CenterTop'
     import CenterBottom from '@/views/page1/centerbottom/CenterBottom';
-    import { mapActions, mapMutations, mapState } from 'vuex';
+    import { mapMutations, mapState } from 'vuex';
     import { 
         getAirQuality, 
         getXiangzhenData, 
@@ -170,9 +170,9 @@
             }catch(err){
                 //
             }finally{
-                window.addEventListener('resize', () => {
+                window.addEventListener('resize', debounce(() => {
                     this.setBasbgSize();
-                })
+                }))
             }
         },
         updated () {
@@ -189,7 +189,7 @@
             ]),
             openContactListPage() {
                 window.open(
-                    `${this.$store.state.chatUrl}theme/theme_1/contactList.html?accesstoken=${Cookie.get('login_sid_t_we')}`,
+                    `${window.chatUrl}theme/theme_1/contactList.html?accesstoken=${Cookie.get('login_sid_t_we')}`,
                     "视频通话窗口",
                     "location=no,menubar=no,status=no,titlebar=no,toolbar=no,width=1000,height=540,left=200,top=100,screenLeft=200,screenTop=150"
                 );

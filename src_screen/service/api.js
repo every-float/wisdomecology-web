@@ -18,7 +18,7 @@ class HttpRequest {
       config => {
         let userToken = Cookie.get('login_sid_t_we');
         if (!userToken) {
-          top.location.href = Store.state.pageUrl + 'views/login.html';
+          top.location.href = process.env.VUE_APP_PAGEURL + 'views/login.html';
         }
         if (userToken && baseUrl) {
           config.headers.authorization = `Bearer ${userToken}`;
@@ -34,10 +34,10 @@ class HttpRequest {
         if(res && res.code==101){
           //token失效
           Cookies.set('login_sid_t_we', '', { path: '/' });
-          top.location.href = Store.state.pageUrl + 'views/login.html';
+          top.location.href = process.env.VUE_APP_PAGEURL + 'views/login.html';
         }else if(res.code==102){
           //无权限
-          location.href = Store.state.pageUrl + 'views/noAuthority.html';
+          location.href = process.env.VUE_APP_PAGEURL + 'views/noAuthority.html';
         }
         const { data, status } = res;
         return data;

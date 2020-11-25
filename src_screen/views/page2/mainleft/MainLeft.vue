@@ -121,9 +121,9 @@
              * 这是一堆初始化工作
              */
             this.calcLeft_1_1_rotate_height();
-            window.addEventListener('resize', () => {
+            window.addEventListener('resize', debounce(() => {
                 this.calcLeft_1_1_rotate_height();
-            });
+            }));
             this.handleData2();     //echarts元素已挂载
             this.handleData3();     //echarts元素已挂载
             this.zbAutoSwitch_2();  //左下角的数据
@@ -494,9 +494,9 @@
                         }
                     ]
                 });
-        　　    window.addEventListener("resize", function () {
+        　　    window.addEventListener("resize", debounce(function () {
                     myChart.resize();
-                });
+                }));
             },
             initCharts_3 (x, y, colors) {
                 const _echarts = this.$echarts;
@@ -627,9 +627,9 @@
                         }
                     ]
                 });
-        　　    window.addEventListener("resize", function () {
+        　　    window.addEventListener("resize", debounce(function () {
                     myChart.resize();
-                });
+                }));
             },
         }
     }

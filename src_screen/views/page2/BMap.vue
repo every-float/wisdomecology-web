@@ -49,9 +49,9 @@
 				map = new BMap.Map("bmap");
 				map.centerAndZoom(new BMap.Point(mapCenterPoint.lng, mapCenterPoint.lat), mapLevel);
 				map.enableScrollWheelZoom();
-				window.addEventListener('resize', () => {
+				window.addEventListener('resize', debounce(() => {
 					map.setViewport();
-				});
+				}));
                 map.setMapStyleV2({
                     styleJson: mapStyle
                 });

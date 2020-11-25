@@ -10,9 +10,6 @@
     created () {
       this.getUserInfo();
     },
-    computed: {
-      
-    },
     methods: {
       getUserInfo() {
         try {

@@ -10,12 +10,12 @@ import page1 from './page1/index';
 import page2 from './page2/index';
 import page3 from './page3/index';
 
+console.log(Vue.xinlaoluId);
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-    pageUrl: process.env.VUE_APP_PAGEURL,
-    chatUrl: window.chatUrl,
+  state: {   
   },
   mutations: {
   },

@@ -79,8 +79,8 @@ export default {
     ...mapState('page2', ['xiangzhen', 'pollutionListA', 'monthCalendar'])
   },
   mounted() {
-    this.fengchangSrc = `${this.$store.state.pageUrl}views/daqi/index_zonghefenxi_iframe.html`;
-    this.fengchangDetailUrl = `${this.$store.state.pageUrl}views/daqi/index_zonghefenxi_iframe.html`;
+    this.fengchangSrc = `${process.env.VUE_APP_PAGEURL}views/daqi/index_zonghefenxi_iframe.html`;
+    this.fengchangDetailUrl = `${process.env.VUE_APP_PAGEURL}views/daqi/index_zonghefenxi_iframe.html`;
 
     this.handleData1();
     this.zbAutoSwitch_1();
@@ -303,9 +303,9 @@ export default {
           },
         ],
       });
-      window.addEventListener("resize", function () {
+      window.addEventListener("resize", debounce(function () {
         myChart.resize();
-      });
+      }));
     },
   },
 };

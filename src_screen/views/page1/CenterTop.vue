@@ -96,7 +96,6 @@
     import {getAirQuality, getXiangzhenData} from '@/service/api.js';
     import mapMarkerStyle from '@/utils/mapMarkerStyle';
     import { mapState } from 'vuex';
-    import bus from  '@/bus/index';
 
     export default {
         data() {
@@ -188,13 +187,16 @@
             document.addEventListener('click', () => {
                 this.isShow = false;
             });
-            bus.$on('stationChange', ({currStation}) => {
+            this.$bus.$on('stationChange_page1', ({currStation}) => {
                 const domlist = document.querySelectorAll(`.map_point_water:not(#map_point_water_${currStation})`);
                 for(let i=0; i<domlist.length; i++){
                     domlist[i].classList.remove('mapicon_zoom');
                 }
                 document.querySelector(`#map_point_water_${currStation}`).classList.add("mapicon_zoom");
             });
+        },
+        beforeDestroy () {
+            this.$bus.$off('stationChange_page1');
         },
         methods: {
             // 获取空气质量信息

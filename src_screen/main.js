@@ -15,17 +15,23 @@ import {
   TabPane,
 } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import setRem from '@/utils/setRem';
+import {debounce} from "@/utils/util.js";
+import setRem from '@/utils/setRem.js';
 import '@/icons';
 import '@/assets/css/base.scss';
 import '@/assets/css/cusAnimate.css';
 import echarts from 'echarts';
+
+window.debounce = debounce;
 
 setRem();
 
 Vue.config.productionTip = false;
 
 Vue.prototype.$echarts = echarts;
+
+// 事件总线
+Vue.prototype.$bus = new Vue();
 
 // 按需引入elementui时，传入一个全局配置对象，以设置组件的默认尺寸
 Vue.prototype.$ELEMENT = { size: 'small', zIndex: 3000 };
