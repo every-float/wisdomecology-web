@@ -4,7 +4,9 @@
 
 <template>
     <router-link class="back_prev_page" :to="to">
-        <i class="el-icon-back"></i><span style="vertical-align: middle;">返回</span>
+        <div @click="handleOtherThings($event)">
+            <i class="el-icon-back"></i><span style="vertical-align: middle;">返回</span>
+        </div>
     </router-link>
 </template>
 
@@ -12,8 +14,16 @@
     export default {
         props: {
             to: {
-                type: String,
+                type: [String, Object],
                 required: true
+            }
+        },
+        methods: {
+            handleOtherThings(e) {
+                if(this.to === "-1"){
+                    e.preventDefault();
+                    this.$router.go(-1);
+                }
             }
         },
     }

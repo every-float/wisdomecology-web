@@ -231,42 +231,55 @@ var vm = new Vue({
                         });
                         if(ret.data.filesHpsp){
                             vm.fileList1 = ObjectParse(ret.data.filesHpsp);
+                            $("input[name=filesHpsp]").val(ret.data.filesHpsp);
                         }
                         if(ret.data.filesYswd){
                             vm.fileList2 = ObjectParse(ret.data.filesYswd);
+                            $("input[name=filesYswd]").val(ret.data.filesYswd);
                         }
                         if(ret.data.filesJcbg){
                             vm.fileList3 = ObjectParse(ret.data.filesJcbg);
+                            $("input[name=filesJcbg]").val(ret.data.filesJcbg);
                         }
                         if(ret.data.filesJcqk){
                             vm.fileList4 = ObjectParse(ret.data.filesJcqk);
+                            $("input[name=filesJcqk]").val(ret.data.filesJcqk);
                         }
                         if(ret.data.filesCfqk){
                             vm.fileList5 = ObjectParse(ret.data.filesCfqk);
+                            $("input[name=filesCfqk]").val(ret.data.filesCfqk);
                         }
                         if(ret.data.filesHyxx){
                             vm.fileList6 = ObjectParse(ret.data.filesHyxx);
+                            $("input[name=filesHyxx]").val(ret.data.filesHyxx);
                         }
                         if(ret.data.filesYjya){
                             vm.fileList7 = ObjectParse(ret.data.filesYjya);
+                            $("input[name=filesYjya]").val(ret.data.filesYjya);
                         }
                         if(ret.data.filesBgjl){
                             vm.fileList8 = ObjectParse(ret.data.filesBgjl);
+                            $("input[name=filesBgjl]").val(ret.data.filesBgjl);
                         }
                         if(ret.data.filesCwjd){
                             vm.fileList9 = ObjectParse(ret.data.filesCwjd);
+                            $("input[name=filesCwjd]").val(ret.data.filesCwjd);
                         }
                         if(ret.data.filesSjcl){
                             vm.fileList10 = ObjectParse(ret.data.filesSjcl);
+                            $("input[name=filesSjcl]").val(ret.data.filesSjcl);
                         }
                         if(ret.data.filesWfgl){
                             vm.fileList11 = ObjectParse(ret.data.filesWfgl);
+                            $("input[name=filesWfgl]").val(ret.data.filesWfgl);
                         }
                         if(ret.data.filesZyqk){
                             vm.fileList12 = ObjectParse(ret.data.filesZyqk);
+                            $("input[name=filesZyqk]").val(ret.data.filesZyqk);
                         }
                         if(ret.data.filesPwk){
                             vm.fileList13 = ObjectParse(ret.data.filesPwk);
+                            $("input[name=filesPwk]").val(ret.data.filesPwk);
                         }
 
                         // 附件上传
@@ -316,105 +329,12 @@ var vm = new Vue({
 
         // 附件上传
         toUploadFile:function(listIndex){
-            switch(listIndex){
-                case 1:
-                    if(vm.fileList1.length){
-                        var num = vm.fileList1.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 2:
-                    if(vm.fileList2.length){
-                        var num = vm.fileList2.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 3:
-                    if(vm.fileList3.length){
-                        var num = vm.fileList3.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 4:
-                    if(vm.fileList4.length){
-                        var num = vm.fileList4.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 5:
-                    if(vm.fileList5.length){
-                        var num = vm.fileList5.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 6:
-                    if(vm.fileList6.length){
-                        var num = vm.fileList6.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 7:
-                    if(vm.fileList7.length){
-                        var num = vm.fileList7.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 8:
-                    if(vm.fileList8.length){
-                        var num = vm.fileList8.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 9:
-                    if(vm.fileList9.length){
-                        var num = vm.fileList9.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 10:
-                    if(vm.fileList10.length){
-                        var num = vm.fileList10.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 11:
-                    if(vm.fileList11.length){
-                        var num = vm.fileList11.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 12:
-                    if(vm.fileList12.length){
-                        var num = vm.fileList12.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-                case 13:
-                    if(vm.fileList13.length){
-                        var num = vm.fileList13.length;
-                    }else{
-                        var num = 0;
-                    }
-                    break;
-            }
             upload.render({
                 elem: '#uploadBtn'+listIndex, //绑定元素
                 url: baseUrl+'fileupload/uploadFile?useType=SOPCO&dataClass='+listIndex,
                 accept: 'file',
                 multiple: true,
-                exts:"jpg|png|gif|bmp|jpeg|txt|doc|xls|ppt|docx|xlsx|pptx|zip",
+                exts:"jpg|png|gif|jpeg|txt|doc|xls|ppt|docx|xlsx|pptx|pdf|rar|zip|json|mp3",
                 before:function(){
                     layer.load(2,{shade:0.6});
                 },
@@ -477,338 +397,281 @@ var vm = new Vue({
                 done:function(res, index, upload){
                     switch(listIndex){
                         case 1:
-                            vm.fileList1[num].msg = res.msg;
-                            vm.fileList1[num].fileId = res.data.fileId;
-                            vm.fileList1[num].path = res.data.filePath;
-                            if(!vm.fileList1[num].type){
-                                vm.fileList1[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList1){
+                                if(vm.fileList1[i].name && vm.fileList1[i].name == res.data.fileName || vm.fileList1[i].fileName){
+                                    vm.fileList1[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList1);
                             break;
                         case 2:
-                            vm.fileList2[num].msg = res.msg;
-                            vm.fileList2[num].fileId = res.data.fileId;
-                            vm.fileList2[num].path = res.data.filePath;
-                            if(!vm.fileList2[num].type){
-                                vm.fileList2[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList2){
+                                if(vm.fileList2[i].name && vm.fileList2[i].name == res.data.fileName || vm.fileList2[i].fileName){
+                                    vm.fileList2[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList2);
                             break;
                         case 3:
-                            if(!vm.fileList3[num].type){
-                                vm.fileList3[num].type = res.data.originalFileType;
-                                console.log(res.data.originalFileType);
-                                console.log(vm.fileList3[num].type);
+                            for(var i in vm.fileList3){
+                                if(vm.fileList3[i].name && vm.fileList3[i].name == res.data.fileName || vm.fileList3[i].fileName){
+                                    vm.fileList3[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
-                            vm.fileList3[num].msg = res.msg;
-                            vm.fileList3[num].fileId = res.data.fileId;
-                            vm.fileList3[num].path = res.data.filePath;
-                            console.log(vm.fileList3[num].type);
+                            vm.renderUploadTable(listIndex, vm.fileList3);
                             break;
                         case 4:
-                            vm.fileList4[num].msg = res.msg;
-                            vm.fileList4[num].fileId = res.data.fileId;
-                            vm.fileList4[num].path = res.data.filePath;
-                            if(!vm.fileList4[num].type){
-                                vm.fileList4[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList4){
+                                if(vm.fileList4[i].name && vm.fileList4[i].name == res.data.fileName || vm.fileList4[i].fileName){
+                                    vm.fileList4[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList4);
                             break;
                         case 5:
-                            vm.fileList5[num].msg = res.msg;
-                            vm.fileList5[num].fileId = res.data.fileId;
-                            vm.fileList5[num].path = res.data.filePath;
-                            if(!vm.fileList5[num].type){
-                                vm.fileList5[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList5){
+                                if(vm.fileList5[i].name && vm.fileList5[i].name == res.data.fileName || vm.fileList5[i].fileName){
+                                    vm.fileList5[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList5);
                             break;
                         case 6:
-                            vm.fileList6[num].msg = res.msg;
-                            vm.fileList6[num].fileId = res.data.fileId;
-                            vm.fileList6[num].path = res.data.filePath;
-                            if(!vm.fileList6[num].type){
-                                vm.fileList6[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList6){
+                                if(vm.fileList6[i].name && vm.fileList6[i].name == res.data.fileName || vm.fileList6[i].fileName){
+                                    vm.fileList6[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList6);
                             break;
                         case 7:
-                            vm.fileList7[num].msg = res.msg;
-                            vm.fileList7[num].fileId = res.data.fileId;
-                            vm.fileList7[num].path = res.data.filePath;
-                            if(!vm.fileList7[num].type){
-                                vm.fileList7[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList7){
+                                if(vm.fileList7[i].name && vm.fileList7[i].name == res.data.fileName || vm.fileList7[i].fileName){
+                                    vm.fileList7[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList7);
                             break;
                         case 8:
-                            vm.fileList8[num].msg = res.msg;
-                            vm.fileList8[num].fileId = res.data.fileId;
-                            vm.fileList8[num].path = res.data.filePath;
-                            if(!vm.fileList8[num].type){
-                                vm.fileList8[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList8){
+                                if(vm.fileList8[i].name && vm.fileList8[i].name == res.data.fileName || vm.fileList8[i].fileName){
+                                    vm.fileList8[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList8);
                             break;
                         case 9:
-                            vm.fileList9[num].msg = res.msg;
-                            vm.fileList9[num].fileId = res.data.fileId;
-                            vm.fileList9[num].path = res.data.filePath;
-                            if(!vm.fileList9[num].type){
-                                vm.fileList9[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList9){
+                                if(vm.fileList9[i].name && vm.fileList9[i].name == res.data.fileName || vm.fileList9[i].fileName){
+                                    vm.fileList9[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList9);
                             break;
                         case 10:
-                            vm.fileList10[num].msg = res.msg;
-                            vm.fileList10[num].fileId = res.data.fileId;
-                            vm.fileList10[num].path = res.data.filePath;
-                            if(!vm.fileList10[num].type){
-                                vm.fileList10[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList10){
+                                if(vm.fileList10[i].name && vm.fileList10[i].name == res.data.fileName || vm.fileList10[i].fileName){
+                                    vm.fileList10[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList10);
                             break;
                         case 11:
-                            vm.fileList11[num].msg = res.msg;
-                            vm.fileList11[num].fileId = res.data.fileId;
-                            vm.fileList11[num].path = res.data.filePath;
-                            if(!vm.fileList11[num].type){
-                                vm.fileList11[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList11){
+                                if(vm.fileList11[i].name && vm.fileList11[i].name == res.data.fileName || vm.fileList11[i].fileName){
+                                    vm.fileList11[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList11);
                             break;
                         case 12:
-                            vm.fileList12[num].msg = res.msg;
-                            vm.fileList12[num].fileId = res.data.fileId;
-                            vm.fileList12[num].path = res.data.filePath;
-                            if(!vm.fileList12[num].type){
-                                vm.fileList12[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList12){
+                                if(vm.fileList12[i].name && vm.fileList12[i].name == res.data.fileName || vm.fileList12[i].fileName){
+                                    vm.fileList12[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList12);
                             break;
                         case 13:
-                            vm.fileList13[num].msg = res.msg;
-                            vm.fileList13[num].fileId = res.data.fileId;
-                            vm.fileList13[num].path = res.data.filePath;
-                            if(!vm.fileList13[num].type){
-                                vm.fileList13[num].type = res.data.originalFileType;
+                            for(var i in vm.fileList13){
+                                if(vm.fileList13[i].name && vm.fileList13[i].name == res.data.fileName || vm.fileList13[i].fileName){
+                                    vm.fileList13[i] = {
+                                        "msg":res.msg,
+                                        "fileId":res.data.fileId,
+                                        "name":res.data.fileName,
+                                        "size":res.data.fileSize,
+                                        "path":res.data.filePath,
+                                        "thumb":"",
+                                        "type":res.data.originalFileType
+                                    }
+                                }
                             }
+                            vm.renderUploadTable(listIndex, vm.fileList13);
                             break;
                     }
-                    num++;
                 },
                 allDone: function(res){
                     //上传完毕回调
-                    var arr = [];
                     switch(listIndex){
                         case 1:
-                            vm.renderUploadTable(listIndex, vm.fileList1);
                             if(vm.fileList1.length){
-                                for(var i in vm.fileList1){
-                                    arr.push({
-                                        fileId:vm.fileList1[i].fileId,
-                                        name:vm.fileList1[i].name,
-                                        path:vm.fileList1[i].path,
-                                        thumb:"",
-                                        size:vm.fileList1[i].size,
-                                        type:vm.fileList1[i].type,
-                                        msg:vm.fileList1[i].msg
-                                    });
-                                }
-                                $("input[name=filesHpsp]").val(JSON.stringify(arr));
+                                $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
                             }
                             break;
                         case 2:
-                            vm.renderUploadTable(listIndex, vm.fileList2);
                             if(vm.fileList2.length){
-                                for(var i in vm.fileList2){
-                                    arr.push({
-                                        fileId:vm.fileList2[i].fileId,
-                                        name:vm.fileList2[i].name,
-                                        path:vm.fileList2[i].path,
-                                        thumb:"",
-                                        size:vm.fileList2[i].size,
-                                        type:vm.fileList2[i].type,
-                                        msg:vm.fileList2[i].msg
-                                    });
-                                }
-                                $("input[name=filesYswd]").val(JSON.stringify(arr));
+                                $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
                             }
                             break;
                         case 3:
-                            vm.renderUploadTable(listIndex, vm.fileList3);
                             if(vm.fileList3.length){
-                                for(var i in vm.fileList3){
-                                    arr.push({
-                                        fileId:vm.fileList3[i].fileId,
-                                        name:vm.fileList3[i].name,
-                                        path:vm.fileList3[i].path,
-                                        thumb:"",
-                                        size:vm.fileList3[i].size,
-                                        type:vm.fileList3[i].type,
-                                        msg:vm.fileList3[i].msg
-                                    });
-                                }
-                                $("input[name=filesJcbg]").val(JSON.stringify(arr));
+                                $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
                             }
                             break;
                         case 4:
-                            vm.renderUploadTable(listIndex, vm.fileList4);
                             if(vm.fileList4.length){
-                                for(var i in vm.fileList4){
-                                    arr.push({
-                                        fileId:vm.fileList4[i].fileId,
-                                        name:vm.fileList4[i].name,
-                                        path:vm.fileList4[i].path,
-                                        thumb:"",
-                                        size:vm.fileList4[i].size,
-                                        type:vm.fileList4[i].type,
-                                        msg:vm.fileList4[i].msg
-                                    });
-                                }
-                                $("input[name=filesJcqk]").val(JSON.stringify(arr));
+                                $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
                             }
                             break;
                         case 5:
-                            vm.renderUploadTable(listIndex, vm.fileList5);
                             if(vm.fileList5.length){
-                                for(var i in vm.fileList5){
-                                    arr.push({
-                                        fileId:vm.fileList5[i].fileId,
-                                        name:vm.fileList5[i].name,
-                                        path:vm.fileList5[i].path,
-                                        thumb:"",
-                                        size:vm.fileList5[i].size,
-                                        type:vm.fileList5[i].type,
-                                        msg:vm.fileList5[i].msg
-                                    });
-                                }
-                                $("input[name=filesCfqk]").val(JSON.stringify(arr));
+                                $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
                             }
                             break;
                         case 6:
-                            vm.renderUploadTable(listIndex, vm.fileList6);
                             if(vm.fileList6.length){
-                                for(var i in vm.fileList6){
-                                    arr.push({
-                                        fileId:vm.fileList6[i].fileId,
-                                        name:vm.fileList6[i].name,
-                                        path:vm.fileList6[i].path,
-                                        thumb:"",
-                                        size:vm.fileList6[i].size,
-                                        type:vm.fileList6[i].type,
-                                        msg:vm.fileList6[i].msg
-                                    });
-                                }
-                                $("input[name=filesHyxx]").val(JSON.stringify(arr));
+                                $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
                             }
                             break;
                         case 7:
-                            vm.renderUploadTable(listIndex, vm.fileList7);
                             if(vm.fileList7.length){
-                                for(var i in vm.fileList7){
-                                    arr.push({
-                                        fileId:vm.fileList7[i].fileId,
-                                        name:vm.fileList7[i].name,
-                                        path:vm.fileList7[i].path,
-                                        thumb:"",
-                                        size:vm.fileList7[i].size,
-                                        type:vm.fileList7[i].type,
-                                        msg:vm.fileList7[i].msg
-                                    });
-                                }
-                                $("input[name=filesYjya]").val(JSON.stringify(arr));
+                                $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
                             }
                             break;
                         case 8:
-                            vm.renderUploadTable(listIndex, vm.fileList8);
                             if(vm.fileList8.length){
-                                for(var i in vm.fileList8){
-                                    arr.push({
-                                        fileId:vm.fileList8[i].fileId,
-                                        name:vm.fileList8[i].name,
-                                        path:vm.fileList8[i].path,
-                                        thumb:"",
-                                        size:vm.fileList8[i].size,
-                                        type:vm.fileList8[i].type,
-                                        msg:vm.fileList8[i].msg
-                                    });
-                                }
-                                $("input[name=filesBgjl]").val(JSON.stringify(arr));
+                                $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
                             }
                             break;
                         case 9:
-                            vm.renderUploadTable(listIndex, vm.fileList9);
                             if(vm.fileList9.length){
-                                for(var i in vm.fileList9){
-                                    arr.push({
-                                        fileId:vm.fileList9[i].fileId,
-                                        name:vm.fileList9[i].name,
-                                        path:vm.fileList9[i].path,
-                                        thumb:"",
-                                        size:vm.fileList9[i].size,
-                                        type:vm.fileList9[i].type,
-                                        msg:vm.fileList9[i].msg
-                                    });
-                                }
-                                $("input[name=filesCwjd]").val(JSON.stringify(arr));
+                                $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
                             }
                             break;
                         case 10:
-                            vm.renderUploadTable(listIndex, vm.fileList10);
                             if(vm.fileList10.length){
-                                for(var i in vm.fileList10){
-                                    arr.push({
-                                        fileId:vm.fileList10[i].fileId,
-                                        name:vm.fileList10[i].name,
-                                        path:vm.fileList10[i].path,
-                                        thumb:"",
-                                        size:vm.fileList10[i].size,
-                                        type:vm.fileList10[i].type,
-                                        msg:vm.fileList10[i].msg
-                                    });
-                                }
-                                $("input[name=filesSjcl]").val(JSON.stringify(arr));
+                                $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
                             }
                             break;
                         case 11:
-                            vm.renderUploadTable(listIndex, vm.fileList11);
                             if(vm.fileList11.length){
-                                for(var i in vm.fileList11){
-                                    arr.push({
-                                        fileId:vm.fileList11[i].fileId,
-                                        name:vm.fileList11[i].name,
-                                        path:vm.fileList11[i].path,
-                                        thumb:"",
-                                        size:vm.fileList11[i].size,
-                                        type:vm.fileList11[i].type,
-                                        msg:vm.fileList11[i].msg
-                                    });
-                                }
-                                $("input[name=filesWfgl]").val(JSON.stringify(arr));
+                                $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
                             }
                             break;
                         case 12:
-                            vm.renderUploadTable(listIndex, vm.fileList12);
                             if(vm.fileList12.length){
-                                for(var i in vm.fileList12){
-                                    arr.push({
-                                        fileId:vm.fileList12[i].fileId,
-                                        name:vm.fileList12[i].name,
-                                        path:vm.fileList12[i].path,
-                                        thumb:"",
-                                        size:vm.fileList12[i].size,
-                                        type:vm.fileList12[i].type,
-                                        msg:vm.fileList12[i].msg
-                                    });
-                                }
-                                $("input[name=filesZyqk]").val(JSON.stringify(arr));
+                                $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
                             }
                             break;
                         case 13:
-                            vm.renderUploadTable(listIndex, vm.fileList13);
                             if(vm.fileList13.length){
-                                for(var i in vm.fileList13){
-                                    arr.push({
-                                        fileId:vm.fileList13[i].fileId,
-                                        name:vm.fileList13[i].name,
-                                        path:vm.fileList13[i].path,
-                                        thumb:"",
-                                        size:vm.fileList13[i].size,
-                                        type:vm.fileList13[i].type,
-                                        msg:vm.fileList13[i].msg
-                                    });
-                                }
-                                $("input[name=filesPwk]").val(JSON.stringify(arr));
+                                $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
                             }
                             break;
                     }
@@ -952,6 +815,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
             vm.renderUploadTable(index,vm.fileList1);
             break;
         case 2:
@@ -961,6 +825,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
             vm.renderUploadTable(index,vm.fileList2);
             break;
         case 3:
@@ -970,6 +835,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
             vm.renderUploadTable(index,vm.fileList3);
             break;
         case 4:
@@ -979,6 +845,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
             vm.renderUploadTable(index,vm.fileList4);
             break;
         case 5:
@@ -988,6 +855,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
             vm.renderUploadTable(index,vm.fileList5);
             break;
         case 6:
@@ -997,6 +865,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
             vm.renderUploadTable(index,vm.fileList6);
             break;
         case 7:
@@ -1006,43 +875,48 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
             vm.renderUploadTable(index,vm.fileList7);
             break;
         case 8:
-                for(var i in vm.fileList8){
-                    if(vm.fileList8[i].fileId == fileId){
-                        vm.fileList8.splice(i,1);
-                        break;
-                    }
+            for(var i in vm.fileList8){
+                if(vm.fileList8[i].fileId == fileId){
+                    vm.fileList8.splice(i,1);
+                    break;
                 }
-                vm.renderUploadTable(index,vm.fileList8);
+            }
+            $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
+            vm.renderUploadTable(index,vm.fileList8);
             break;
         case 9:
-                for(var i in vm.fileList9){
-                    if(vm.fileList9[i].fileId == fileId){
-                        vm.fileList9.splice(i,1);
-                        break;
-                    }
+            for(var i in vm.fileList9){
+                if(vm.fileList9[i].fileId == fileId){
+                    vm.fileList9.splice(i,1);
+                    break;
                 }
-                vm.renderUploadTable(index,vm.fileList9);
+            }
+            $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
+            vm.renderUploadTable(index,vm.fileList9);
             break;
         case 10:
-                for(var i in vm.fileList10){
-                    if(vm.fileList10[i].fileId == fileId){
-                        vm.fileList10.splice(i,1);
-                        break;
-                    }
+            for(var i in vm.fileList10){
+                if(vm.fileList10[i].fileId == fileId){
+                    vm.fileList10.splice(i,1);
+                    break;
                 }
-                vm.renderUploadTable(index,vm.fileList10);
+            }
+            $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
+            vm.renderUploadTable(index,vm.fileList10);
             break;
         case 11:
-                for(var i in vm.fileList11){
-                    if(vm.fileList11[i].fileId == fileId){
-                        vm.fileList11.splice(i,1);
-                        break;
-                    }
+            for(var i in vm.fileList11){
+                if(vm.fileList11[i].fileId == fileId){
+                    vm.fileList11.splice(i,1);
+                    break;
                 }
-                vm.renderUploadTable(index,vm.fileList11);
+            }
+            $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
+            vm.renderUploadTable(index,vm.fileList11);
             break;
         case 12:
             for(var i in vm.fileList12){
@@ -1051,6 +925,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
             vm.renderUploadTable(index,vm.fileList12);
             break;
         case 13:
@@ -1060,6 +935,7 @@ function deleteFile(index, fileId){
                     break;
                 }
             }
+            $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
             vm.renderUploadTable(index,vm.fileList13);
             break;
     }

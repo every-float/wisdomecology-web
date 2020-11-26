@@ -1,6 +1,6 @@
 <template>
     <div class="not-found">
-        <back-prevpage></back-prevpage>
+        <back-prevpage to="-1"></back-prevpage>
         404
     </div>
 </template>
