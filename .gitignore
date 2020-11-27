@@ -26,6 +26,4 @@ pnpm-debug.log*
 
 commit.log
 output.js
-vue.config.copy.js
-md.md
 yarn.lock
