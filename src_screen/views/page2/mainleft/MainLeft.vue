@@ -290,7 +290,7 @@
                         this.index_1 = 0;
                     }
                     this.currzb_1 = this.zblist[this.index_1].name;
-                }, 5000);
+                }, 7000);
             },
             stopAutoSwitch () {
                 console.log('定时器关闭');
@@ -349,7 +349,7 @@
                     if(this.index_2 >= this.zblist.length){
                         this.index_2 = 0;
                     }
-                }, 5000);
+                }, 7000);
             },
             stopAutoSwitch_2 () {
                 clearInterval(this.timer_2)

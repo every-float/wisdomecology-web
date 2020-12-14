@@ -726,11 +726,11 @@ function fnDrawingCircle() {
         function onmouseUp(e) {
             // console.log(e, "pppppppppppppppppppppp");
             map.dragging.enable();
-            tempCircleR = L.latLng(e.latlng).distanceTo(tempCircleI).toFixed(2) + '米' //计算半径
+            tempCircleR = L.latLng(e.latlng).distanceTo(tempCircleI).toFixed(2)  //计算半径
 
             if ('文字标签') {
                 var RIcon = L.divIcon({
-                    html: "<div><span style='padding: 5px 10px;border-radius: 20px;overflow: hidden;border: 1px solid #bfa5a5;'>" + tempCircleR + "</span></div>",
+                    html: "<div><span style='padding: 5px 10px;border-radius: 20px;overflow: hidden;border: 1px solid #bfa5a5;'>" + tempCircleR + " 米</span></div>",
                     className: 'RIcon',
                     iconAnchor: [14, 14],
                     popupAnchor: [1, -13],

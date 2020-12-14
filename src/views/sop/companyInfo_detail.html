@@ -740,19 +740,19 @@
 											break;
 									}
 								}
-								vm.getUploadTable(1,ret.data.filesHpsp?ObjectParse(ret.data.filesHpsp):[]);
-								vm.getUploadTable(2,ret.data.filesYswd?ObjectParse(ret.data.filesYswd):[]);
-								vm.getUploadTable(3,ret.data.filesJcbg?ObjectParse(ret.data.filesJcbg):[]);
-								vm.getUploadTable(4,ret.data.filesJcqk?ObjectParse(ret.data.filesJcqk):[]);
-								vm.getUploadTable(5,ret.data.filesCfqk?ObjectParse(ret.data.filesCfqk):[]);
-								vm.getUploadTable(6,ret.data.filesHyxx?ObjectParse(ret.data.filesHyxx):[]);
-								vm.getUploadTable(7,ret.data.filesYjya?ObjectParse(ret.data.filesYjya):[]);
-								vm.getUploadTable(8,ret.data.filesBgjl?ObjectParse(ret.data.filesBgjl):[]);
-								vm.getUploadTable(9,ret.data.filesCwjd?ObjectParse(ret.data.filesCwjd):[]);
-								vm.getUploadTable(10,ret.data.filesSjcl?ObjectParse(ret.data.filesSjcl):[]);
-								vm.getUploadTable(11,ret.data.filesWfgl?ObjectParse(ret.data.filesWfgl):[]);
-								vm.getUploadTable(12,ret.data.filesZyqk?ObjectParse(ret.data.filesZyqk):[]);
-								vm.getUploadTable(13,ret.data.filesPwk?ObjectParse(ret.data.filesPwk):[]);
+								vm.getUploadTable(1,ret.data.filesHpsp);
+								vm.getUploadTable(2,ret.data.filesYswd);
+								vm.getUploadTable(3,ret.data.filesJcbg);
+								vm.getUploadTable(4,ret.data.filesJcqk);
+								vm.getUploadTable(5,ret.data.filesCfqk);
+								vm.getUploadTable(6,ret.data.filesHyxx);
+								vm.getUploadTable(7,ret.data.filesYjya);
+								vm.getUploadTable(8,ret.data.filesBgjl);
+								vm.getUploadTable(9,ret.data.filesCwjd);
+								vm.getUploadTable(10,ret.data.filesSjcl);
+								vm.getUploadTable(11,ret.data.filesWfgl);
+								vm.getUploadTable(12,ret.data.filesZyqk);
+								vm.getUploadTable(13,ret.data.filesPwk);
 							}else{
 								layer.msg(ret.msg);
 							}
@@ -776,13 +776,13 @@
 							height:177,
 							page:true,
 							cols:[[
-								{field: 'name', title: '文件名称', minWidth:200, align: 'center'},
-								{field: 'type', title: '文件类型', width:120, align: 'center'},
+								{field: 'fileName', title: '文件名称', minWidth:200, align: 'center'},
+								{field: 'fileSuffix', title: '文件类型', width:120, align: 'center'},
 								{title: '文件大小', width:120, align: 'center', templet:function(d){
-									return (d.size/1024).toFixed(2)+"kb";
+									return (d.fileSize/1024).toFixed(2)+"kb";
 								}},
 								{title: '操作', width:80, align: 'center', templet:function(d){
-									return "<div><a class='layui-btn layui-btn-xs layui-btn-primary' onclick='toPreview(\""+d.path+"\")'>预览</a></div>"
+									return "<div><a class='layui-btn layui-btn-xs layui-btn-primary' onclick='toPreview(\""+d.fileUrl+"\")'>预览</a></div>"
 								}}
 							]]
 						});

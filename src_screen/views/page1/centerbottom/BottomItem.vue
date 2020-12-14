@@ -61,7 +61,7 @@
             background-size: 100% 100%;
             transform: translateY(-0.15rem);
             transform-style: preserve-3d;
-            animation: beat 2s linear infinite;
+            animation: beat 3.6s linear infinite;
         }
         .base-icon{
             width: 36.71875%;

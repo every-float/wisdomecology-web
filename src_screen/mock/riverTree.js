@@ -7,14 +7,6 @@ module.exports = {
 		"parentId": "",
 		"sortNum": 0,
 		"children": [{
-			"id": "1045",
-			"name": "大柳滩泵站",
-			"parentId": "0",
-			"sortNum": 3,
-            "children": [],
-            "lng": "116.983138",
-            "lat": "39.142341"
-		}, {
 			"id": "1044",
 			"name": "当城桥",
 			"parentId": "0",
@@ -55,14 +47,6 @@ module.exports = {
             "lng": "116.982456",
             "lat": "39.169244"
 		}, {
-			"id": "4178",
-			"name": "大柳滩",
-			"parentId": "0",
-			"sortNum": 4,
-            "children": [],
-            "lng": "116.984366",
-            "lat": "39.11972"
-		}, {
 			"id": "19121107",
 			"name": "复康路桥",
 			"parentId": "0",
@@ -70,6 +54,22 @@ module.exports = {
             "children": [],
             "lng": "117.139515",
             "lat": "39.082437"
+		}, {
+			"id": "1045",
+			"name": "大柳滩泵站",
+			"parentId": "0",
+			"sortNum": 3,
+            "children": [],
+            "lng": "116.983138",
+            "lat": "39.142341"
+		}, {
+			"id": "4178",
+			"name": "大柳滩",
+			"parentId": "0",
+			"sortNum": 4,
+            "children": [],
+            "lng": "116.984366",
+            "lat": "39.11972"
 		}]
 	},
 	"success": true

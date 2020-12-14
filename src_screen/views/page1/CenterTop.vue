@@ -15,6 +15,8 @@
                 :key="vo.id"
                 :style="{top: vo.top, left: vo.left}"
                 :id="`map_point_water_${vo.id}`"
+                @mouseover="onMouseOverWater(vo, $event)"
+                @click.stop
             ></span>
             <span 
                 class="map_icon" 
@@ -22,7 +24,6 @@
                 :key="vo.pointId" 
                 :style="{backgroundPosition: `${-28*vo['aqi']['icon_x']}px ${-28*vo['aqi']['icon_y']}px`, top: vo.top, left: vo.left}"
                 @mouseover="onMouseOver(vo, $event)"
-                @mouseout="onMouseOut()"
                 @click.stop
             ></span>
             <div class="contentBox" v-if="currInfo.aqi && isShow" :style="{top: infoWinTop+'px', left: infoWinLeft+'px'}" @click.stop>
@@ -87,6 +88,7 @@
                     <img v-else src="~@/assets/image/down.png" style="transform: rotate(180deg); top: -10px;" />
                 </div>
             </div>
+            <water-win ref="waterWin"></water-win>
         </div>
         
     </div>
@@ -96,13 +98,17 @@
     import {getAirQuality, getXiangzhenData} from '@/service/api.js';
     import mapMarkerStyle from '@/utils/mapMarkerStyle';
     import { mapState } from 'vuex';
+    import WaterWin from '@/views/page1/centertop/WaterWin.vue';
 
     export default {
+        components: {
+            WaterWin,
+        },
         data() {
             return {
                 currInfo: {},
+                currInfoWater: {},
                 isShow: false,
-                isOver: true,
                 infoWinTop: 0,
                 infoWinLeft: 0,
                 arrowIsDown: true,
@@ -186,6 +192,7 @@
         mounted () {
             document.addEventListener('click', () => {
                 this.isShow = false;
+                this.$refs.waterWin.isShow = false;
             });
             this.$bus.$on('stationChange_page1', ({currStation}) => {
                 const domlist = document.querySelectorAll(`.map_point_water:not(#map_point_water_${currStation})`);
@@ -218,23 +225,32 @@
                 })
             },
             onMouseOver(vo, e) {
-                if(this.isOver){
-                    this.isShow = true;
-                    this.currInfo = vo;
-                    if(e.clientY-180-30 <= 0){
-                        this.infoWinTop = e.clientY + 40;
-                        this.arrowIsDown = false;
-                    }else{
-                        this.infoWinTop = e.clientY - 180 - 30;
-                        this.arrowIsDown = true;
-                    }
-                    
-                    this.infoWinLeft = e.clientX - 130;
+                this.$refs.waterWin.isShow = false;
+                this.isShow = true;
+                this.currInfo = vo;
+                if(e.clientY-180-30 <= 0){
+                    this.infoWinTop = e.clientY + 40;
+                    this.arrowIsDown = false;
+                }else{
+                    this.infoWinTop = e.clientY - 180 - 30;
+                    this.arrowIsDown = true;
                 }
-                this.isOver = false;
+                this.infoWinLeft = e.clientX - 130;
             },
-            onMouseOut() {
-                this.isOver = true;
+            onMouseOverWater(vo, e){
+                this.isShow = false;
+                this.$refs.waterWin.isShow = true;
+                if(e.clientY-180-30 <= 0){
+                    this.$refs.waterWin.infoWinTop = e.clientY + 40;
+                    this.$refs.waterWin.arrowIsDown = false;
+                }else{
+                    this.$refs.waterWin.infoWinTop = e.clientY - 180 - 30;
+                    this.$refs.waterWin.arrowIsDown = true;
+                }
+                this.$refs.waterWin.infoWinLeft = e.clientX - 130;
+                setTimeout(() => {
+                    this.$refs.waterWin.getData(vo.id);
+                }, 50);
             },
             // 处理水环境站点数据
             getWaterPointInfo(v) {
@@ -301,48 +317,44 @@
             }
             .map_point_water{
                 position: absolute;
-                width: 5px;
-                height: 5px;
-                background-color: #1600ff;
+                width: 0.32rem;
+                height: 0.32rem;
+                // background-color: #1600ff;
                 cursor: pointer;
                 transform: scale(1);
-                border-radius: 50%;
-                box-shadow: 0px 0px 2px 4px #1600ff;
+                // border-radius: 50%;
+                // box-shadow: 0px 0px 2px 4px #1600ff;
                 transition: transform 0.2s linear;
+                background: url("~@/assets/image/map_mark.png") no-repeat center;
+                background-size: 100% 100%;
             }
             @keyframes mapiconZoom {
                 0%   {
-                    transform: scale(1);
-                    opacity: 0.5;
+                    transform: translateY(0);
                 }
                 50% {
-                    transform: scale(2);
-                    opacity: 1;
+                    transform: translateY(-50%);
                 }
                 100% {
-                    transform: scale(1);
-                    opacity: 0.5;
+                    transform: translateY(0);
                 }
             }
             @-webkit-keyframes mapiconZoom {
                 0%   {
-                    -webkit-transform: scale(1);
-                    opacity: 0.5;
+                    -webkit-transform: translateY(0);
                 }
                 50% {
-                    -webkit-transform: scale(2);
-                    opacity: 1;
+                    -webkit-transform: translateY(-50%);
                 }
                 100% {
-                    -webkit-transform: scale(1);
-                    opacity: 0.5;
+                    -webkit-transform: translateY(0);
                 }
             }
             .mapicon_zoom{
-                background-color: #ffffff;
-                box-shadow: 0px 0px 2px 4px #ffffff;
-                animation: mapiconZoom 1.66s linear infinite forwards;
-                -webkit-animation: mapiconZoom 1.66s linear infinite forwards;
+                // background-color: #ffffff;
+                // box-shadow: 0px 0px 2px 4px #ffffff;
+                animation: mapiconZoom 1.5s linear infinite forwards;
+                -webkit-animation: mapiconZoom 1.5s linear infinite forwards;
             }
             .map_icon{
                 position: absolute;

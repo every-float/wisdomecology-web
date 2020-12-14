@@ -248,7 +248,7 @@
                     if(this.index_1 >= this.riverTree.length){
                         this.index_1 = 0;
                     }
-                }, 4000);
+                }, 7000);
             },
             stopAutoSwitch_1 () {
                 clearInterval(this.timer_1)
@@ -362,7 +362,7 @@
                     if(this.index_3 >= this.zblist_3.length){
                         this.index_3 = 0;
                     }
-                }, 5000);
+                }, 7000);
             },
             stopAutoSwitch_3 () {
                 clearInterval(this.timer_3)
@@ -404,17 +404,17 @@
                             data: [num, num+0.02, num+0.04],
                             shape: 'path://M879.992333 656.007667a367.992333 367.992333 0 0 1-735.984666 0C144.007667 452.875898 479.453123 0 512 0 536.532822 0 879.992333 452.875898 879.992333 656.007667z',
                             // color:['rgba(248,234,13,1)','rgba(248,234,13,0.8)','rgba(248,234,13,0.6)'],
-                            color: ['rgba(0,162,255,1)', 'rgba(0,162,255,0.8)', 'rgba(0,162,255,0.6)'],
+                            color: ['rgba(0,229,254,1)', 'rgba(0,229,254,0.8)', 'rgba(0,229,254,0.6)'],
                             direction: 'left',
-                            radius: '80%',
+                            radius: '96%',
                             center: ['50%', '50%'],
                             outline: {
                                 show: true,
                                 borderDistance: 0,
                                 itemStyle: {
                                     color: 'none',
-                                    borderColor: 'rgba(0,147,242,1)',
-                                    borderWidth: 4,
+                                    borderColor: 'rgba(0,217,253,1)',
+                                    borderWidth: 3,
                                     shadowBlur: 20,
                                     shadowColor: 'rgba(0, 0, 0, 0.25)'
                                 }
@@ -868,7 +868,9 @@
                     // background: -ms-linear-gradient(left top,  #F37020 0%,#B40000 100%);
                     // background: linear-gradient(to right bottom,  #F37020 0%,#B40000 100%);
                     // filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F37020', endColorstr='#B40000',GradientType=0 );
-                    background-color: #0172AC;
+                    // background-color: rgba(121,250,203,0.75);
+                    background: url("~@/assets/image/selectedbtnbg.png") no-repeat center;
+                    background-size: 100% 100%;
                     color: #FFFFFF;
                     box-shadow: none;
                     // border: 1px solid #ffffff;

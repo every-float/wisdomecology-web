@@ -64,9 +64,48 @@ $(function(){
         });
 
         // 保存监听
-        form.on('submit(btnSave)', function(){
+        form.on('submit(btnSave)', function(data){
             var conDatatype = formSelects.value('conDatatype', 'val').join(",");
             $("select[name=conDatatype]").val(conDatatype);
+            if(vm.fileList1.length){
+                $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
+            }
+            if(vm.fileList2.length){
+                $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
+            }
+            if(vm.fileList3.length){
+                $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
+            }
+            if(vm.fileList4.length){
+                $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
+            }
+            if(vm.fileList5.length){
+                $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
+            }
+            if(vm.fileList6.length){
+                $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
+            }
+            if(vm.fileList7.length){
+                $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
+            }
+            if(vm.fileList8.length){
+                $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
+            }
+            if(vm.fileList9.length){
+                $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
+            }
+            if(vm.fileList10.length){
+                $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
+            }
+            if(vm.fileList11.length){
+                $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
+            }
+            if(vm.fileList12.length){
+                $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
+            }
+            if(vm.fileList13.length){
+                $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
+            }
             vm.saveInfo();
             return false;
         })
@@ -230,56 +269,56 @@ var vm = new Vue({
                             "conZyqk":ret.data.conZyqk
                         });
                         if(ret.data.filesHpsp){
-                            vm.fileList1 = ObjectParse(ret.data.filesHpsp);
-                            $("input[name=filesHpsp]").val(ret.data.filesHpsp);
+                            vm.fileList1 = ret.data.filesHpsp;
+                            $("input[name=filesHpsp]").val(JSON.stringify(ret.data.filesHpsp));
                         }
                         if(ret.data.filesYswd){
-                            vm.fileList2 = ObjectParse(ret.data.filesYswd);
-                            $("input[name=filesYswd]").val(ret.data.filesYswd);
+                            vm.fileList2 = ret.data.filesYswd;
+                            $("input[name=filesYswd]").val(JSON.stringify(ret.data.filesYswd));
                         }
                         if(ret.data.filesJcbg){
-                            vm.fileList3 = ObjectParse(ret.data.filesJcbg);
-                            $("input[name=filesJcbg]").val(ret.data.filesJcbg);
+                            vm.fileList3 = ret.data.filesJcbg;
+                            $("input[name=filesJcbg]").val(JSON.stringify(ret.data.filesJcbg));
                         }
                         if(ret.data.filesJcqk){
-                            vm.fileList4 = ObjectParse(ret.data.filesJcqk);
-                            $("input[name=filesJcqk]").val(ret.data.filesJcqk);
+                            vm.fileList4 = ret.data.filesJcqk;
+                            $("input[name=filesJcqk]").val(JSON.stringify(ret.data.filesJcqk));
                         }
                         if(ret.data.filesCfqk){
-                            vm.fileList5 = ObjectParse(ret.data.filesCfqk);
-                            $("input[name=filesCfqk]").val(ret.data.filesCfqk);
+                            vm.fileList5 = ret.data.filesCfqk;
+                            $("input[name=filesCfqk]").val(JSON.stringify(ret.data.filesCfqk));
                         }
                         if(ret.data.filesHyxx){
-                            vm.fileList6 = ObjectParse(ret.data.filesHyxx);
-                            $("input[name=filesHyxx]").val(ret.data.filesHyxx);
+                            vm.fileList6 = ret.data.filesHyxx;
+                            $("input[name=filesHyxx]").val(JSON.stringify(ret.data.filesHyxx));
                         }
                         if(ret.data.filesYjya){
-                            vm.fileList7 = ObjectParse(ret.data.filesYjya);
-                            $("input[name=filesYjya]").val(ret.data.filesYjya);
+                            vm.fileList7 = ret.data.filesYjya;
+                            $("input[name=filesYjya]").val(JSON.stringify(ret.data.filesYjya));
                         }
                         if(ret.data.filesBgjl){
-                            vm.fileList8 = ObjectParse(ret.data.filesBgjl);
-                            $("input[name=filesBgjl]").val(ret.data.filesBgjl);
+                            vm.fileList8 = ret.data.filesBgjl;
+                            $("input[name=filesBgjl]").val(JSON.stringify(ret.data.filesBgjl));
                         }
                         if(ret.data.filesCwjd){
-                            vm.fileList9 = ObjectParse(ret.data.filesCwjd);
-                            $("input[name=filesCwjd]").val(ret.data.filesCwjd);
+                            vm.fileList9 = ret.data.filesCwjd;
+                            $("input[name=filesCwjd]").val(JSON.stringify(ret.data.filesCwjd));
                         }
                         if(ret.data.filesSjcl){
-                            vm.fileList10 = ObjectParse(ret.data.filesSjcl);
-                            $("input[name=filesSjcl]").val(ret.data.filesSjcl);
+                            vm.fileList10 = ret.data.filesSjcl;
+                            $("input[name=filesSjcl]").val(JSON.stringify(ret.data.filesSjcl));
                         }
                         if(ret.data.filesWfgl){
-                            vm.fileList11 = ObjectParse(ret.data.filesWfgl);
-                            $("input[name=filesWfgl]").val(ret.data.filesWfgl);
+                            vm.fileList11 = ret.data.filesWfgl;
+                            $("input[name=filesWfgl]").val(JSON.stringify(ret.data.filesWfgl));
                         }
                         if(ret.data.filesZyqk){
-                            vm.fileList12 = ObjectParse(ret.data.filesZyqk);
-                            $("input[name=filesZyqk]").val(ret.data.filesZyqk);
+                            vm.fileList12 = ret.data.filesZyqk;
+                            $("input[name=filesZyqk]").val(JSON.stringify(ret.data.filesZyqk));
                         }
                         if(ret.data.filesPwk){
-                            vm.fileList13 = ObjectParse(ret.data.filesPwk);
-                            $("input[name=filesPwk]").val(ret.data.filesPwk);
+                            vm.fileList13 = ret.data.filesPwk;
+                            $("input[name=filesPwk]").val(JSON.stringify(ret.data.filesPwk));
                         }
 
                         // 附件上传
@@ -296,19 +335,19 @@ var vm = new Vue({
                         vm.toUploadFile(11);
                         vm.toUploadFile(12);
                         vm.toUploadFile(13);
-                        vm.getUploadTable(1,ret.data.filesHpsp?ObjectParse(ret.data.filesHpsp):[]);
-                        vm.getUploadTable(2,ret.data.filesYswd?ObjectParse(ret.data.filesYswd):[]);
-                        vm.getUploadTable(3,ret.data.filesJcbg?ObjectParse(ret.data.filesJcbg):[]);
-                        vm.getUploadTable(4,ret.data.filesJcqk?ObjectParse(ret.data.filesJcqk):[]);
-                        vm.getUploadTable(5,ret.data.filesCfqk?ObjectParse(ret.data.filesCfqk):[]);
-                        vm.getUploadTable(6,ret.data.filesHyxx?ObjectParse(ret.data.filesHyxx):[]);
-                        vm.getUploadTable(7,ret.data.filesYjya?ObjectParse(ret.data.filesYjya):[]);
-                        vm.getUploadTable(8,ret.data.filesBgjl?ObjectParse(ret.data.filesBgjl):[]);
-                        vm.getUploadTable(9,ret.data.filesCwjd?ObjectParse(ret.data.filesCwjd):[]);
-                        vm.getUploadTable(10,ret.data.filesSjcl?ObjectParse(ret.data.filesSjcl):[]);
-                        vm.getUploadTable(11,ret.data.filesWfgl?ObjectParse(ret.data.filesWfgl):[]);
-                        vm.getUploadTable(12,ret.data.filesZyqk?ObjectParse(ret.data.filesZyqk):[]);
-                        vm.getUploadTable(13,ret.data.filesPwk?ObjectParse(ret.data.filesPwk):[]);
+                        vm.getUploadTable(1,ret.data.filesHpsp);
+                        vm.getUploadTable(2,ret.data.filesYswd);
+                        vm.getUploadTable(3,ret.data.filesJcbg);
+                        vm.getUploadTable(4,ret.data.filesJcqk);
+                        vm.getUploadTable(5,ret.data.filesCfqk);
+                        vm.getUploadTable(6,ret.data.filesHyxx);
+                        vm.getUploadTable(7,ret.data.filesYjya);
+                        vm.getUploadTable(8,ret.data.filesBgjl);
+                        vm.getUploadTable(9,ret.data.filesCwjd);
+                        vm.getUploadTable(10,ret.data.filesSjcl);
+                        vm.getUploadTable(11,ret.data.filesWfgl);
+                        vm.getUploadTable(12,ret.data.filesZyqk);
+                        vm.getUploadTable(13,ret.data.filesPwk);
 
                         formSelects.value('conDatatype', ret.data.conDatatype.split(","));
                         setTimeout(function(){
@@ -398,15 +437,15 @@ var vm = new Vue({
                     switch(listIndex){
                         case 1:
                             for(var i in vm.fileList1){
-                                if(vm.fileList1[i].name && vm.fileList1[i].name == res.data.fileName || vm.fileList1[i].fileName){
+                                if(vm.fileList1[i].name && vm.fileList1[i].name == res.data.fileName){
                                     vm.fileList1[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -414,15 +453,15 @@ var vm = new Vue({
                             break;
                         case 2:
                             for(var i in vm.fileList2){
-                                if(vm.fileList2[i].name && vm.fileList2[i].name == res.data.fileName || vm.fileList2[i].fileName){
+                                if(vm.fileList2[i].name && vm.fileList2[i].name == res.data.fileName){
                                     vm.fileList2[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -430,15 +469,15 @@ var vm = new Vue({
                             break;
                         case 3:
                             for(var i in vm.fileList3){
-                                if(vm.fileList3[i].name && vm.fileList3[i].name == res.data.fileName || vm.fileList3[i].fileName){
+                                if(vm.fileList3[i].name && vm.fileList3[i].name == res.data.fileName){
                                     vm.fileList3[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -446,15 +485,15 @@ var vm = new Vue({
                             break;
                         case 4:
                             for(var i in vm.fileList4){
-                                if(vm.fileList4[i].name && vm.fileList4[i].name == res.data.fileName || vm.fileList4[i].fileName){
+                                if(vm.fileList4[i].name && vm.fileList4[i].name == res.data.fileName){
                                     vm.fileList4[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -462,15 +501,15 @@ var vm = new Vue({
                             break;
                         case 5:
                             for(var i in vm.fileList5){
-                                if(vm.fileList5[i].name && vm.fileList5[i].name == res.data.fileName || vm.fileList5[i].fileName){
+                                if(vm.fileList5[i].name && vm.fileList5[i].name == res.data.fileName){
                                     vm.fileList5[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -478,15 +517,15 @@ var vm = new Vue({
                             break;
                         case 6:
                             for(var i in vm.fileList6){
-                                if(vm.fileList6[i].name && vm.fileList6[i].name == res.data.fileName || vm.fileList6[i].fileName){
+                                if(vm.fileList6[i].name && vm.fileList6[i].name == res.data.fileName){
                                     vm.fileList6[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -494,15 +533,15 @@ var vm = new Vue({
                             break;
                         case 7:
                             for(var i in vm.fileList7){
-                                if(vm.fileList7[i].name && vm.fileList7[i].name == res.data.fileName || vm.fileList7[i].fileName){
+                                if(vm.fileList7[i].name && vm.fileList7[i].name == res.data.fileName){
                                     vm.fileList7[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -510,15 +549,15 @@ var vm = new Vue({
                             break;
                         case 8:
                             for(var i in vm.fileList8){
-                                if(vm.fileList8[i].name && vm.fileList8[i].name == res.data.fileName || vm.fileList8[i].fileName){
+                                if(vm.fileList8[i].name && vm.fileList8[i].name == res.data.fileName){
                                     vm.fileList8[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -526,15 +565,15 @@ var vm = new Vue({
                             break;
                         case 9:
                             for(var i in vm.fileList9){
-                                if(vm.fileList9[i].name && vm.fileList9[i].name == res.data.fileName || vm.fileList9[i].fileName){
+                                if(vm.fileList9[i].name && vm.fileList9[i].name == res.data.fileName){
                                     vm.fileList9[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -542,15 +581,15 @@ var vm = new Vue({
                             break;
                         case 10:
                             for(var i in vm.fileList10){
-                                if(vm.fileList10[i].name && vm.fileList10[i].name == res.data.fileName || vm.fileList10[i].fileName){
+                                if(vm.fileList10[i].name && vm.fileList10[i].name == res.data.fileName){
                                     vm.fileList10[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -558,15 +597,15 @@ var vm = new Vue({
                             break;
                         case 11:
                             for(var i in vm.fileList11){
-                                if(vm.fileList11[i].name && vm.fileList11[i].name == res.data.fileName || vm.fileList11[i].fileName){
+                                if(vm.fileList11[i].name && vm.fileList11[i].name == res.data.fileName){
                                     vm.fileList11[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -574,15 +613,15 @@ var vm = new Vue({
                             break;
                         case 12:
                             for(var i in vm.fileList12){
-                                if(vm.fileList12[i].name && vm.fileList12[i].name == res.data.fileName || vm.fileList12[i].fileName){
+                                if(vm.fileList12[i].name && vm.fileList12[i].name == res.data.fileName){
                                     vm.fileList12[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -590,15 +629,15 @@ var vm = new Vue({
                             break;
                         case 13:
                             for(var i in vm.fileList13){
-                                if(vm.fileList13[i].name && vm.fileList13[i].name == res.data.fileName || vm.fileList13[i].fileName){
+                                if(vm.fileList13[i].name && vm.fileList13[i].name == res.data.fileName){
                                     vm.fileList13[i] = {
-                                        "msg":res.msg,
+                                        "remark":res.msg,
                                         "fileId":res.data.fileId,
-                                        "name":res.data.fileName,
-                                        "size":res.data.fileSize,
-                                        "path":res.data.filePath,
+                                        "fileName":res.data.fileName,
+                                        "fileSize":res.data.fileSize,
+                                        "fileUrl":res.data.filePath,
                                         "thumb":"",
-                                        "type":res.data.originalFileType
+                                        "fileSuffix":res.data.originalFileType
                                     }
                                 }
                             }
@@ -608,73 +647,75 @@ var vm = new Vue({
                 },
                 allDone: function(res){
                     //上传完毕回调
-                    switch(listIndex){
-                        case 1:
-                            if(vm.fileList1.length){
-                                $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
-                            }
-                            break;
-                        case 2:
-                            if(vm.fileList2.length){
-                                $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
-                            }
-                            break;
-                        case 3:
-                            if(vm.fileList3.length){
-                                $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
-                            }
-                            break;
-                        case 4:
-                            if(vm.fileList4.length){
-                                $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
-                            }
-                            break;
-                        case 5:
-                            if(vm.fileList5.length){
-                                $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
-                            }
-                            break;
-                        case 6:
-                            if(vm.fileList6.length){
-                                $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
-                            }
-                            break;
-                        case 7:
-                            if(vm.fileList7.length){
-                                $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
-                            }
-                            break;
-                        case 8:
-                            if(vm.fileList8.length){
-                                $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
-                            }
-                            break;
-                        case 9:
-                            if(vm.fileList9.length){
-                                $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
-                            }
-                            break;
-                        case 10:
-                            if(vm.fileList10.length){
-                                $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
-                            }
-                            break;
-                        case 11:
-                            if(vm.fileList11.length){
-                                $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
-                            }
-                            break;
-                        case 12:
-                            if(vm.fileList12.length){
-                                $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
-                            }
-                            break;
-                        case 13:
-                            if(vm.fileList13.length){
-                                $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
-                            }
-                            break;
-                    }
+                    // switch(listIndex){
+                    //     case 1:
+                    //         if(vm.fileList1.length){
+                    //             console.log(vm.fileList1);
+                    //             $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
+                    //             console.log($("input[name=filesHpsp]").val());
+                    //         }
+                    //         break;
+                    //     case 2:
+                    //         if(vm.fileList2.length){
+                    //             $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
+                    //         }
+                    //         break;
+                    //     case 3:
+                    //         if(vm.fileList3.length){
+                    //             $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
+                    //         }
+                    //         break;
+                    //     case 4:
+                    //         if(vm.fileList4.length){
+                    //             $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
+                    //         }
+                    //         break;
+                    //     case 5:
+                    //         if(vm.fileList5.length){
+                    //             $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
+                    //         }
+                    //         break;
+                    //     case 6:
+                    //         if(vm.fileList6.length){
+                    //             $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
+                    //         }
+                    //         break;
+                    //     case 7:
+                    //         if(vm.fileList7.length){
+                    //             $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
+                    //         }
+                    //         break;
+                    //     case 8:
+                    //         if(vm.fileList8.length){
+                    //             $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
+                    //         }
+                    //         break;
+                    //     case 9:
+                    //         if(vm.fileList9.length){
+                    //             $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
+                    //         }
+                    //         break;
+                    //     case 10:
+                    //         if(vm.fileList10.length){
+                    //             $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
+                    //         }
+                    //         break;
+                    //     case 11:
+                    //         if(vm.fileList11.length){
+                    //             $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
+                    //         }
+                    //         break;
+                    //     case 12:
+                    //         if(vm.fileList12.length){
+                    //             $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
+                    //         }
+                    //         break;
+                    //     case 13:
+                    //         if(vm.fileList13.length){
+                    //             $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
+                    //         }
+                    //         break;
+                    // }
                     layer.closeAll("loading");
                 },
                 error: function(){
@@ -735,14 +776,14 @@ var vm = new Vue({
                     page:true,
                     height:177,
                     cols:[[
-                        {field: 'name', title: '文件名称', minWidth:200, align: 'center'},
-                        {field: 'type', title: '文件类型', width:120, align: 'center'},
+                        {field: 'fileName', title: '文件名称', minWidth:200, align: 'center'},
+                        {field: 'fileSuffix', title: '文件类型', width:120, align: 'center'},
                         {title: '文件大小', width:120, align: 'center', templet:function(d){
-                            return (d.size/1024).toFixed(2)+"kb";
+                            return (d.fileSize/1024).toFixed(2)+"kb";
                         }},
-                        {field: 'msg', title: '上传描述', width:180, align: 'center'},
+                        {field: 'remark', title: '上传描述', width:180, align: 'center'},
                         {title: '操作', width:130, align: 'center', templet:function(d){
-                            return "<div><a class='layui-btn layui-btn-xs' onclick='deleteFile("+index+",\""+d.fileId+"\")'>删除</a><a class='layui-btn layui-btn-xs layui-btn-primary' onclick='toPreview(\""+d.path+"\")'>预览</a></div>"
+                            return "<div><a class='layui-btn layui-btn-xs' onclick='deleteFile("+index+",\""+d.fileId+"\")'>删除</a><a class='layui-btn layui-btn-xs layui-btn-primary' onclick='toPreview(\""+d.fileUrl+"\")'>预览</a></div>"
                         }},
                     ]]
                 });
@@ -806,139 +847,348 @@ var vm = new Vue({
 })
 
 // 删除
-function deleteFile(index, fileId){
-    switch(index){
+function deleteFile(partIndex, fileId){
+    switch(partIndex){
         case 1:
             for(var i in vm.fileList1){
                 if(vm.fileList1[i].fileId == fileId){
-                    vm.fileList1.splice(i,1);
+                    if(vm.fileList1[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList1.splice(i,1);
+                        $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
+                        vm.renderUploadTable(partIndex,vm.fileList1);
+                    }
                     break;
                 }
             }
-            $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
-            vm.renderUploadTable(index,vm.fileList1);
             break;
         case 2:
             for(var i in vm.fileList2){
                 if(vm.fileList2[i].fileId == fileId){
-                    vm.fileList2.splice(i,1);
+                    if(vm.fileList2[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList2.splice(i,1);
+                        $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
+                        vm.renderUploadTable(partIndex,vm.fileList2);
+                    }
                     break;
                 }
             }
-            $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
-            vm.renderUploadTable(index,vm.fileList2);
             break;
         case 3:
             for(var i in vm.fileList3){
                 if(vm.fileList3[i].fileId == fileId){
-                    vm.fileList3.splice(i,1);
+                    if(vm.fileList3[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList3.splice(i,1);
+                        $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
+                        vm.renderUploadTable(partIndex,vm.fileList3);
+                    }
                     break;
                 }
             }
-            $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
-            vm.renderUploadTable(index,vm.fileList3);
             break;
         case 4:
             for(var i in vm.fileList4){
                 if(vm.fileList4[i].fileId == fileId){
-                    vm.fileList4.splice(i,1);
+                    if(vm.fileList4[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList4.splice(i,1);
+                        $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
+                        vm.renderUploadTable(partIndex,vm.fileList4);
+                    }
                     break;
                 }
             }
-            $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
-            vm.renderUploadTable(index,vm.fileList4);
             break;
         case 5:
             for(var i in vm.fileList5){
                 if(vm.fileList5[i].fileId == fileId){
-                    vm.fileList5.splice(i,1);
+                    if(vm.fileList5[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList5.splice(i,1);
+                        $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
+                        vm.renderUploadTable(partIndex,vm.fileList5);
+                    }
                     break;
                 }
             }
-            $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
-            vm.renderUploadTable(index,vm.fileList5);
             break;
         case 6:
             for(var i in vm.fileList6){
                 if(vm.fileList6[i].fileId == fileId){
-                    vm.fileList6.splice(i,1);
+                    if(vm.fileList6[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList6.splice(i,1);
+                        $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
+                        vm.renderUploadTable(partIndex,vm.fileList6);
+                    }
                     break;
                 }
             }
-            $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
-            vm.renderUploadTable(index,vm.fileList6);
             break;
         case 7:
             for(var i in vm.fileList7){
                 if(vm.fileList7[i].fileId == fileId){
-                    vm.fileList7.splice(i,1);
+                    if(vm.fileList7[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList7.splice(i,1);
+                        $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
+                        vm.renderUploadTable(partIndex,vm.fileList7);
+                    }
                     break;
                 }
             }
-            $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
-            vm.renderUploadTable(index,vm.fileList7);
             break;
         case 8:
             for(var i in vm.fileList8){
                 if(vm.fileList8[i].fileId == fileId){
-                    vm.fileList8.splice(i,1);
+                    if(vm.fileList8[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList8.splice(i,1);
+                        $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
+                        vm.renderUploadTable(partIndex,vm.fileList8);
+                    }
                     break;
                 }
             }
-            $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
-            vm.renderUploadTable(index,vm.fileList8);
             break;
         case 9:
             for(var i in vm.fileList9){
                 if(vm.fileList9[i].fileId == fileId){
-                    vm.fileList9.splice(i,1);
+                    if(vm.fileList9[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList9.splice(i,1);
+                        $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
+                        vm.renderUploadTable(partIndex,vm.fileList9);
+                    }
                     break;
                 }
             }
-            $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
-            vm.renderUploadTable(index,vm.fileList9);
             break;
         case 10:
             for(var i in vm.fileList10){
                 if(vm.fileList10[i].fileId == fileId){
-                    vm.fileList10.splice(i,1);
+                    if(vm.fileList10[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList10.splice(i,1);
+                        $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
+                        vm.renderUploadTable(partIndex,vm.fileList10);
+                    }
                     break;
                 }
             }
-            $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
-            vm.renderUploadTable(index,vm.fileList10);
             break;
         case 11:
             for(var i in vm.fileList11){
                 if(vm.fileList11[i].fileId == fileId){
-                    vm.fileList11.splice(i,1);
+                    if(vm.fileList11[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList11.splice(i,1);
+                        $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
+                        vm.renderUploadTable(partIndex,vm.fileList11);
+                    }
                     break;
                 }
             }
-            $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
-            vm.renderUploadTable(index,vm.fileList11);
             break;
         case 12:
             for(var i in vm.fileList12){
                 if(vm.fileList12[i].fileId == fileId){
-                    vm.fileList12.splice(i,1);
+                    if(vm.fileList12[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList12.splice(i,1);
+                        $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
+                        vm.renderUploadTable(partIndex,vm.fileList12);
+                    }
                     break;
                 }
             }
-            $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
-            vm.renderUploadTable(index,vm.fileList12);
             break;
         case 13:
             for(var i in vm.fileList13){
                 if(vm.fileList13[i].fileId == fileId){
-                    vm.fileList13.splice(i,1);
+                    if(vm.fileList13[i].dataClass){
+                        deleteInfo(partIndex, fileId);
+                    }else{
+                        vm.fileList13.splice(i,1);
+                        $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
+                        vm.renderUploadTable(partIndex,vm.fileList13);
+                    }
                     break;
                 }
             }
-            $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
-            vm.renderUploadTable(index,vm.fileList13);
             break;
     }
+}
+function deleteInfo(partIndex, fileId){
+    layer.confirm('<span style="color:red">您确定要删除该文件？！删除后无法恢复！</span>', {icon: 3, title:'提示'}, function(index){
+        layer.close(index);
+        $.ajax({
+            type:"post",
+            url:URL_company_file_delete,
+            data:{
+                fileId:fileId
+            },
+            beforeSend:function(){
+                layer.load(2,{shade:0.5});
+            },
+            success:function(ret){
+                if(ret.code == 0){
+                    switch(partIndex){
+                        case 1:
+                            for(var i in vm.fileList1){
+                                if(vm.fileList1[i].fileId == fileId){
+                                    vm.fileList1.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesHpsp]").val(JSON.stringify(vm.fileList1));
+                            vm.renderUploadTable(partIndex,vm.fileList1);
+                            break;
+                        case 2:
+                            for(var i in vm.fileList2){
+                                if(vm.fileList2[i].fileId == fileId){
+                                    vm.fileList2.splice(i,1);
+                                }
+                            }
+                            $("input[name=filesYswd]").val(JSON.stringify(vm.fileList2));
+                            vm.renderUploadTable(partIndex,vm.fileList2);
+                            break;
+                        case 3:
+                            for(var i in vm.fileList3){
+                                if(vm.fileList3[i].fileId == fileId){
+                                    vm.fileList3.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesJcbg]").val(JSON.stringify(vm.fileList3));
+                            vm.renderUploadTable(partIndex,vm.fileList3);
+                            break;
+                        case 4:
+                            for(var i in vm.fileList4){
+                                if(vm.fileList4[i].fileId == fileId){
+                                    vm.fileList4.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesJcqk]").val(JSON.stringify(vm.fileList4));
+                            vm.renderUploadTable(partIndex,vm.fileList4);
+                            break;
+                        case 5:
+                            for(var i in vm.fileList5){
+                                if(vm.fileList5[i].fileId == fileId){
+                                    vm.fileList5.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesCfqk]").val(JSON.stringify(vm.fileList5));
+                            vm.renderUploadTable(partIndex,vm.fileList5);
+                            break;
+                        case 6:
+                            for(var i in vm.fileList6){
+                                if(vm.fileList6[i].fileId == fileId){
+                                    vm.fileList6.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesHyxx]").val(JSON.stringify(vm.fileList6));
+                            vm.renderUploadTable(partIndex,vm.fileList6);
+                            break;
+                        case 7:
+                            for(var i in vm.fileList7){
+                                if(vm.fileList7[i].fileId == fileId){
+                                    vm.fileList7.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesYjya]").val(JSON.stringify(vm.fileList7));
+                            vm.renderUploadTable(partIndex,vm.fileList7);
+                            break;
+                        case 8:
+                            for(var i in vm.fileList8){
+                                if(vm.fileList8[i].fileId == fileId){
+                                    vm.fileList8.splice(i,1);
+                                }
+                            }
+                            $("input[name=filesBgjl]").val(JSON.stringify(vm.fileList8));
+                            vm.renderUploadTable(partIndex,vm.fileList8);
+                            break;
+                        case 9:
+                            for(var i in vm.fileList9){
+                                if(vm.fileList9[i].fileId == fileId){
+                                    vm.fileList9.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesCwjd]").val(JSON.stringify(vm.fileList9));
+                            vm.renderUploadTable(partIndex,vm.fileList9);
+                            break;
+                        case 10:
+                            for(var i in vm.fileList10){
+                                if(vm.fileList10[i].fileId == fileId){
+                                    vm.fileList10.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesSjcl]").val(JSON.stringify(vm.fileList10));
+                            vm.renderUploadTable(partIndex,vm.fileList10);
+                            break;
+                        case 11:
+                            for(var i in vm.fileList11){
+                                if(vm.fileList11[i].fileId == fileId){
+                                    vm.fileList11.splice(i,1);
+                                }
+                            }
+                            $("input[name=filesWfgl]").val(JSON.stringify(vm.fileList11));
+                            vm.renderUploadTable(partIndex,vm.fileList11);
+                            break;
+                        case 12:
+                            for(var i in vm.fileList12){
+                                if(vm.fileList12[i].fileId == fileId){
+                                    vm.fileList12.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesZyqk]").val(JSON.stringify(vm.fileList12));
+                            vm.renderUploadTable(partIndex,vm.fileList12);
+                            break;
+                        case 13:
+                            for(var i in vm.fileList13){
+                                if(vm.fileList13[i].fileId == fileId){
+                                    vm.fileList13.splice(i,1);
+                                    break;
+                                }
+                            }
+                            $("input[name=filesPwk]").val(JSON.stringify(vm.fileList13));
+                            vm.renderUploadTable(partIndex,vm.fileList13);
+                            break;
+                    }
+                    layer.closeAll("loading");
+                    layer.msg("删除成功");
+                }else{
+                    layer.closeAll("loading");
+                    layer.msg(ret.msg);
+                }
+            },
+            error:function(){
+                layer.closeAll("loading");
+                layer.msg("删除失败，请稍后重试");
+            }
+        })
+    })
 }
 
 // 预览

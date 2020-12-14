@@ -743,7 +743,9 @@
                     method: 'get',
                     url: profiles.jsonUrl + type + "/" + type + ".json",
                     headers: {
-                        'Authorization': 'Bearer ' + getUserToken()
+                        'Authorization': 'Bearer ' + getUserToken(),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                     },
                 });
             },
@@ -1145,7 +1147,6 @@
             },
 
             fnAddMarker: function() {
-
                 layui.use(['form'], function() {
                     var $ = layui.jquery;
                     var form = layui.form;
@@ -1196,6 +1197,8 @@
                             // var count=0;
                             vm.screen_marker_list = [];
                             vm.screenCircle_marker_list = [];
+
+
                             vm.marker_list.forEach(function(item, index) {
                                 vm.marker_list[index].curItem = vm.curItem;
                                 vm.marker_list[index].sort = vm.marker_list[index].aqi == '-' ? 0 : vm.marker_list[index].aqi;
@@ -1288,7 +1291,9 @@
                                     }
                                 }
                             });
-
+console.log(2020);
+console.log(vm.screen_marker_list)
+console.log(vm.screenCircle_marker_list)
                             vm.screen_marker_list.sort(function(a, b) {
                                 if (Number(a.sort) > Number(b.sort)) {
                                     return -1;

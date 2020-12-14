@@ -40,6 +40,11 @@ function initDatagrid() {
 				width : 180,
 				align : 'center'
 			},{
+				field : 'log_operateCN',
+				title : '操作类型',
+				width : 100,
+				align : 'center'
+			},{
 				field : 'paramValue',
 				title : '登录设备',
 				width : 130,

@@ -151,7 +151,7 @@ export default {
             if(this.index_1 >= this.zblist.length){
                 this.index_1 = 0;
             }
-        }, 5000);
+        }, 7000);
     },
     stopAutoSwitch_1 () {
         clearInterval(this.timer_1)

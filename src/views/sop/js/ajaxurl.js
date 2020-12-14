@@ -5,6 +5,7 @@ var URL_company_info_save = baseUrl + "sop/save";  // 保存
 var URL_company_info_update = baseUrl + "sop/update";  // 修改
 var URL_company_info_delete = baseUrl + "sop/del";  // 删除
 var URL_get_company_type = baseUrl + "sop/getIndustryAll";  // 获取行业类别
+var URL_company_file_delete = baseUrl + "fileupload/delFile";     // 删除已上传的附件
 
 var URL_sop_video_list = baseUrl + 'sop/video/getPageList';
 

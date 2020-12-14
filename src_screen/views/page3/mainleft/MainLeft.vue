@@ -247,7 +247,7 @@
                     if(this.index_1 >= this.riverTree.length){
                         this.index_1 = 0;
                     }
-                }, 4000);
+                }, 7000);
             },
             stopAutoSwitch_1 () {
                 clearInterval(this.timer_1)
@@ -360,7 +360,7 @@
                     if(this.index_3 >= this.zblist_3.length){
                         this.index_3 = 0;
                     }
-                }, 5000);
+                }, 7000);
             },
             stopAutoSwitch_3 () {
                 clearInterval(this.timer_3)
